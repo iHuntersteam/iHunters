@@ -2,43 +2,44 @@ CREATE DATABASE IF NOT EXISTS ihunters;
 
 USE ihunters;
 
-CREATE TABLE IF NOT EXISTS persons(
+CREATE TABLE IF NOT EXISTS persons (
 	id INT NOT NULL AUTO_INCREMENT, 
-	name TEXT NOT NULL, 
-	PRIMARY KEY (id),
-	UNIQUE (name(1024))
-	);
+	name TEXT NOT NULL,
+	name_hash CHAR(32) UNIQUE, 
+	PRIMARY KEY (id)
+);
 
-CREATE TABLE IF NOT EXISTS sites(
+CREATE TABLE IF NOT EXISTS sites (
 	id INT NOT NULL AUTO_INCREMENT, 
 	name NVARCHAR(256) NOT NULL UNIQUE, 
-	PRIMARY KEY (id));
+	PRIMARY KEY (id)
+);
 
 CREATE TABLE IF NOT EXISTS keywords (
 	id INT NOT NULL AUTO_INCREMENT, 
-	name TEXT NOT NULL, 
+	name TEXT NOT NULL,
+	name_hash CHAR(32) UNIQUE, 
 	person_id INT NOT NULL, 
 	PRIMARY KEY (id), 
 	FOREIGN KEY (person_id) 
 		REFERENCES persons(id) 
-		ON DELETE CASCADE,
-	UNIQUE (name(1024))
-	);
+		ON DELETE CASCADE
+);
 
-CREATE TABLE IF NOT EXISTS pages(
+CREATE TABLE IF NOT EXISTS pages (
 	id INT NOT NULL AUTO_INCREMENT, 
 	url TEXT NOT NULL, 
 	site_id INT NOT NULL, 
 	found_date_time DATETIME DEFAULT CURRENT_TIMESTAMP, 
-	last_scan_date DATETIME ON UPDATE CURRENT_TIMESTAMP, 
+	last_scan_date DATETIME ON UPDATE CURRENT_TIMESTAMP,
+	url_hash CHAR(32) UNIQUE, 
 	PRIMARY KEY (id), 
 	FOREIGN KEY (site_id) 
 		REFERENCES sites(id) 
-		ON DELETE CASCADE,
-	UNIQUE (url(1024))
-	);
+		ON DELETE CASCADE
+);
 
-CREATE TABLE IF NOT EXISTS person_page_rank(
+CREATE TABLE IF NOT EXISTS person_page_rank (
 	person_id INT NOT NULL, 
 	page_id INT NOT NULL, 
 	rank INT NOT NULL, 
@@ -47,4 +48,52 @@ CREATE TABLE IF NOT EXISTS person_page_rank(
 		ON DELETE CASCADE, 
 	FOREIGN KEY (page_id) 
 		REFERENCES pages(id) 
-		ON DELETE CASCADE);
+		ON DELETE CASCADE
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER Persons_BeforeInsert 
+BEFORE INSERT ON persons
+FOR EACH ROW
+BEGIN
+	SET NEW.name_hash = MD5(NEW.name);
+END$$
+
+CREATE TRIGGER Persons_BeforeUpdate 
+BEFORE UPDATE ON persons
+FOR EACH ROW
+BEGIN
+	SET NEW.name_hash = MD5(NEW.name);
+END$$
+
+CREATE TRIGGER Keywords_BeforeInsert 
+BEFORE INSERT ON keywords
+FOR EACH ROW
+BEGIN
+	SET NEW.name_hash = MD5(NEW.name);
+END$$
+
+CREATE TRIGGER Keywords_BeforeUpdate 
+BEFORE UPDATE ON keywords
+FOR EACH ROW
+BEGIN
+	SET NEW.name_hash = MD5(NEW.name);
+END$$
+
+CREATE TRIGGER Pages_BeforeInsert 
+BEFORE INSERT ON pages
+FOR EACH ROW
+BEGIN
+	SET NEW.url_hash = MD5(NEW.url);
+END$$
+
+CREATE TRIGGER Pages_BeforeUpdate 
+BEFORE UPDATE ON pages
+FOR EACH ROW
+BEGIN
+	SET NEW.url_hash = MD5(NEW.url);
+END$$
+
+DELIMITER ;
