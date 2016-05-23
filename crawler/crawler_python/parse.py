@@ -18,7 +18,7 @@ class RobotsParser:
         Parse robots.txt and search for sitemap links in it.
         :return: A list of sitemaps or an empty list if sitemaps are not found.
         """
-        robots_txt = self.fetch()
+        robots_txt = self._fetch()
         if robots_txt:
             # We need to decode binary string here
             # Robots.txt must be in ASCII. If we didn't get a decoded string, suggest it's utf-8 or utf-16
@@ -60,10 +60,16 @@ class RobotsParser:
         else:
             return []
 
-    def can_i_visit(self, url):
+    def allowed(self, url, useragent='*'):
+        """
+        Are you allowed to visit url according with robots.txt?
+        :param url: url you want to visit
+        :param useragent: your user-agent
+        :return: True or False
+        """
         pass
 
-    def fetch(self):
+    def _fetch(self):
         try:
             parsed = parse.urlparse(self.url)
             robot_url = '{s.scheme}://{s.netloc}/robots.txt'.format(s=parsed)
