@@ -142,12 +142,3 @@ class SitemapParser:
 
 class HTMLParser:
     pass
-
-
-# p = RobotsParser(url='http://192.168.1.6:8080/')
-# p.get_sitemap_links()
-
-s = SitemapParser()
-res = s.get_parsed_urls('http://192.168.1.6:8080/sitemap.xml')
-for item in res:
-    print(item)
