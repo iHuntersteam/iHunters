@@ -1,38 +1,56 @@
-class CrawlerPagesConnector:
+import pymysql
+from pymysql import MySQLError
+from db_settings import HOST, USER, PASSWORD, DBNAME
 
-    def get_page(page_id):
+
+class DBconnector:
+
+    db = pymysql.connect(host=HOST, user=USER,
+                         password=PASSWORD, db=DBNAME,
+                         use_unicode=True, charset='utf8',
+                         autocommit=True)
+
+    def __init__(self):
+        self.cursor = self.db.cursor(pymysql.cursors.Cursor)
+
+    def err(e):
+        return 'Got error {!r}, error is {}'.format(e, e.args[0])
+
+
+class CrawlerPagesConnector(DBconnector):
+
+    def get(self, page_id):
+        try:
+            return self.cursor.execute('''
+                SELECT * FROM pages WHERE id = %s
+            ''', page_id)
+        except MySQLError as e:
+            print(self.err(e))
+
+    def save(self, page, site):
+        try:
+            self.cursor.execute('''
+                INSERT INTO pages''')
+        except MySQLError as e:
+            print(self.err(e))
+
+
+class CrawlerPersonPageRankConnector(DBconnector):
+
+    def save(self, person, page, page_rank):
         try:
             pass
-        except PageNotExists:
-            print('Page with id {0} not exists.'.format(page_id))
-
-    def save_page(page, site):
-        try:
-            pass
-        except PageExists:
-            print('Page {0} exists'.format(page))
-        except SiteNotExists:
-            print('Site {0} not exists'.format(site))
+        except MySQLError as e:
+            print(self.err(e))
 
 
-class CrawlerPersonPageRankConnector:
+class CrawlerSitesConnector(DBconnector):
 
-    def save_person_pr(person, page, page_rank):
-        try:
-            pass
-        except PageNotExists:
-            print('Page {0} not exists'.format(page))
-        except PersonNotExists:
-            print('Person {0} not exists'.format(person))
-
-
-class CrawlerSitesConnector:
-
-    def get_site(site_id):
+    def get(site_id):
         pass
 
 
-class CrawlerPersonsConnector:
+class CrawlerPersonsConnector(DBconnector):
 
-    def get_person(person_id):
+    def get(person_id):
         pass
