@@ -1,8 +1,13 @@
-import requests
 import codecs
+import gzip
+from io import BytesIO
+from itertools import chain
+from urllib import parse
+
+import requests
+from lxml import etree
 from requests.exceptions import (SSLError, ConnectionError, URLRequired, MissingSchema, InvalidSchema,
                                  InvalidURL, TooManyRedirects)
-from urllib import parse
 
 
 class RobotsParser:
@@ -38,6 +43,7 @@ class RobotsParser:
                 except UnicodeDecodeError:
                     # Very rare and difficult to reproduce exception
                     return
+            result = []
             for rawline in robots_txt.splitlines():
                 line = rawline.strip()
                 # Throw away comments
@@ -52,7 +58,6 @@ class RobotsParser:
                     continue
                 # Yes it is possible to have more than one sitemap-index-file:
                 # http://www.sitemaps.org/protocol.html#index
-                result = []
                 key, val = [x.strip() for x in line.split(':', maxsplit=1)]
                 if key.lower() == 'sitemap':
                     result.append(val)
@@ -81,12 +86,59 @@ class RobotsParser:
 
 
 class SitemapParser:
-    pass
+
+    def _fetch(self, url):
+        """
+        Receive file from a website. If it's auto-detects and reads gzip-compressed XML files (.gz)
+        :return: BytesIO file-like object
+        """
+        # TODO add integration with downloader
+        r = requests.get(url)
+        if url.endswith('gz'):
+            return gzip.GzipFile(fileobj=BytesIO(r.content))
+        else:
+            return BytesIO(r.content)
+
+    def get_parsed_urls(self, url):
+        """
+        Parses sitemap.xml and extract urls from it
+        If sitemap contains links to other sitemaps, automatically download and use them.
+        Works with gzipped sitemaps too.
+        :param url: Sitemap's url to parse
+        :return: Generator with all found urls
+        """
+        # grab sitemap
+        sitemap = etree.parse(self._fetch(url))
+        # grab a root element
+        root = sitemap.getroot()
+        # prepare namespaces
+        # As we only use default namespace from sitemap, we don't need to worry
+        # about custom namespaces for video, mobile (etc)
+        my_nsmap = {'bot': ''}
+        if root.nsmap:
+            my_nsmap['bot'] = root.nsmap[None]
+        # There are two types of sitemaps - sitemaps of page urls and sitemaps of other sitemaps urls
+        # The second one are used because one sitemap can't contain more than 50000 urls and can't be more
+        # than 10 MB
+
+        # Determine which sitemap we are dealing with
+        if 'sitemapindex' in root.tag:
+            # This is sitemap of sitemaps
+            sitemap_list = [x for x in root.xpath('//bot:loc/text()', namespaces=my_nsmap)]
+            yield from chain(*[self.get_parsed_urls(x) for x in sitemap_list])
+        elif 'urlset' in root.tag:
+            # This is sitemap of urls
+            for url_entry in root.xpath('bot:url', namespaces=my_nsmap):
+                location = url_entry.find('bot:loc', namespaces=my_nsmap).text  # obligatory field
+                lastmod = url_entry.find('bot:lastmod', namespaces=my_nsmap)  # optional field
+                if lastmod is not None:
+                    lastmod = lastmod.text
+                    # TODO add filtering urls on date
+                yield location
+        else:
+            # bad xml
+            raise StopIteration
 
 
 class HTMLParser:
     pass
-
-
-p = RobotsParser(url='http://192.168.1.6:8080/')
-p.get_sitemap_links()
