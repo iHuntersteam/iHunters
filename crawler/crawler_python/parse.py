@@ -1,52 +1,44 @@
-import codecs
 import gzip
 import re
 from io import BytesIO
 from itertools import chain
 from urllib import parse
 
-import requests
+import logging
 from bs4 import UnicodeDammit
 from lxml import etree, html
-from requests.exceptions import (SSLError, ConnectionError, URLRequired, MissingSchema, InvalidSchema,
-                                 InvalidURL, TooManyRedirects)
+from lxml.etree import XMLSyntaxError
+
+from downloader import ReqRequest, ReqResponse, ReqDownloader, BaseCrawlException
 
 
 class RobotsParser:
-    def __init__(self, url):
-        """
-        Robots.txt parser
-        :param url: Any url from website to parse.
-        """
-        self.url = url
-
-    def get_sitemap_links(self):
+    """
+    Robots.txt parser
+    """
+    @staticmethod
+    def get_sitemap_links(url):
         """
         Parse robots.txt and search for sitemap links in it.
-        :return: A list of sitemaps or an empty list if sitemaps are not found.
+        :param url: web-site url
+        :return: A list of sitemaps OR an empty list if sitemaps are not found.
         """
-        robots_txt = self._fetch()
-        if robots_txt:
-            # We need to decode binary string here
-            # Robots.txt must be in ASCII. If we didn't get a decoded string, suggest it's utf-8 or utf-16
-            # If the decoding fails we say robots.txt is a garbage.
-            if isinstance(robots_txt, bytes):
-                try:
-                    if robots_txt.startswith(codecs.BOM_UTF8):
-                        # Normally, the BOM is used to signal the endianness of an encoding, but since endianness
-                        # is irrelevant to utf-8, the BOM is unnecessary.
-                        # BOM for utf-8 files is not recommended according to Unicode standart.
-                        # Anyway, some 'smart' owner could save robots.txt as utf-8 with BOM.
-                        robots_txt = robots_txt.decode('utf-8').lstrip(str(codecs.BOM_UTF8, encoding='utf-8'))
-                    elif robots_txt.startswith(codecs.BOM_UTF16):
-                        robots_txt = robots_txt.decode('utf-16')
-                    else:
-                        robots_txt = robots_txt.decode('utf-8', errors='ignore')
-                except UnicodeDecodeError:
-                    # Very rare and difficult to reproduce exception
-                    return
+        parsed = parse.urlparse(url)
+        robot_url = '{s.scheme}://{s.netloc}/robots.txt'.format(s=parsed)
+        robots_txt = ReqDownloader.fetch(ReqRequest(robot_url))
+        if isinstance(robots_txt, BaseCrawlException):
+            logging.debug('Robots.txt isn\'t available')
+            return []
+
+        if isinstance(robots_txt.content, bytes):
+            # Before there was a decoding algorithm. But since I use UnicodeDammit to decode html pages
+            # I prefer to use it here too.
+            converted = UnicodeDammit(robots_txt.content)
+            if not converted.unicode_markup:
+                # robots.txt is broken
+                return []
             result = []
-            for rawline in robots_txt.splitlines():
+            for rawline in converted.unicode_markup.splitlines():
                 line = rawline.strip()
                 # Throw away comments
                 comment_sign = line.find('#')
@@ -76,26 +68,18 @@ class RobotsParser:
         """
         pass
 
-    def _fetch(self):
-        try:
-            parsed = parse.urlparse(self.url)
-            robot_url = '{s.scheme}://{s.netloc}/robots.txt'.format(s=parsed)
-            options = {'allow_redirects': True}
-            req = requests.get(robot_url, options)
-            return req.content
-        except (SSLError, ConnectionError, URLRequired, MissingSchema, InvalidSchema, InvalidURL, TooManyRedirects):
-            return None
-
 
 class SitemapParser:
 
     def _fetch(self, url):
         """
-        Receive file from a website. If it's auto-detects and reads gzip-compressed XML files (.gz)
+        Receive file from a website. Auto-detects and reads gzip-compressed XML files (.gz)
         :return: BytesIO file-like object
         """
-        # TODO add integration with downloader
-        r = requests.get(url)
+        r = ReqDownloader.fetch(ReqRequest(url))
+        if isinstance(r, BaseCrawlException):
+            logging.debug('Sitemap isn\'t available')
+            raise StopIteration
         if url.endswith('gz'):
             return gzip.GzipFile(fileobj=BytesIO(r.content))
         else:
@@ -110,7 +94,11 @@ class SitemapParser:
         :return: Generator with all found urls
         """
         # grab sitemap
-        sitemap = etree.parse(self._fetch(url))
+        try:
+            sitemap = etree.parse(self._fetch(url))
+        except XMLSyntaxError:
+            logging.debug('XML parse error')
+            raise StopIteration
         # grab a root element
         root = sitemap.getroot()
         # prepare namespaces
@@ -149,7 +137,6 @@ class HTMLParser:
         Search words from search_dict on webpage. Returns rank
         :param search_dict: Dictionary like {'id': ('word_form1', 'word_form2', 'word_form3'), 'id2': ('...' etc)}
         """
-        self.search_entry = search_dict
         self._search_patterns = {}
         # For each search pattern build a regular expression
         # \bВася|Васи|васе\b - '|' means OR, \b means - word boundary
@@ -157,17 +144,17 @@ class HTMLParser:
         # of the string. This matches a position, not a character.
         for key, value in search_dict.items():
             search_val = '|'.join(value)
-            self._search_patterns[key] = re.compile(r'\b{}\b'.format(search_val), re.IGNORECASE)
+            self._search_patterns[key] = re.compile(r'\b{}\b'.format(search_val), re.IGNORECASE | re.MULTILINE)
 
-    def get_info(self, webpage):
+    def get_info_from(self, response):
         """
         Returns rank dictionary like {'id': nubmer of needed words on the page}
-        :param webpage: Webpage content
+        :param response: Webpage ReqResponse from downloader
         :return: Calculated rank
         """
         # Using BeautifulSoup to encoding detection
         # It works very good. Much better than requests or lxml encoding detection
-        converted = UnicodeDammit(webpage)
+        converted = UnicodeDammit(response.content)
         if not converted.unicode_markup:
             raise UnicodeDecodeError(
                 "Failed to detect encoding, tried [{}]".format(', '.join(converted.tried_encodings))
@@ -176,10 +163,9 @@ class HTMLParser:
         # remove all <script> tags
         cleaner = html.clean.Cleaner(scripts=True)
         root = cleaner.clean_html(root)
-        # we are interested in text on a webpage, so use just body tag
+        # we are interested in text on a webpage, so use only body tag
         body = root.xpath('body')[0]
         body_text = body.text_content()
-        # print(body_text)
         result = {}
         for pattern_name in self._search_patterns:
             rank = self._search_patterns[pattern_name].findall(body_text)
