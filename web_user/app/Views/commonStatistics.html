@@ -1,0 +1,56 @@
+{% extends "template.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="margin-top:30px">
+
+	<div class="row">
+		<div class="col-md-3">
+
+			<ul class="unstyled" style="list-style-type: none">
+				<a href=""><li><b>Общая статистика</b></li></a>
+				<a href=""><li>Ежедневная статистика</li></a>	
+			</ul>
+
+		</div>
+		<div class="col-md-4">
+			<form action="/stats/showAll/" method="POST">
+				<label for="sites">Сайт:&nbsp&nbsp&nbsp</label>
+				
+				<select name="siteId" id="sites" value="9">
+					{% for site in sites %}
+					<option value="{{ site.id }}">{{ site.name }}</option>
+					{% else %}
+					<p>Нет сайтов</p>
+					{% endfor %}  
+				</select>
+				<button type="submit" class="btn btn-primary pull-right">Применить</button>
+				
+			</form>
+			<table class = "table">
+				<thead>
+
+					<tr>
+						<th>Имя</th>
+						<th>Количество упоминаний</th>
+					</tr>
+					
+				</thead>
+				<tbody>
+					{% for stat in stats %}
+					<tr>
+						<td>{{ stat.name }}</td>
+						<td>{{ stat.Qty }} </td>
+					</tr>
+					{% endfor %} 
+
+				</tbody>
+			</table>
+		</table>
+	</div>
+</div>
+{% endblock %}
