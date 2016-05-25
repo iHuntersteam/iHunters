@@ -3,71 +3,82 @@ import logging
 from pymysql import MySQLError
 from db_settings import HOST, USER, PASSWORD, DBNAME
 
+DB = pymysql.connect(host=HOST, user=USER,
+                     password=PASSWORD, db=DBNAME,
+                     use_unicode=True, charset='utf8',
+                     autocommit=True)
 
-class DBconnector:
-
-    db = pymysql.connect(host=HOST, user=USER,
-                         password=PASSWORD, db=DBNAME,
-                         use_unicode=True, charset='utf8',
-                         autocommit=True)
-
-    def __init__(self):
-        self.cursor = self.db.cursor(pymysql.cursors.Cursor)
-
-    def err(self, e):
-        logging.basicConfig(
-            format=u'%(levelname) -8s [%(asctime)s] %(module)s:%(lineno)s %(funcName)s %(message)s',
-            level=logging.DEBUG,
-            filename=u'debug.log')
-        logging.exception(e)
-        # raise
-        return 'Got error {!r}, error is {}'.format(e, e.args[0])
+CURSOR = DB.cursor(pymysql.cursors.Cursor)
 
 
-class CrawlerPagesConnector(DBconnector):
+def err(e):
+    logging.basicConfig(
+        format=u'%(levelname) -8s [%(asctime)s] %(module)s:%(lineno)s %(funcName)s %(message)s',
+        level=logging.DEBUG,
+        filename=u'debug.log')
+    logging.exception(e)
+    return 'Got error {!r}, error is {}'.format(e, e.args[0])
+
+
+class CrawlerPagesConnector:
 
     def get(self, id):
         try:
-            return self.cursor.execute('''
+            CURSOR.execute('''
                 SELECT * FROM pages WHERE id = %s
             ''', id)
+            return CURSOR.fetchone()
         except MySQLError as e:
-            print(self.err(e))
+            print(err(e))
 
     def save(self, url, site_id):
         try:
-            self.cursor.execute('''
+            CURSOR.execute('''
                 INSERT INTO pages(url, site_id)
                 VALUES(%s, %s)''', (url, site_id))
         except MySQLError as e:
-            print(self.err(e))
+            print(err(e))
 
-    def update(self, id, url=None, site_id=None):
-        pass
-
-
-class CrawlerPersonPageRankConnector(DBconnector):
-
-    def save(self, person, page, page_rank):
+    def update(self, id):
         try:
-            pass
+            CURSOR.execute('''
+                UPDATE pages SET last_scan_date=now()
+                WHERE id=%s
+                ''', (id))
         except MySQLError as e:
-            print(self.err(e))
+            print(err(e))
 
 
-class CrawlerSitesConnector(DBconnector):
+class CrawlerPersonPageRankConnector:
+
+    def save(self, person_id, page_id, rank):
+        try:
+            CURSOR.execute('''
+                INSERT INTO person_page_rank(person_id, page_id, rank)
+                VALUES(%s, %s, %s)''', (person_id, page_id, rank))
+        except MySQLError as e:
+            print(err(e))
+
+
+class CrawlerSitesConnector:
 
     def get(self, id):
         try:
-            pass
+            CURSOR.execute('''
+                SELECT * FROM sites WHERE id = %s
+                ''', id)
+            return CURSOR.fetchone()
         except MySQLError as e:
-            print(self.err(e))
+            print(err(e))
 
 
-class CrawlerPersonsConnector(DBconnector):
+class CrawlerPersonsConnector:
 
     def get(self, id):
         try:
-            pass
+            CURSOR.execute('''
+                SELECT * FROM persons WHERE id = %s
+                ''', id)
+            return CURSOR.fetchone()
         except MySQLError as e:
-            print(self.err(e))
+            print(err(e))
