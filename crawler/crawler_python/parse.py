@@ -1,11 +1,13 @@
 import codecs
 import gzip
+import re
 from io import BytesIO
 from itertools import chain
 from urllib import parse
 
 import requests
-from lxml import etree
+from bs4 import UnicodeDammit
+from lxml import etree, html
 from requests.exceptions import (SSLError, ConnectionError, URLRequired, MissingSchema, InvalidSchema,
                                  InvalidURL, TooManyRedirects)
 
@@ -141,4 +143,46 @@ class SitemapParser:
 
 
 class HTMLParser:
-    pass
+
+    def __init__(self, search_dict):
+        """
+        Search words from search_dict on webpage. Returns rank
+        :param search_dict: Dictionary like {'id': ('word_form1', 'word_form2', 'word_form3'), 'id2': ('...' etc)}
+        """
+        self.search_entry = search_dict
+        self._search_patterns = {}
+        # For each search pattern build a regular expression
+        # \bВася|Васи|васе\b - '|' means OR, \b means - word boundary
+        # Matches a word boundary position such as whitespace, punctuation, or the start/end
+        # of the string. This matches a position, not a character.
+        for key, value in search_dict.items():
+            search_val = '|'.join(value)
+            self._search_patterns[key] = re.compile(r'\b{}\b'.format(search_val), re.IGNORECASE)
+
+    def get_info(self, webpage):
+        """
+        Returns rank dictionary like {'id': nubmer of needed words on the page}
+        :param webpage: Webpage content
+        :return: Calculated rank
+        """
+        # Using BeautifulSoup to encoding detection
+        # It works very good. Much better than requests or lxml encoding detection
+        converted = UnicodeDammit(webpage)
+        if not converted.unicode_markup:
+            raise UnicodeDecodeError(
+                "Failed to detect encoding, tried [{}]".format(', '.join(converted.tried_encodings))
+            )
+        root = html.fromstring(converted.unicode_markup)
+        # remove all <script> tags
+        cleaner = html.clean.Cleaner(scripts=True)
+        root = cleaner.clean_html(root)
+        # we are interested in text on a webpage, so use just body tag
+        body = root.xpath('body')[0]
+        body_text = body.text_content()
+        # print(body_text)
+        result = {}
+        for pattern_name in self._search_patterns:
+            rank = self._search_patterns[pattern_name].findall(body_text)
+            print(rank)
+            result[pattern_name] = len(rank)
+        return result
