@@ -2,6 +2,8 @@ import pymysql
 import logging
 from pymysql import MySQLError
 from db_settings import HOST, USER, PASSWORD, DBNAME
+from itertools import chain
+
 
 DB = pymysql.connect(host=HOST, user=USER,
                      password=PASSWORD, db=DBNAME,
@@ -26,7 +28,7 @@ class CrawlerPagesConnector:
         try:
             CURSOR.execute('''
                 SELECT * FROM pages WHERE id = %s
-            ''', id)
+                ''', id)
             return CURSOR.fetchone()
         except MySQLError as e:
             print(err(e))
@@ -35,14 +37,15 @@ class CrawlerPagesConnector:
         try:
             CURSOR.execute('''
                 INSERT INTO pages(url, site_id)
-                VALUES(%s, %s)''', (url, site_id))
+                VALUES(%s, %s)
+                ''', (url, site_id))
         except MySQLError as e:
             print(err(e))
 
     def update(self, id):
         try:
             CURSOR.execute('''
-                UPDATE pages SET last_scan_date=now()
+                UPDATE pages SET last_scan_date=NOW()
                 WHERE id=%s
                 ''', (id))
         except MySQLError as e:
@@ -55,7 +58,8 @@ class CrawlerPersonPageRankConnector:
         try:
             CURSOR.execute('''
                 INSERT INTO person_page_rank(person_id, page_id, rank)
-                VALUES(%s, %s, %s)''', (person_id, page_id, rank))
+                VALUES(%s, %s, %s)
+                ''', (person_id, page_id, rank))
         except MySQLError as e:
             print(err(e))
 
