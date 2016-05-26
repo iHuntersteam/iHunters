@@ -51,39 +51,39 @@ class __TwigTemplate_3b64dc03d5ecaedda277e23132f3e1e1a013c9e37030562eb873a2dbbb8
 
 \t\t</div>
 \t\t<div class=\"col-md-4\">
-<form action=\"/stats/showAll/\" method=\"POST\">
-\t\t\t<label for=\"sites\">Сайт:&nbsp&nbsp&nbsp</label>
-\t\t\t
-\t\t\t<select name=\"siteId\" id=\"sites\" value=\"9\">
-\t\t\t\t";
+\t\t\t<form action=\"/stats/showAll/\" method=\"POST\">
+\t\t\t\t<label for=\"sites\">Сайт:&nbsp&nbsp&nbsp</label>
+\t\t\t\t
+\t\t\t\t<select name=\"siteId\" id=\"sites\" value=\"9\">
+\t\t\t\t\t";
         // line 25
         $context['_parent'] = $context;
         $context['_seq'] = twig_ensure_traversable((isset($context["sites"]) ? $context["sites"] : null));
         $context['_iterated'] = false;
         foreach ($context['_seq'] as $context["_key"] => $context["site"]) {
             // line 26
-            echo "\t\t\t\t<option value=\"";
+            echo "\t\t\t\t\t<option value=\"";
             echo twig_escape_filter($this->env, $this->getAttribute($context["site"], "id", array()), "html", null, true);
             echo "\">";
             echo twig_escape_filter($this->env, $this->getAttribute($context["site"], "name", array()), "html", null, true);
             echo "</option>
-\t\t\t\t";
+\t\t\t\t\t";
             $context['_iterated'] = true;
         }
         if (!$context['_iterated']) {
             // line 28
-            echo "\t\t\t\t<p>Нет сайтов</p>
-\t\t\t\t";
+            echo "\t\t\t\t\t<p>Нет сайтов</p>
+\t\t\t\t\t";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['_key'], $context['site'], $context['_parent'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
         // line 29
         echo "  
-\t\t\t</select>
-<button type=\"submit\" class=\"btn btn-primary pull-right\">Применить</button>
-\t\t\t
-</form>
+\t\t\t\t</select>
+\t\t\t\t<button type=\"submit\" class=\"btn btn-primary pull-right\">Применить</button>
+\t\t\t\t
+\t\t\t</form>
 \t\t\t<table class = \"table\">
 \t\t\t\t<thead>
 
@@ -161,19 +161,19 @@ class __TwigTemplate_3b64dc03d5ecaedda277e23132f3e1e1a013c9e37030562eb873a2dbbb8
 /* */
 /* 		</div>*/
 /* 		<div class="col-md-4">*/
-/* <form action="/stats/showAll/" method="POST">*/
-/* 			<label for="sites">Сайт:&nbsp&nbsp&nbsp</label>*/
-/* 			*/
-/* 			<select name="siteId" id="sites" value="9">*/
-/* 				{% for site in sites %}*/
-/* 				<option value="{{ site.id }}">{{ site.name }}</option>*/
-/* 				{% else %}*/
-/* 				<p>Нет сайтов</p>*/
-/* 				{% endfor %}  */
-/* 			</select>*/
-/* <button type="submit" class="btn btn-primary pull-right">Применить</button>*/
-/* 			*/
-/* </form>*/
+/* 			<form action="/stats/showAll/" method="POST">*/
+/* 				<label for="sites">Сайт:&nbsp&nbsp&nbsp</label>*/
+/* 				*/
+/* 				<select name="siteId" id="sites" value="9">*/
+/* 					{% for site in sites %}*/
+/* 					<option value="{{ site.id }}">{{ site.name }}</option>*/
+/* 					{% else %}*/
+/* 					<p>Нет сайтов</p>*/
+/* 					{% endfor %}  */
+/* 				</select>*/
+/* 				<button type="submit" class="btn btn-primary pull-right">Применить</button>*/
+/* 				*/
+/* 			</form>*/
 /* 			<table class = "table">*/
 /* 				<thead>*/
 /* */
