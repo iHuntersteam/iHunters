@@ -21,3 +21,7 @@ Route::group(['prefix' => 'api/admin'], function () {
     Route::put('persons', 'Person\PersonController@update');
     Route::delete('persons', 'Person\PersonController@destroy');
 });
+
+Route::group(['prefix' => 'api'], function () {
+    Route::get('statistics', 'Statistics\StatisticController@show');
+});

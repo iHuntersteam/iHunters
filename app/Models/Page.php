@@ -47,4 +47,14 @@ class Page extends Model
     {
         return $this->belongsTo(Site::class);
     }
+
+    /**
+     * Персоны, которые содержатся на этой странице
+     * @return $this
+     */
+    public function persons()
+    {
+        return $this->belongsToMany(Person::class, 'person_page_rank')
+            ->withPivot(['rank']);
+    }
 }

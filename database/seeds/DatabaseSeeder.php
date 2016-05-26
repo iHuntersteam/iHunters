@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->pageSeeder();
+        $this->rankTableSeeder(40);
     }
 
     private function personsSeeder()
@@ -27,6 +27,18 @@ class DatabaseSeeder extends Seeder
     private function pageSeeder()
     {
         factory(\App\Models\Page::class, 100)->create();
+    }
+
+    private function rankTableSeeder($rowCount)
+    {
+        $faker = \Faker\Factory::create();
+        for ($i = 0; $i < $rowCount; $i++) {
+            DB::table('person_page_rank')->insert([
+                'person_id' => \App\Helpers\PersonHelpers::randomPersonId(),
+                'page_id' => \App\Helpers\PageHelpers::randomPageId(),
+                'rank' => $faker->randomNumber()
+            ]);
+        }
     }
 
 
