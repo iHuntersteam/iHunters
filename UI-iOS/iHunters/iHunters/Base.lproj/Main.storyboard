@@ -47,10 +47,10 @@
             </objects>
             <point key="canvasLocation" x="-353" y="321"/>
         </scene>
-        <!--View Controller-->
+        <!--Total Stats View Controller-->
         <scene sceneID="YXp-av-u4K">
             <objects>
-                <viewController id="JVx-fs-NAk" sceneMemberID="viewController">
+                <viewController id="JVx-fs-NAk" customClass="TotalStatsViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="OND-FI-wCe"/>
                         <viewControllerLayoutGuide type="bottom" id="LNc-SI-A59"/>
