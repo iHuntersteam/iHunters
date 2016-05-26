@@ -83,6 +83,12 @@ class CrawlerPersonsConnector:
             CURSOR.execute('''
                 SELECT * FROM persons WHERE id = %s
                 ''', id)
-            return CURSOR.fetchone()
+            person = CURSOR.fetchone()
+            CURSOR.execute('''
+                SELECT name FROM keywords WHERE person_id = %s
+            ''', person[0])
+            keywords = list(chain(*CURSOR.fetchall()))
+            keywords.extend([person[1]])
+            return keywords
         except MySQLError as e:
             print(err(e))
