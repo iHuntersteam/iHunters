@@ -1,0 +1,68 @@
+*{
+	box-sizing: border-box;
+}
+.section-main{
+	margin: 0 auto;
+	width: 900px;
+}
+
+h2{
+	width: 900px;
+	margin: 15px auto;
+	text-align: center;
+}
+.table{
+	display: table;
+	border: collapse;
+	border:1px solid black;
+	width: 400px;
+	margin: 0 auto;
+}
+.row{
+	padding: 10px;
+	border:1px solid black;
+	width: 100%;
+}
+.top{
+	background: lightgrey;
+	border-bottom: 1px solid black;
+}
+
+.edit{
+	margin: 0 auto;
+	width: 400px;
+	padding-top:15px;
+	text-align: center;
+
+}
+ul{
+	list-style: none;
+	margin: 0 auto;
+	text-align: center;
+
+}
+
+li{
+	display: inline-block;
+}
+li a{
+	display: block;
+	padding: 10px;
+	font-variant: small-caps;
+	text-decoration: none;
+}
+.select{
+	margin: 0 auto;
+	width: 400px;
+	padding-top:15px;
+	text-align: center;
+}
+ select{
+	padding: 8px 10px;
+	border-radius: 10px;
+	/*width: 100%;*/
+}
+select:focus{
+	outline: none;
+}
+
