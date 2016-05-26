@@ -27,4 +27,13 @@ class Site extends Model
      * @var bool $timestamps
      */
     public $timestamps = false;
+
+    /**
+     * Все страницы сайта
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pages()
+    {
+        return $this->hasMany(Page::class);
+    }
 }

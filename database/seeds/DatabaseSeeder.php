@@ -11,6 +11,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        $this->pageSeeder();
     }
+
+    private function personsSeeder()
+    {
+        factory(\App\Models\Person::class, 10)->create();
+    }
+
+    private function sitesSeeder()
+    {
+        factory(\App\Models\Site::class, 20)->create();
+    }
+
+    private function pageSeeder()
+    {
+        factory(\App\Models\Page::class, 100)->create();
+    }
+
+
 }
