@@ -100,4 +100,13 @@ BEGIN
 	SET NEW.url_hash = MD5(NEW.url);
 END$$
 
+CREATE TRIGGER PersonPageRank_AfterInsert
+AFTER INSERT ON person_page_rank
+FOR EACH ROW
+BEGIN
+	UPDATE pages SET last_scan_date=NEW.scan_date
+	WHERE pages.id = NEW.page_id;
+END$$
+
 DELIMITER ;
+
