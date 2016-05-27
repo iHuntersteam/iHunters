@@ -174,7 +174,8 @@ class HTMLParser:
                 page_ranks[page_id] = {}
             # Using BeautifulSoup to encoding detection
             # It works very good. Much better than requests or lxml encoding detection
-            converted = UnicodeDammit(page_content.content)
+            else:
+                converted = UnicodeDammit(page_content.content)
             if not converted.unicode_markup:
                 # logging.debug(
                 #     "Failed to detect encoding, tried [{}] page {}".format(', '.join(converted.tried_encodings),
