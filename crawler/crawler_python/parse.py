@@ -176,10 +176,11 @@ class HTMLParser:
             # It works very good. Much better than requests or lxml encoding detection
             converted = UnicodeDammit(page_content.content)
             if not converted.unicode_markup:
-                logging.debug(
-                    "Failed to detect encoding, tried [{}] page {}".format(', '.join(converted.tried_encodings),
-                                                                           page_content.request.url))
+                # logging.debug(
+                #     "Failed to detect encoding, tried [{}] page {}".format(', '.join(converted.tried_encodings),
+                #                                                            page_content.request.url))
                 page_ranks[page_id] = {}
+                continue
 
             root = html.fromstring(converted.unicode_markup)
             # remove all <script> tags
