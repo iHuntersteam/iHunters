@@ -65,31 +65,23 @@ class CrawlerPersonPageRankConnector:
             print(err(e))
 
 
-class CrawlerSitesConnector:
-
-    def get(self, id):
-        try:
-            CURSOR.execute('''
-                SELECT * FROM sites WHERE id = %s
-                ''', id)
-            return CURSOR.fetchone()
-        except MySQLError as e:
-            print(err(e))
-
-
 class CrawlerPersonsConnector:
 
-    def get(self, id):
+    def get(self, *ids):
         try:
+            format_strings = ','.join(['%s'] * len(ids))
             CURSOR.execute('''
-                SELECT * FROM persons WHERE id = %s
-                ''', id)
-            person = CURSOR.fetchone()
+                SELECT id, name FROM persons WHERE id IN (%s)
+                ''' % format_strings, ids)
+            persons = CURSOR.fetchall()
             CURSOR.execute('''
-                SELECT name FROM keywords WHERE person_id = %s
-            ''', person[0])
-            keywords = list(chain(*CURSOR.fetchall()))
-            keywords.extend([person[1]])
-            return keywords
+                SELECT person_id, name FROM keywords WHERE person_id IN (%s)
+            ''' % format_strings, ids)
+            keywords = list(CURSOR.fetchall())
+            keywords.extend(persons)
+            persons_dict = defaultdict(list)
+            for k, v in keywords:
+                persons_dict[k].append(v)
+            return dict(persons_dict)
         except MySQLError as e:
             print(err(e))
