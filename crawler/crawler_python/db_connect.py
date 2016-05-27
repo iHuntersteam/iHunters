@@ -61,7 +61,6 @@ class CrawlerPersonPageRankConnector:
 class CrawlerPersonsConnector:
 
     def get(self, ids):
-        print(ids)
         try:
             CURSOR.execute('''
                 SELECT id, name FROM persons WHERE id IN ({})
