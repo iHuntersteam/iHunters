@@ -20,6 +20,7 @@ class ReqResponse:
     def __init__(self, req, response):
         self.request = req
         self.content = response.content
+        self.status_code = response.status_code
 
 
 class ReqDownloader:
@@ -40,15 +41,16 @@ class ReqDownloader:
         return responses
 
     @staticmethod
-    def fetch(request):
+    def fetch(request, **kwargs):
         """
         Load one request from the internet
-        :param request:
+        :param \*\*kwargs: Options for requests library (headers, user-agent, redirects)
+        :param request: ReqRequest to load
         :return:
         """
         # TODO Add configuring (user-agent etc)
         try:
-            res = requestslib.get(request.url)
+            res = requestslib.get(request.url, **kwargs)
             return ReqResponse(request, res)
         except (SSLError, ConnectionError, URLRequired,
                 MissingSchema, InvalidSchema, InvalidURL, TooManyRedirects) as e:
