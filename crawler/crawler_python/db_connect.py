@@ -2,7 +2,7 @@ import pymysql
 import logging
 from pymysql import MySQLError
 from db_settings import HOST, USER, PASSWORD, DBNAME
-from itertools import chain
+from collections import defaultdict
 
 
 DB = pymysql.connect(host=HOST, user=USER,
@@ -22,14 +22,15 @@ def err(e):
     return 'Got error {!r}, error is {}'.format(e, e.args[0])
 
 
-class CrawlerPagesConnector:
+class CrawlerSitesConnector:
 
-    def get(self, id):
+    def get(self, *ids):
+        format_strings = ','.join(['%s'] * len(ids))
         try:
             CURSOR.execute('''
-                SELECT * FROM pages WHERE id = %s
-                ''', id)
-            return CURSOR.fetchone()
+                SELECT id, url FROM pages WHERE site_id IN (%s)
+                ''' % format_strings, ids)
+            return {k: v for k, v in CURSOR.fetchall()}
         except MySQLError as e:
             print(err(e))
 
