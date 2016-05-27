@@ -5,12 +5,12 @@ from db_settings import HOST, USER, PASSWORD, DBNAME
 from collections import defaultdict
 
 
-DB = pymysql.connect(host=HOST, user=USER,
-                     password=PASSWORD, db=DBNAME,
-                     use_unicode=True, charset='utf8',
-                     autocommit=True)
+CONN = pymysql.connect(host=HOST, user=USER,
+                       password=PASSWORD, db=DBNAME,
+                       use_unicode=True, charset='utf8',
+                       autocommit=True)
 
-CURSOR = DB.cursor(pymysql.cursors.Cursor)
+CURSOR = CONN.cursor(pymysql.cursors.Cursor)
 
 
 def err(e):
