@@ -81,12 +81,10 @@ class SitemapParser:
         Receive file from a website. Auto-detects and reads gzip-compressed XML files (.gz)
         :return: BytesIO file-like object
         """
-        r = ReqDownloader.fetch(ReqRequest(url))
-
-        if r.status_code == 404:
+        r = ReqDownloader.fetch(ReqRequest(url), allow_redirects=False)
+        if r.status_code != 200:
             logging.debug('Sitemap not found on {}, status code {} '.format(url, r.status_code))
             return BytesIO()
-
         if isinstance(r, BaseCrawlException):
             logging.debug('Sitemap isn\'t available on {}'.format(url))
             return BytesIO()
@@ -101,8 +99,7 @@ class SitemapParser:
         If sitemap contains links to other sitemaps, automatically download and use them.
         Works with gzipped sitemaps too.
         :param url: Sitemap's url to parse
-        :return: Generator with all found urls. Generator returns a tuple.
-         If there is an error (None, error) else (url, None)
+        :return: Generator with all found urls.
         """
         # grab sitemap
         try:
@@ -110,8 +107,6 @@ class SitemapParser:
         except XMLSyntaxError:
             logging.debug('XML parse error on {}'.format(url))
             sitemap = etree.parse(BytesIO(b'<?xml version="1.0" encoding="UTF-8" ?><wrong><bad></bad></wrong>'))
-            yield None, SiteMapException(ReqRequest(url))
-            # return in python 3 generators is equal raise StopIteration(<something>)
         # grab a root element
         root = sitemap.getroot()
         # prepare namespaces
@@ -132,16 +127,24 @@ class SitemapParser:
         elif 'urlset' in root.tag:
             # This is sitemap of urls
             for url_entry in root.xpath('bot:url', namespaces=my_nsmap):
-                location = url_entry.find('bot:loc', namespaces=my_nsmap).text  # obligatory field
-                lastmod = url_entry.find('bot:lastmod', namespaces=my_nsmap)  # optional field
-                if lastmod is not None:
-                    lastmod = lastmod.text
-                    # TODO add filtering urls on date
-                yield (location, None)
+                try:
+                    location = url_entry.find('bot:loc', namespaces=my_nsmap).text  # obligatory field
+                    lastmod = url_entry.find('bot:lastmod', namespaces=my_nsmap)  # optional field
+                    if lastmod is not None:
+                        lastmod = lastmod.text
+                        # TODO add filtering urls on date
+                    if location:
+                        # if xml tag <loc> is presented but empty location == None
+                        # return only non-empty locations
+                        yield location
+                except AttributeError:
+                    # xml sitemap contains an error - missed <loc> tag.
+                    # Ignore this error and parse the next entry
+                    pass
         else:
             # bad xml
-            logging.debug('This xml is not a sitemap - {}'.format(url))
-            # raise SiteMapException(ReqRequest(url))
+            # just ignore it
+            pass
 
 
 class HTMLParser:
