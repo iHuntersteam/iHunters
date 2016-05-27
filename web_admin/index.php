@@ -29,13 +29,11 @@ switch ($_GET['c']) {
 		case 'keywords':
 			$controller=new C_Keywords();
 			break;
-		
-		
 		default:
 			$controller=new C_Sites();
 			break;
 	}
-}else $controller=new C_Persons();
+} else $controller=new C_Persons();
 
 	$controller->request($action);
 

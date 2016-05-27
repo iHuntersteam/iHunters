@@ -53,13 +53,14 @@ li a{
 }
 .select{
 	margin: 0 auto;
-	width: 400px;
+	width: 150px;
 	padding-top:15px;
 	text-align: center;
 }
  select{
 	padding: 8px 10px;
 	border-radius: 10px;
+	margin-bottom: 15px;
 	/*width: 100%;*/
 }
 select:focus{

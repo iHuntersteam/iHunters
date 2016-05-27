@@ -18,6 +18,13 @@ abstract class C_Controller
 		{
 			return $_SERVER['REQUEST_METHOD']=='GET';
 		}
+
+	protected function isPost()
+		{
+			return $_SERVER['REQUEST_METHOD']=='POST';
+		}
+	
+
 	protected function template($file,$var=array())
 	{
 		foreach ($var as $key => $value) {

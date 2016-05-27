@@ -4,7 +4,7 @@
 	</div>
 	<?php foreach ($keywords as $keyword): ?>
 	<div class="row">
-	<?=$keyword['name']?>
+		<?=$keyword['name']?>
 	</div>
 	<?php endforeach ?>
 </div>

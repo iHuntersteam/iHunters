@@ -17,8 +17,10 @@ class M_Mysql
 	{
 		$this->link=mysqli_connect(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME)
 			or die(mysqli_error($this->link));
+		
 		mysqli_select_db($this->link,DB_NAME)
 			or die("Error:Select failed" . mysqli_error($this->link));
+		
 		mysqli_query($this->link,"SET NAMES UTF8");	
 	}
 
@@ -37,7 +39,9 @@ class M_Mysql
 		if(!$result) die (mysqli_error($this->link));
 
 		$count=mysqli_num_rows($result);
+		
 		$row=array();
+		
 		for ($i=0; $i<$count; $i++)
 		{
 			$row[]=mysqli_fetch_assoc($result);

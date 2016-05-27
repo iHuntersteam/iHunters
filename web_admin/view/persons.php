@@ -11,8 +11,8 @@
 	</div>
 	<div class="edit">
 		<form method="post" class="form">
-			<input type="submit" value="Добавить">
-			<input type="submit" value="Удалить">
-			<input type="submit" value="Редактировать">
+			<input type="submit" name="add" value="Добавить">
+			<input type="submit" name="delete" value="Удалить">
+			<input type="submit" name="edit" value="Редактировать">
 		</form>
 	</div>
