@@ -37,7 +37,7 @@ class CrawlerSitesConnector:
         try:
             CURSOR.execute('''
                 INSERT INTO pages(url, site_id)
-                VALUES({}, {})
+                VALUES('{}', {}) ON DUPLICATE KEY UPDATE site_id = site_id
                 '''.format(url, id))
         except MySQLError as e:
             print(err(e))
@@ -51,7 +51,7 @@ class CrawlerPersonPageRankConnector:
                 try:
                     CURSOR.execute('''
                         INSERT INTO person_page_rank(person_id, page_id, rank)
-                        VALUES({}, {}, {})
+                        VALUES({0}, {1}, {2}) ON DUPLICATE KEY UPDATE rank = {2},
                         '''.format(person_id, page_id, rank))
 
                 except MySQLError as e:
