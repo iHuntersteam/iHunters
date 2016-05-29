@@ -3,6 +3,7 @@ from db_connect import (CrawlerSitesConnector,
                         CrawlerPersonsConnector, CrawlerPersonPageRankConnector)
 
 
+# TODO Refactoring
 class WorkerPageRank:
     crawler_sites_conn = CrawlerSitesConnector()
     crawler_persons_conn = CrawlerPersonsConnector()
