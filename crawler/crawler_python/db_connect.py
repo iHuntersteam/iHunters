@@ -24,10 +24,10 @@ def err(e):
 
 class CrawlerSitesConnector:
 
-    def get(self, ids):
+    def get_pages_by_site_id(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, url FROM pages WHERE site_id IN ({})
+                SELECT id, url FROM pages WHERE site_id IN ({0})
                 '''.format(ids))
             return {k: v for k, v in CURSOR.fetchall()}
         except MySQLError as e:
@@ -60,14 +60,14 @@ class CrawlerPersonPageRankConnector:
 
 class CrawlerPersonsConnector:
 
-    def get(self, ids):
+    def get_person_with_keywords(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, name FROM persons WHERE id IN ({})
+                SELECT id, name FROM persons WHERE id IN ({0})
                 '''.format(ids))
             persons = CURSOR.fetchall()
             CURSOR.execute('''
-                SELECT person_id, name FROM keywords WHERE person_id IN ({})
+                SELECT person_id, name FROM keywords WHERE person_id IN ({0})
             '''.format(ids))
             keywords = list(CURSOR.fetchall())
             keywords.extend(persons)
