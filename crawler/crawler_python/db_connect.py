@@ -3,7 +3,7 @@ import logging
 from pymysql import MySQLError
 from db_settings import HOST, USER, PASSWORD, DBNAME
 from collections import defaultdict
-import time
+from datetime import datetime
 
 
 CONN = pymysql.connect(host=HOST, user=USER,
@@ -36,7 +36,8 @@ class CrawlerSitesConnector:
 
     def save(self, url, id, found_time=None):
         try:
-            found = found_time.strftime('%Y-%m-%d %H:%M:%S') or time.strftime('%Y-%m-%d %H:%M:%S')
+            found_time = found_time or datetime.now()
+            found = found_time.strftime('%Y-%m-%d %H:%M:%S')
 
             CURSOR.execute('''
                 INSERT INTO pages(url, site_id, found_date_time)
