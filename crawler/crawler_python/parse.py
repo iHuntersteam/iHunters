@@ -140,11 +140,11 @@ class SitemapParser:
                 except AttributeError:
                     # xml sitemap contains an error - missed <loc> tag.
                     # Ignore this error and parse the next entry
-                    pass
+                    logging.debug('Missed obligatory field `loc` in XML on {}'.format(url))
         else:
             # bad xml
             # just ignore it
-            pass
+            logging.debug('Can\'t parse xml on {}'.format(url))
 
 
 class HTMLParser:
