@@ -24,10 +24,10 @@ def err(e):
 
 class CrawlerSitesConnector:
 
-    def get(self, ids):
+    def get_pages_by_site_id(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, url FROM pages WHERE site_id IN ({})
+                SELECT id, url FROM pages WHERE site_id IN ({0})
                 '''.format(ids))
             return {k: v for k, v in CURSOR.fetchall()}
         except MySQLError as e:
@@ -36,8 +36,8 @@ class CrawlerSitesConnector:
     def save(self, url, id):
         try:
             CURSOR.execute('''
-                INSERT INTO pages(url, site_id)
-                VALUES({}, {})
+                INSERT IGNORE INTO pages(url, site_id)
+                VALUES('{0}', '{1}')
                 '''.format(url, id))
         except MySQLError as e:
             print(err(e))
@@ -51,7 +51,7 @@ class CrawlerPersonPageRankConnector:
                 try:
                     CURSOR.execute('''
                         INSERT INTO person_page_rank(person_id, page_id, rank)
-                        VALUES({}, {}, {})
+                        VALUES('{0}', '{1}', '{2}')
                         '''.format(person_id, page_id, rank))
 
                 except MySQLError as e:
@@ -60,14 +60,14 @@ class CrawlerPersonPageRankConnector:
 
 class CrawlerPersonsConnector:
 
-    def get(self, ids):
+    def get_person_with_keywords(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, name FROM persons WHERE id IN ({})
+                SELECT id, name FROM persons WHERE id IN ({0})
                 '''.format(ids))
             persons = CURSOR.fetchall()
             CURSOR.execute('''
-                SELECT person_id, name FROM keywords WHERE person_id IN ({})
+                SELECT person_id, name FROM keywords WHERE person_id IN ({0})
             '''.format(ids))
             keywords = list(CURSOR.fetchall())
             keywords.extend(persons)

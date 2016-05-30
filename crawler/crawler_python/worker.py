@@ -3,6 +3,7 @@ from db_connect import (CrawlerSitesConnector,
                         CrawlerPersonsConnector, CrawlerPersonPageRankConnector)
 
 
+# TODO Refactoring
 class WorkerPageRank:
     crawler_sites_conn = CrawlerSitesConnector()
     crawler_persons_conn = CrawlerPersonsConnector()
@@ -11,8 +12,10 @@ class WorkerPageRank:
     def __init__(self, person_ids, site_ids):
         person_ids = self.data_validate(person_ids)
         site_ids = self.data_validate(site_ids)
-        self.pages_dict = self.crawler_sites_conn.get(site_ids)
-        self.parser = HTMLParser(self.crawler_persons_conn.get(person_ids))
+        self.pages_dict = self.crawler_sites_conn.get_pages_by_site_id(
+            site_ids)
+        self.parser = HTMLParser(
+            self.crawler_persons_conn.get_person_with_keywords(person_ids))
 
     def go(self):
         ranks = self.parser.get_info_from(self.pages_dict)
