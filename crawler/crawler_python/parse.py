@@ -173,17 +173,22 @@ class HTMLParser:
 
     def get_info_from(self, pages_dict):
         """
-        Returns rank dictionary like {'id': nubmer of needed words on the page}
-        :param response: Webpage ReqResponse from downloader
+        Returns rank dictionary like {'id': number of needed words on the page}
         :return: Calculated rank
         """
         # {pages.id: pages.name, pages.other_id: pages.name и так далее?}
-        # на выходе ({page_id: {person_id: rank,...}},
+        # {1: ('http://lenta.ru/', '2016-05-30 21:41:15'), 12: ('http://example.com/', '2016-05-30 21:41:15')}
+        #
+        # на выходе ({page_id: { 'date_modified': 'date', person_id: rank, person_id2: rank2...},
+        # {1: {'date_modified': '2016-05-30 21:41:15', 20: 10, }}
         page_ranks = {}
-        for page_id, page_url in pages_dict.items():
+        for page_id, page_info in pages_dict.items():
+            page_url, page_date_modified = page_info
+            print('{:>30}'.format(page_url))
             page_content = ReqDownloader.fetch(ReqRequest(page_url))
             if isinstance(page_content, BaseCrawlException):
                 page_ranks[page_id] = {}
+                continue
             # Using BeautifulSoup to encoding detection
             # It works very good. Much better than requests or lxml encoding detection
             else:
@@ -195,6 +200,24 @@ class HTMLParser:
                 page_ranks[page_id] = {}
                 continue
 
+            # Если дата страницы != сегодняшней, то скорее всего мы поставили её из сайтмапа. и значит её же и выдадим
+            # в результате
+            # А иначе пробуем определить дату.
+            # page_date_modified = datetime.strptime(page_date_modified, '%Y-%m-%d %H:%M:%S').date()
+            page_date_modified = page_date_modified.date()
+            now_date = datetime.now().date()
+            if page_date_modified == now_date:
+                last_modified_header = page_content.headers.get('Last-Modified')
+                if last_modified_header:
+                    try:
+                        page_date_modified = dateutil.parser.parse(last_modified_header)
+                    except ValueError:
+                        # if this error occurs page_date_modified remains equal to page_date_modified
+                        pass
+                else:
+                    # TODO Add parsing url to found datetime
+                    pass
+
             root = html.fromstring(converted.unicode_markup)
             # remove all <script> tags
             cleaner = Cleaner(scripts=True)
@@ -205,8 +228,8 @@ class HTMLParser:
             result = {}
             for pattern_name in self._search_patterns:
                 rank = self._search_patterns[pattern_name].findall(body_text)
-
                 result[pattern_name] = len(rank)
+                result['date_modified'] = page_date_modified
             page_ranks[page_id] = result
         return page_ranks
 

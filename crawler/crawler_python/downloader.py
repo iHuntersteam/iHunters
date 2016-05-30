@@ -21,6 +21,7 @@ class ReqResponse:
         self.request = req
         self.content = response.content
         self.status_code = response.status_code
+        self.headers = response.headers
 
 
 class ReqDownloader:

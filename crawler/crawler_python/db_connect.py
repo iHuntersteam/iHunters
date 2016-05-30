@@ -28,13 +28,14 @@ class CrawlerSitesConnector:
     def get_pages_by_site_id(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, url FROM pages WHERE site_id IN ({0})
+                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND last_scan_date IS NULL
                 '''.format(ids))
-            return {k: v for k, v in CURSOR.fetchall()}
+            return {k: (v, d) for k, v, d in CURSOR.fetchall()}
         except MySQLError as e:
             print(err(e))
 
     def save(self, url, id, found_time=None):
+        # found_time - date object
         try:
             found_time = found_time or datetime.now()
             found = found_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -70,12 +71,14 @@ class CrawlerPersonPageRankConnector:
 
     def save(self, dict_ranks):
         for page_id, v in dict_ranks.items():
+            page_modified_date = v.pop('date_modified', datetime.now())
+            page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
             for person_id, rank in v.items():
                 try:
                     CURSOR.execute('''
-                        INSERT INTO person_page_rank(person_id, page_id, rank)
-                        VALUES('{0}', '{1}', '{2}')
-                        '''.format(person_id, page_id, rank))
+                        INSERT INTO person_page_rank(person_id, page_id, rank, date_modified)
+                        VALUES('{0}', '{1}', '{2}', '{3}')
+                        '''.format(person_id, page_id, rank, page_modified_date))
 
                 except MySQLError as e:
                     print(err(e))
