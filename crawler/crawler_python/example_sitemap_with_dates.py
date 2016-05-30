@@ -1,12 +1,5 @@
-# Вот команды, которые я сделал перед прогоном этого примера.
-# По его окончании добавляется 4862 ссылок с N+1
-# и 2258 с гикбрэйнса.
-# DELETE FROM `ihunters`.`sites`;
-# DELETE FROM `ihunters`.`pages`;
-# INSERT INTO `ihunters`.`sites` (`id`, `name`) VALUES (1,'Гикбрэйнс');
-# INSERT INTO `ihunters`.`sites` (`id`, `name`) VALUES (2,'N+1');
-# INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://geekbrains.ru/', 1);
-# INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('https://nplus1.ru/', 2);
+# SQL команды для прогона в файле test_data.sql
+# После запуска этого файла добавляются 2258 ссылок с гикбрэйнса.
 
 from urllib import parse
 
