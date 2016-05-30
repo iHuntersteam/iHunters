@@ -14,7 +14,7 @@
 
 	spl_autoload_register('classesAutoload');
 	
-	$action="action_";
+	$action="action";
 	$action .=(isset($_GET['action']))? $_GET['action']: 'Index';		
 	$controller='';
 	

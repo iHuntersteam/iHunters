@@ -26,6 +26,13 @@ class M_Persons
 		$rows=$db->Select("SELECT * FROM persons WHERE id=$id");
 		return $rows[0];
 	}
+	 public function addPerson($name)
+	 {
+
+        $db=M_Mysql::getInstance();
+        $db->insert("persons",['name'=>$name]);
+        return $db;
+    }
 }
 
 ?>

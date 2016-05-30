@@ -10,7 +10,7 @@ abstract class C_Base extends C_Controller
 
 	public function before()
 	{
-		$this->title="Справочники";
+		$this->title="";
 		$this->content='';
 	}
 	public function render()

@@ -4,7 +4,7 @@
 class C_Keywords extends C_Base
 {
 	
-	public function action_Index()
+	public function actionIndex()
 	{
 		$this->title .=": Ключевые слова";
 		$mPersons=M_Persons::getInstance();
@@ -27,7 +27,7 @@ class C_Keywords extends C_Base
 			array('persons'=>$persons,'keywordsList'=>$keywordsList));
 		
 	}
-	public function action_Add()
+	public function actionAdd()
 	{
 		if($this->isPost())
 		{
@@ -37,7 +37,7 @@ class C_Keywords extends C_Base
 			}
 		}
 	}
-	public function action_Edit()
+	public function actionEdit()
 	{
 		if($this->isPost())
 		{
@@ -47,7 +47,7 @@ class C_Keywords extends C_Base
 			}
 		}
 	}
-	public function action_Delete()
+	public function actionDelete()
 	{
 		if($this->isPost())
 		{

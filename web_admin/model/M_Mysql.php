@@ -48,6 +48,44 @@ class M_Mysql
 		} 	
 		return $row;
 	}
+	public  function delete($table,$where)
+	{
+		$sql=sprintf("DELETE FROM %s WHERE %s",$table,$where);
+		$result=mysqli_query($this->link,$sql);
+
+		if (!$result) die(mysqli_error($this->link));
+
+		return mysqli_affected_rows($this->link);
+		
+	}
+	public function insert($table,$object){
+
+		$colunms=array();
+		$values=array();
+
+		foreach ($object as $key => $value) {
+			
+			$key=mysqli_real_escape_string($this->link,$key);
+			$colunms[]=$key;
+			
+			if($value==NULL) $values[]="NULL";
+			else{
+					$value=mysqli_real_escape_string($this->link,$value);
+				 	$values[]="'$value'";
+				}
+		}
+		
+		$colums_s=implode(",", $colunms);
+		$values_s=implode(",", $values);
+
+		$sql="INSERT INTO $table($colums_s) VALUES($values_s)";
+
+		$result=mysqli_query($this->link,$sql);
+			if (!$result) die (mysqli_error($this->link));
+
+		return mysqli_insert_id($this->link);
+
+	}
 }
 
 

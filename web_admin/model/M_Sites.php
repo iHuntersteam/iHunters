@@ -20,7 +20,20 @@ class M_Sites
 		$db=M_Mysql::getInstance();
 		$rows=$db->Select("SELECT * FROM sites ORDER BY id");
 		return $rows;
+	} 
+	public function deleteSite($id)
+	{
+		$db=M_Mysql::getInstance();
+		$db->delete("sites","id=$id");
+		return $db;
 	}
+	 public function addSite($name)
+	 {
+
+        $db=M_Mysql::getInstance();
+        $db->insert("sites",['name'=>$name]);
+        return $db;
+    }
 }
 
 ?>

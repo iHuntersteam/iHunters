@@ -2,17 +2,17 @@
 
 class C_Persons extends C_Base
 {	
-	public function action_Index()
+	public function actionIndex()
 	{
-		$this->title .=": Личности";
+		$this->title .="Личности";
 		$mPersons=M_Persons::getInstance();
 		$persons=$mPersons->allPersons();
-		$this->content=$this->template('view/persons.php', array('persons'=>$persons));
+		$this->content=$this->template('view/persons.php', array('persons'=>$persons,'title'=>$this->title));
 	}
 	
-	public function action_Get()
+	public function actionGet()
 	{
-		$this->title .=": Личность";
+		$this->title .="Личность";
 
 		if ($this->isGet()) 
 		{
@@ -25,17 +25,23 @@ class C_Persons extends C_Base
 		
 		$this->content=$this->template('view/person.php', array('name'=>$person['name']));
 	}
-	public function action_Add()
+	public function actionAdd()
 	{
-		if($this->isPost())
-		{
-			if(isset($_POST['add']))
-			{
+		$this->title .="Добавить личность";
 
+		if (!empty($this->isPost())) 
+		{
+			if(M_Persons::addPerson($_POST['name']))
+			{
+				header("location: index.php?c=persons");
 			}
+			$this->name=$_POST['name'];
+
 		}
+
+		$this->content=$this->template('view/personsAdd.php', array('name'=>$this->name,'title'=>$this->title));
 	}
-	public function action_Edit()
+	public function actionEdit()
 	{
 		if($this->isPost())
 		{
@@ -45,7 +51,7 @@ class C_Persons extends C_Base
 			}
 		}
 	}
-	public function action_Delete()
+	public function actionDelete()
 	{
 		if($this->isPost())
 		{
