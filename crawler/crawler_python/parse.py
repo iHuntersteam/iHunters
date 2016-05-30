@@ -184,6 +184,7 @@ class HTMLParser:
         page_ranks = {}
         for page_id, page_info in pages_dict.items():
             page_url, page_date_modified = page_info
+            print('{:>30}'.format(page_url))
             page_content = ReqDownloader.fetch(ReqRequest(page_url))
             if isinstance(page_content, BaseCrawlException):
                 page_ranks[page_id] = {}
@@ -202,7 +203,8 @@ class HTMLParser:
             # Если дата страницы != сегодняшней, то скорее всего мы поставили её из сайтмапа. и значит её же и выдадим
             # в результате
             # А иначе пробуем определить дату.
-            page_date_modified = datetime.strptime(page_date_modified, '%Y-%m-%d %H:%M:%S').date()
+            # page_date_modified = datetime.strptime(page_date_modified, '%Y-%m-%d %H:%M:%S').date()
+            page_date_modified = page_date_modified.date()
             now_date = datetime.now().date()
             if page_date_modified == now_date:
                 last_modified_header = page_content.headers.get('Last-Modified')

@@ -1,3 +1,4 @@
+from itertools import islice
 from parse import HTMLParser
 from db_connect import (CrawlerSitesConnector,
                         CrawlerPersonsConnector, CrawlerPersonPageRankConnector)
@@ -18,8 +19,21 @@ class WorkerPageRank:
             self.crawler_persons_conn.get_person_with_keywords(person_ids))
 
     def go(self):
-        ranks = self.parser.get_info_from(self.pages_dict)
-        self.crawler_person_page_rank_conn.save(ranks)
+
+        def split_to_chunks(data, step=100):
+            it = iter(data)
+            result = []
+            for i in range(0, len(data), step):
+                result.append({k: data[k] for k in islice(it, step)})
+            return result
+
+        chunks = split_to_chunks(self.pages_dict, 20)
+        # Если не разбить на куски, то воркер будет ждать обхода всех ссылок, прежде чем записать в БД
+        # Если ссылок очень много - ждать будем крайне долго, и из-за какого-нибудь сбоя можно всё потерять.
+        for num, chunk in enumerate(chunks):
+            print('Обрабатываем кусок списка url № {} из {}'.format(num + 1, len(chunks) + 1))
+            ranks = self.parser.get_info_from(chunk)
+            self.crawler_person_page_rank_conn.save(ranks)
         print('DONE!')
 
     @staticmethod
@@ -29,10 +43,7 @@ class WorkerPageRank:
         return ','.join(map(str, data))
 
 
-# test
-# data:
-# persons_ids = {1: ('путин', 'путину', 'путина', 'путине'), 3: ('муров', 'мурову', 'мурове')}
-# sites 2 - lenta.ru and 4 - geekbrains.ru
+# Тестовые данные на которых я проверял работу - в файле test_data.sql
 if __name__ == '__main__':
-    worker = WorkerPageRank(person_ids=(1, 3), site_ids='4, 2')
+    worker = WorkerPageRank(person_ids=(1, 2, 3), site_ids='1')
     worker.go()

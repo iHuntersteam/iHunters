@@ -28,9 +28,9 @@ class CrawlerSitesConnector:
     def get_pages_by_site_id(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, url FROM pages WHERE site_id IN ({0})
+                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND last_scan_date IS NULL
                 '''.format(ids))
-            return {k: v for k, v in CURSOR.fetchall()}
+            return {k: (v, d) for k, v, d in CURSOR.fetchall()}
         except MySQLError as e:
             print(err(e))
 
