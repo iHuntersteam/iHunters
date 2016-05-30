@@ -1,10 +1,12 @@
 import gzip
 import re
+from datetime import datetime
 from io import BytesIO
 from itertools import chain
 from urllib import parse
 
 import logging
+import dateutil.parser
 from bs4 import UnicodeDammit
 from lxml import etree, html
 from lxml.html.clean import Cleaner
@@ -131,7 +133,11 @@ class SitemapParser:
                     location = url_entry.find('bot:loc', namespaces=my_nsmap).text  # obligatory field
                     lastmod = url_entry.find('bot:lastmod', namespaces=my_nsmap)  # optional field
                     if lastmod is not None:
-                        lastmod = lastmod.text
+                        try:
+                            lastmod_date = dateutil.parser.parse(lastmod.text)
+                        except ValueError:
+                            logging.debug('Error date string {} on {}'.format(lastmod.text, url))
+                            lastmod_date = datetime.now()
                         # TODO add filtering urls on date
                     if location:
                         # if xml tag <loc> is presented but empty location == None
