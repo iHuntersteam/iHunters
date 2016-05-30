@@ -4,6 +4,7 @@ from datetime import datetime
 from io import BytesIO
 from itertools import chain
 from urllib import parse
+from urllib.parse import urljoin
 
 import logging
 import dateutil.parser
@@ -143,6 +144,7 @@ class SitemapParser:
                     if location:
                         # if xml tag <loc> is presented but empty location == None
                         # return only non-empty locations
+                        location = urljoin(url, location)
                         yield location, lastmod_date
                 except AttributeError:
                     # xml sitemap contains an error - missed <loc> tag.
