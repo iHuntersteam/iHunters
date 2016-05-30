@@ -101,7 +101,8 @@ class SitemapParser:
         If sitemap contains links to other sitemaps, automatically download and use them.
         Works with gzipped sitemaps too.
         :param url: Sitemap's url to parse
-        :return: Generator with all found urls.
+        :return: Generator with all found urls and dates. It returns tuples like (url, date).
+        If date is not in sitemap it returns (url, None)
         """
         # grab sitemap
         try:
@@ -137,12 +138,12 @@ class SitemapParser:
                             lastmod_date = dateutil.parser.parse(lastmod.text)
                         except ValueError:
                             logging.debug('Error date string {} on {}'.format(lastmod.text, url))
-                            lastmod_date = datetime.now()
+                            lastmod_date = None
                         # TODO add filtering urls on date
                     if location:
                         # if xml tag <loc> is presented but empty location == None
                         # return only non-empty locations
-                        yield location
+                        yield location, lastmod_date
                 except AttributeError:
                     # xml sitemap contains an error - missed <loc> tag.
                     # Ignore this error and parse the next entry
