@@ -94,18 +94,12 @@
 				059687CC1CFDE0D2005D525B /* Controller */,
 				05BCB28A1CF340D40083D708 /* AppDelegate.h */,
 				05BCB28B1CF340D40083D708 /* AppDelegate.m */,
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 				05BCB28D1CF340D40083D708 /* ViewController.h */,
 				05BCB28E1CF340D40083D708 /* ViewController.m */,
 				79EF4C991CFDEC0900FCD6C3 /* DailyViewController.h */,
 				79EF4C9A1CFDEC0900FCD6C3 /* DailyViewController.m */,
 				79EF4C9C1CFDED8200FCD6C3 /* DailyTableViewController.h */,
 				79EF4C9D1CFDED8200FCD6C3 /* DailyTableViewController.m */,
-=======
->>>>>>> origin/mobile/user
->>>>>>> Stashed changes
 				05BCB2901CF340D40083D708 /* Main.storyboard */,
 				05BCB2931CF340D40083D708 /* Assets.xcassets */,
 				05BCB2951CF340D40083D708 /* LaunchScreen.storyboard */,
@@ -194,14 +188,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 				79EF4C9E1CFDED8200FCD6C3 /* DailyTableViewController.m in Sources */,
 				05BCB28F1CF340D40083D708 /* ViewController.m in Sources */,
-=======
->>>>>>> origin/mobile/user
->>>>>>> Stashed changes
 				05BCB28C1CF340D40083D708 /* AppDelegate.m in Sources */,
 				79EF4C9B1CFDEC0900FCD6C3 /* DailyViewController.m in Sources */,
 				05BCB2891CF340D40083D708 /* main.m in Sources */,
