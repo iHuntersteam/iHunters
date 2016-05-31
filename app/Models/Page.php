@@ -39,6 +39,10 @@ class Page extends Model
         'last_scan_date',
     ];
 
+    protected $hidden = [
+        'pivot', 'url_hash'
+    ];
+
     /**
      * Сайт, которому принадлежит страница
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

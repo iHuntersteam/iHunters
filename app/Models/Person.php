@@ -43,4 +43,14 @@ class Person extends Model
     {
         return $this->hasMany(Keyword::class);
     }
+
+    /**
+     * Страницы с упоминанием персоны
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function pages()
+    {
+        return $this->belongsToMany(Page::class, 'person_page_rank',
+            'person_id', 'page_id');
+    }
 }

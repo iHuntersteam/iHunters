@@ -11,7 +11,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->rankTableSeeder(40);
+        $this->personsSeeder();
+        $this->sitesSeeder();
+        $this->pageSeeder();
+        $this->rankTableSeeder(3000);
     }
 
     private function personsSeeder()

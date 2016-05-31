@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\Site;
+use Illuminate\Database\Eloquent\Collection;
 
 class SiteHelpers
 {
@@ -27,4 +28,6 @@ class SiteHelpers
 
         return Site::find($id);
     }
+
+
 }

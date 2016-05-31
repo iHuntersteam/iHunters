@@ -15,18 +15,27 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix' => 'api/admin'], function () {
-    Route::get('persons', 'Person\PersonController@show');
-    Route::post('persons', 'Person\PersonController@store');
-    Route::put('persons', 'Person\PersonController@update');
-    Route::delete('persons', 'Person\PersonController@destroy');
-    Route::get('sites', 'Site\SiteController@show');
-    Route::post('sites', 'Site\SiteController@store');
-    Route::put('sites', 'Site\SiteController@update');
-    Route::delete('sites', 'Site\SiteController@destroy');
-    Route::get('keywords', 'Keyword\KeywordController@show');
-    Route::post('keywords', 'Keyword\KeywordController@store');
-    Route::put('keywords', 'Keyword\KeywordController@update');
-    Route::delete('keywords', 'Keyword\KeywordController@destroy');
+Route::group(['prefix' => 'api'], function () {
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('persons', 'Person\PersonController@show');
+        Route::post('persons', 'Person\PersonController@store');
+        Route::put('persons', 'Person\PersonController@update');
+        Route::delete('persons', 'Person\PersonController@destroy');
+        Route::get('sites', 'Site\SiteController@show');
+        Route::post('sites', 'Site\SiteController@store');
+        Route::put('sites', 'Site\SiteController@update');
+        Route::delete('sites', 'Site\SiteController@destroy');
+        Route::get('keywords', 'Keyword\KeywordController@show');
+        Route::post('keywords', 'Keyword\KeywordController@store');
+        Route::put('keywords', 'Keyword\KeywordController@update');
+        Route::delete('keywords', 'Keyword\KeywordController@destroy');
+    });
 
+    Route::group(['prefix' => 'statistics'], function () {
+        Route::get('/', 'Statistics\StatisticController@show');
+
+        Route::group(['prefix' => 'crawler'], function () {
+            Route::get('/', 'Statistics\StatisticsCrawlerController@show');
+        });
+    });
 });

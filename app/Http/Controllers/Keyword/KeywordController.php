@@ -28,7 +28,6 @@ class KeywordController extends Controller
                 422);
         }
 
-
         try {
             $keyword = Keyword::create([
                 'name' => $request->get('keyword_name'),

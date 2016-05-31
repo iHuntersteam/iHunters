@@ -28,7 +28,7 @@ $factory->define(\App\Models\Person::class, function (Faker\Generator $faker) {
 
 $factory->define(\App\Models\Site::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->domainName
+        'name' => $faker->domainWord . "." . $faker->tld
     ];
 });
 
@@ -37,7 +37,7 @@ $factory->define(\App\Models\Page::class, function (Faker\Generator $faker) {
     return [
         'url' => $site->name . "/" . $faker->domainWord . "." . $faker->tld,
         'site_id' => $site->id,
-        'found_date_time' => \Carbon\Carbon::now(),
-        'last_scan_date' => null
+        'found_date_time' => $faker->dateTime,
+        'last_scan_date' => $faker->dateTime
     ];
 });

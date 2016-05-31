@@ -12,11 +12,7 @@ class CreateSitesTable extends Migration
      */
     public function up()
     {
-        DB::statement('CREATE TABLE IF NOT EXISTS sites (
-            id INT NOT NULL AUTO_INCREMENT,
-            name NVARCHAR(256) NOT NULL UNIQUE,
-            PRIMARY KEY (id)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;');
+        DB::unprepared('SET GLOBAL innodb_file_format = BARRACUDA;SET GLOBAL innodb_large_prefix = ON;CREATE TABLE IF NOT EXISTS sites (id INT NOT NULL AUTO_INCREMENT,name VARCHAR(256) NOT NULL UNIQUE,PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC');
     }
 
     /**
