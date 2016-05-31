@@ -32,7 +32,7 @@ class M_Mysql
 		}
 		return self::$instance;
 	}
-	public function Select($sql)
+	public function select($sql)
 	{
 		$result=mysqli_query($this->link,$sql);
 

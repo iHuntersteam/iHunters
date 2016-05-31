@@ -18,7 +18,7 @@ class M_Sites
 	public function allSites()
 	{
 		$db=M_Mysql::getInstance();
-		$rows=$db->Select("SELECT * FROM sites ORDER BY id");
+		$rows=$db->select("SELECT * FROM sites ORDER BY id");
 		return $rows;
 	} 
 	public function deleteSite($id)

@@ -26,7 +26,7 @@ class C_Sites extends C_Base
 
 		}
 
-		$this->content=$this->template('view/Add.php', array('name'=>$this->name,'title'=>$this->title));
+		$this->content=$this->template('view/add.php', array('name'=>$this->name,'title'=>$this->title));
 	}
 	public function actionEdit()
 	{
@@ -48,23 +48,36 @@ class C_Sites extends C_Base
 				}
 			}
 
-		$this->content=$this->template('view/Edit.php', array('name'=>$site['name'],'title'=>$this->title));
+		$this->content=$this->template('view/edit.php', array('name'=>$site['name'],'title'=>$this->title));
 	}
-	/*public function actionDelete()
+	public function actionDelete()
 	{
-		if(!empty($this->isPost()))
-		{
+		$this->title .="Удаление ресурса из справочника";
 			
-			if(M_Sites::deleteSite($_POST['check']))
+			if(isset($_GET['id']))
 			{
-				header("location:index.php?c=sites");
-				exit();
-			}
-		}
-		
-		$this->content=$this->template('view/sites.php', array('sites'=>$sites));	
+				$this->id=$_GET['id'];
+				$site=M_Sites::getSite($this->id);
 			
-	}*/
+				if($this->isPost())
+				{
+					if(isset($_POST['yes']))
+					{
+						$this->id=$_GET['id'];
+						M_Sites::deleteSite($this->id);
+						header("location: index.php?c=sites");
+						die();
+					}
+					else
+					{
+						header("location: index.php?c=sites");
+						die();
+					}
+				}
+			}
+		
+		$this->content=$this->template('view/delete.php', array('name'=>$site['name'],'title'=>$this->title ));
+	}
 	
 }
 

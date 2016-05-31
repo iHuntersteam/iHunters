@@ -47,7 +47,7 @@ class C_Keywords extends C_Base
 			
 		}
 	}
-		$this->content=$this->template('view/Add.php',
+		$this->content=$this->template('view/add.php',
 			array('name'=>$this->name,'person_id'=>$this->person_id,'title'=>$this->title));
 	}
 	public function actionEdit()
@@ -70,19 +70,36 @@ class C_Keywords extends C_Base
 				}
 			}
 
-		$this->content=$this->template('view/Edit.php', array('name'=>$keyword['name'],'title'=>$this->title));
+		$this->content=$this->template('view/edit.php', array('name'=>$keyword['name'],'title'=>$this->title));
 	}
 	
 	public function actionDelete()
 	{
-		if($this->isPost())
-		{
-			if(isset($_POST['delete']))
+		$this->title .="Удаление ключевого слова из справочника";
+			
+			if(isset($_GET['id']))
 			{
-				
+				$this->id=$_GET['id'];
+				$keyword=M_Keywords::getKeyword($this->id);
+			
+				if($this->isPost())
+				{
+					if(isset($_POST['yes']))
+					{
+						$this->id=$_GET['id'];
+						M_Keywords::deleteKeyword($this->id);
+						header("location: index.php?c=keywords");
+						die();
+					}
+					else
+					{
+						header("location: index.php?c=keywords");
+						die();
+					}
+				}
 			}
-		}
+		
+		$this->content=$this->template('view/delete.php', array('name'=>$keyword['name'],'title'=>$this->title ));
 	}
 }
-
 ?>

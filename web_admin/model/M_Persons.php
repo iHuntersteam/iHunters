@@ -16,7 +16,7 @@ class M_Persons
 	public function allPersons()
 	{
 		$db=M_Mysql::getInstance();
-		$rows=$db->Select("SELECT * FROM persons ORDER BY id");
+		$rows=$db->select("SELECT * FROM persons ORDER BY id");
 		return $rows;
 	}
 
@@ -39,6 +39,12 @@ class M_Persons
     	$rows=$db->update("persons",['name'=>$name],"id=$id");
     	return $rows;
     }
+    public function deletePerson($id)
+	{
+		$db=M_Mysql::getInstance();
+		$db->delete("persons","id=$id");
+		return $db;
+	}
 }
 
 ?>

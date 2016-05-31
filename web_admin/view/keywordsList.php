@@ -11,7 +11,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="index.php?c=keywords&action=delete&id=<?=$keyword['person_id']?>">	удалить
+				<a href="index.php?c=keywords&action=delete&id=<?=$keyword['id']?>">	удалить
 				</a>
 			</li>
 		</ul>

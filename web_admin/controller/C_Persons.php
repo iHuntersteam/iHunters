@@ -24,7 +24,7 @@ class C_Persons extends C_Base
 
 		}
 
-		$this->content=$this->template('view/Add.php', array('name'=>$this->name,'title'=>$this->title));
+		$this->content=$this->template('view/add.php', array('name'=>$this->name,'title'=>$this->title));
 	}
 	public function actionEdit()
 	{
@@ -46,17 +46,35 @@ class C_Persons extends C_Base
 				}
 			}
 
-		$this->content=$this->template('view/Edit.php', array('name'=>$person['name'],'title'=>$this->title));
+		$this->content=$this->template('view/edit.php', array('name'=>$person['name'],'title'=>$this->title));
 	}
 	public function actionDelete()
 	{
-		if($this->isPost())
-		{
-			if(isset($_POST['delete']))
+		$this->title .="Удаление имени личности из справочника";
+			
+			if(isset($_GET['id']))
 			{
-				
+				$this->id=$_GET['id'];
+				$person=M_Persons::getPerson($this->id);
+			
+				if($this->isPost())
+				{
+					if(isset($_POST['yes']))
+					{
+						$this->id=$_GET['id'];
+						M_Persons::deletePerson($this->id);
+						header("location: index.php?c=persons");
+						die();
+					}
+					else
+					{
+						header("location: index.php?c=persons");
+						die();
+					}
+				}
 			}
-		}
+		
+		$this->content=$this->template('view/delete.php', array('name'=>$person['name'],'title'=>$this->title ));
 	}
 }
 
