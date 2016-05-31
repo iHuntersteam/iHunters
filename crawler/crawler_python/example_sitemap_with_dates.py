@@ -23,7 +23,7 @@ for site_id in sites:
     if page_count == 1:
         # Ссылку на сайтмап возьмём из robots.txt
         # Если её там нет, попробуем обработать url/sitemap.xml
-        site_url = list(crawler_sites_conn.get_pages_by_site_id(site_id).values())[0]
+        site_url, site_date = list(crawler_sites_conn.get_pages_by_site_id(site_id).values())[0]
         # потому что метод get возвращает словарь {id: url} а городить новый метод для
         # получения одного url'а это как-то глупо.
         print('Всего одна ссылка в базе. Судя по всему это новый сайт. Его URL = {}'.format(site_url))
