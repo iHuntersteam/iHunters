@@ -19,22 +19,28 @@ class WorkerPageRank:
             self.crawler_persons_conn.get_person_with_keywords(person_ids))
 
     def go(self):
+        for id in list(self.pages_dict):
+            print({id: self.pages_dict[id]})
+            rank = self.parser.get_info_from({id: self.pages_dict[id]})
+            self.crawler_person_page_rank_conn.save(rank)
+        print('DONE!')
 
-        def split_to_chunks(data, step=100):
-            it = iter(data)
-            result = []
-            for i in range(0, len(data), step):
-                result.append({k: data[k] for k in islice(it, step)})
-            return result
+        # def split_to_chunks(data, step=100):
+        #     it = iter(data)
+        #     result = []
+        #     for i in range(0, len(data), step):
+        #         result.append({k: data[k] for k in islice(it, step)})
+        #     return result
 
-        chunks = split_to_chunks(self.pages_dict, 20)
+        # chunks = split_to_chunks(self.pages_dict, 20)
         # Если не разбить на куски, то воркер будет ждать обхода всех ссылок, прежде чем записать в БД
         # Если ссылок очень много - ждать будем крайне долго, и из-за какого-нибудь сбоя можно всё потерять.
-        for num, chunk in enumerate(chunks):
-            print('Обрабатываем кусок списка url № {} из {}'.format(num + 1, len(chunks) + 1))
-            ranks = self.parser.get_info_from(chunk)
-            self.crawler_person_page_rank_conn.save(ranks)
-        print('DONE!')
+
+        # for num, chunk in enumerate(chunks):
+        #     print('Обрабатываем кусок списка url № {} из {}'.format(num + 1, len(chunks) + 1))
+        #     ranks = self.parser.get_info_from(chunk)
+        #     self.crawler_person_page_rank_conn.save(ranks)
+        # print('DONE!')
 
     @staticmethod
     def data_validate(data):
@@ -45,5 +51,5 @@ class WorkerPageRank:
 
 # Тестовые данные на которых я проверял работу - в файле test_data.sql
 if __name__ == '__main__':
-    worker = WorkerPageRank(person_ids=(1, 2, 3), site_ids='1')
+    worker = WorkerPageRank(person_ids=(1, 2, 3), site_ids='1, 2')
     worker.go()
