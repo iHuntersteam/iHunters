@@ -19,18 +19,19 @@ class WorkerPageRank:
             self.crawler_persons_conn.get_person_with_keywords(person_ids))
 
     def go(self):
-        for id in list(self.pages_dict):
-            print({id: self.pages_dict[id]})
+        count = len(self.pages_dict)
+        for i, id in enumerate(list(self.pages_dict)):
+            print('Обрабатываем url № {} из {}'.format(i + 1, count))
             rank = self.parser.get_info_from({id: self.pages_dict[id]})
             self.crawler_person_page_rank_conn.save(rank)
         print('DONE!')
 
-        # def split_to_chunks(data, step=100):
-        #     it = iter(data)
-        #     result = []
-        #     for i in range(0, len(data), step):
-        #         result.append({k: data[k] for k in islice(it, step)})
-        #     return result
+    # def split_to_chunks(self ,data, step=100):
+    #     it = iter(data)
+    #     result = []
+    #     for i in range(0, len(data), step):
+    #         result.append({k: data[k] for k in islice(it, step)})
+    #     return result
 
         # chunks = split_to_chunks(self.pages_dict, 20)
         # Если не разбить на куски, то воркер будет ждать обхода всех ссылок, прежде чем записать в БД
