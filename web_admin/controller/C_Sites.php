@@ -26,19 +26,31 @@ class C_Sites extends C_Base
 
 		}
 
-		$this->content=$this->template('view/sitesAdd.php', array('name'=>$this->name,'title'=>$this->title));
+		$this->content=$this->template('view/Add.php', array('name'=>$this->name,'title'=>$this->title));
 	}
 	public function actionEdit()
 	{
-		if($this->isPost())
-		{
-			if(isset($_POST['edit']))
+		$this->title .="Редактировать имя сайта";
+
+		if(isset($_GET['id']))
 			{
-				
+				$this->id=$_GET['id'];
+				$site=M_Sites::getSite($this->id);
+
+				if($this->isPost())
+				{
+					if (M_Sites::editSite($this->id,$_POST['name'])) 
+					{
+						header("location: index.php?c=sites");
+						die();
+					}
+					$this->name=$_POST['name'];
+				}
 			}
-		}
+
+		$this->content=$this->template('view/Edit.php', array('name'=>$site['name'],'title'=>$this->title));
 	}
-	public function actionDelete()
+	/*public function actionDelete()
 	{
 		if(!empty($this->isPost()))
 		{
@@ -52,7 +64,7 @@ class C_Sites extends C_Base
 		
 		$this->content=$this->template('view/sites.php', array('sites'=>$sites));	
 			
-	}
+	}*/
 	
 }
 

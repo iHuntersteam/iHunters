@@ -34,6 +34,18 @@ class M_Sites
         $db->insert("sites",['name'=>$name]);
         return $db;
     }
+    public function editSite($id,$name)
+    {
+    	$db=M_Mysql::getInstance();
+    	$rows=$db->update("sites",['name'=>$name],"id=$id");
+    	return $rows;
+    }
+    public function getSite($id)
+	{
+		$db=M_Mysql::getInstance();
+		$rows=$db->Select("SELECT * FROM sites WHERE id=$id");
+		return $rows[0];
+	}
 }
 
 ?>

@@ -33,6 +33,12 @@ class M_Persons
         $db->insert("persons",['name'=>$name]);
         return $db;
     }
+     public function editPerson($id,$name)
+    {
+    	$db=M_Mysql::getInstance();
+    	$rows=$db->update("persons",['name'=>$name],"id=$id");
+    	return $rows;
+    }
 }
 
 ?>

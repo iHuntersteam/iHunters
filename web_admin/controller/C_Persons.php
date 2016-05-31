@@ -10,21 +10,6 @@ class C_Persons extends C_Base
 		$this->content=$this->template('view/persons.php', array('persons'=>$persons,'title'=>$this->title));
 	}
 	
-	public function actionGet()
-	{
-		$this->title .="Личность";
-
-		if ($this->isGet()) 
-		{
-			if (isset($_GET['id'])) 
-			{
-				$this->id=$_GET['id'];
-				$person=M_Persons::getPerson($this->id);
-			}
-		}
-		
-		$this->content=$this->template('view/person.php', array('name'=>$person['name']));
-	}
 	public function actionAdd()
 	{
 		$this->title .="Добавить личность";
@@ -39,17 +24,29 @@ class C_Persons extends C_Base
 
 		}
 
-		$this->content=$this->template('view/personsAdd.php', array('name'=>$this->name,'title'=>$this->title));
+		$this->content=$this->template('view/Add.php', array('name'=>$this->name,'title'=>$this->title));
 	}
 	public function actionEdit()
 	{
-		if($this->isPost())
-		{
-			if(isset($_POST['edit']))
+		$this->title .="Редактировать имя личности";
+
+		if(isset($_GET['id']))
 			{
-				
+				$this->id=$_GET['id'];
+				$person=M_Persons::getPerson($this->id);
+
+				if($this->isPost())
+				{
+					if (M_Persons::editPerson($this->id,$_POST['name'])) 
+					{
+						header("location: index.php?c=persons");
+						die();
+					}
+					$this->name=$_POST['name'];
+				}
 			}
-		}
+
+		$this->content=$this->template('view/Edit.php', array('name'=>$person['name'],'title'=>$this->title));
 	}
 	public function actionDelete()
 	{

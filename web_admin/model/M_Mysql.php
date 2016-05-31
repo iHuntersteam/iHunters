@@ -86,6 +86,29 @@ class M_Mysql
 		return mysqli_insert_id($this->link);
 
 	}
+	public function update($table,$object,$where)
+	{
+		$sets=array();
+
+		foreach ($object as $key => $value) 
+		{
+			$key=mysqli_real_escape_string($this->link,$key);
+
+			if($value==null) $sets[]="$key=null";
+			else
+			{
+				$value=mysqli_real_escape_string($this->link,$value);
+				$sets[]="$key='$value'";
+			}
+		}
+		$set_s=implode(",",$sets);
+		$sql=sprintf("UPDATE %s SET %s WHERE %s",$table,$set_s,$where);
+		$result=mysqli_query($this->link,$sql);
+
+		if(!$result) die(mysqli_error($this->link));
+
+		 return mysqli_affected_rows($this->link);
+	}
 }
 
 

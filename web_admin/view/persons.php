@@ -5,16 +5,28 @@
 	</div>
 	<?php foreach ($persons as $person): ?>
 	<div class="row">
-		<a href="c=sites&action=get&id=<?=$person['id']?>"> <?=$person['name']?></a>
+	 <?=$person['name']?>
+	 	<ul>
+	 		<li>
+				<a href="index.php?c=persons&action=edit&id=<?=$person['id']?>"">
+					редактировать
+				</a>
+			</li>
+			
+			<li>
+				<a href="index.php?c=persons&action=delete&id=<?=$person['id']?>">
+					удалить
+				</a>
+			</li>
+			
+		</ul>
 	</div>
 	<?php endforeach ?>
 </div>
 <div class="edit">
 <ul>
 	<li><a href="index.php?c=persons&action=add">добавить</a></li>
-	<li><a href="index.php?c=sites&action=delete&id=<?=$person['id']?>">удалить</a>
-</li>
-	<li><a href="index.php?c=persons&action=edit&id=<?=$person['id']?>"">редактировать</a></li>
+	
 </ul>
 </div>
 	

@@ -17,6 +17,18 @@ class M_Keywords
 		$db->insert("keywords",['name'=>$name,'person_id'=>$person_id]);
 		return $db;
 	}
+	 public function getKeyword($id)
+	{
+		$db=M_Mysql::getInstance();
+		$rows=$db->Select("SELECT * FROM keywords WHERE id=$id");
+		return $rows[0];
+	}
+	public function editKeyword($id,$name)
+    {
+    	$db=M_Mysql::getInstance();
+    	$rows=$db->update("keywords",['name'=>$name],"id=$id");
+    	return $rows;
+    }
 
 }
 
