@@ -7,8 +7,15 @@
 //
 
 #import "TotalStatsViewController.h"
+#import "AllSites.h"
 
-@interface TotalStatsViewController ()
+@interface TotalStatsViewController () <UIPickerViewDelegate, UIPickerViewDataSource>
+
+{
+    NSArray *_sitesPickerData;
+}
+
+@property (weak, nonatomic) IBOutlet UIPickerView *sitesPicker;
 
 @end
 
@@ -16,12 +23,42 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    // Initialize picker data
+    AllSites *siteList = [[AllSites alloc] init];
+    _sitesPickerData = siteList.sites;
+    // Connect picker data
+    self.sitesPicker.dataSource = self;
+    self.sitesPicker.delegate = self;
+    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - sitesPicker delegate methods
+
+// Number of columns
+- (int)numberOfComponentsInPickerView:(UIPickerView *)sitesPicker {
+    return 1;
+}
+
+// Number of rows
+- (int)pickerView:(UIPickerView *)sitesPicker numberOfRowsInComponent:(NSInteger)component {
+    return _sitesPickerData.count;
+}
+
+// Tha data to display in rows
+- (NSString *)pickerView:(UIPickerView *)sitesPicker titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    return _sitesPickerData[row];
+}
+
+// Capture the selection
+- (void)pickerView:(UIPickerView *)sitesPicker didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    self.chosenSite = _sitesPickerData[row];
+    // test
+    NSLog(@"%@", self.chosenSite);
 }
 
 /*

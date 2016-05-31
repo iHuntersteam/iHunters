@@ -10,4 +10,6 @@
 
 @interface TotalStatsViewController : UIViewController
 
+@property (nonatomic, strong) NSString *chosenSite;
+
 @end
