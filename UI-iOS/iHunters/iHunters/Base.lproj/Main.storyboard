@@ -47,10 +47,10 @@
             </objects>
             <point key="canvasLocation" x="-353" y="321"/>
         </scene>
-        <!--View Controller-->
+        <!--Total Stats View Controller-->
         <scene sceneID="YXp-av-u4K">
             <objects>
-                <viewController id="JVx-fs-NAk" sceneMemberID="viewController">
+                <viewController id="JVx-fs-NAk" customClass="TotalStatsViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="OND-FI-wCe"/>
                         <viewControllerLayoutGuide type="bottom" id="LNc-SI-A59"/>
@@ -63,7 +63,7 @@
                                 <rect key="frame" x="260" y="458" width="81" height="30"/>
                                 <state key="normal" title="Применить"/>
                                 <connections>
-                                    <segue destination="pcX-Q4-bhG" kind="show" id="Fuo-eF-xog"/>
+                                    <segue destination="pcX-Q4-bhG" kind="show" identifier="totalStatsSegue" id="Fuo-eF-xog"/>
                                 </connections>
                             </button>
                             <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oZS-pr-JBp">
@@ -86,6 +86,9 @@
                             <constraint firstItem="oZS-pr-JBp" firstAttribute="centerX" secondItem="wUt-bh-FDB" secondAttribute="centerX" id="ssV-zY-IGg"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="sitesPicker" destination="oZS-pr-JBp" id="bCZ-kJ-Deu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jeX-YA-P2S" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

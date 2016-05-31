@@ -7,21 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0509B6A21CF7107F00C0980E /* TotalStatsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0509B6A11CF7107F00C0980E /* TotalStatsViewController.m */; };
+		059687D21CFDE70D005D525B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 059687D11CFDE70D005D525B /* ViewController.m */; };
+		059687D51CFDE986005D525B /* AllSites.m in Sources */ = {isa = PBXBuildFile; fileRef = 059687D41CFDE986005D525B /* AllSites.m */; };
 		05BCB2891CF340D40083D708 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05BCB2881CF340D40083D708 /* main.m */; };
 		05BCB28C1CF340D40083D708 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05BCB28B1CF340D40083D708 /* AppDelegate.m */; };
-		05BCB28F1CF340D40083D708 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05BCB28E1CF340D40083D708 /* ViewController.m */; };
 		05BCB2921CF340D40083D708 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05BCB2901CF340D40083D708 /* Main.storyboard */; };
 		05BCB2941CF340D40083D708 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05BCB2931CF340D40083D708 /* Assets.xcassets */; };
 		05BCB2971CF340D40083D708 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05BCB2951CF340D40083D708 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0509B6A01CF7107F00C0980E /* TotalStatsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TotalStatsViewController.h; sourceTree = "<group>"; };
+		0509B6A11CF7107F00C0980E /* TotalStatsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TotalStatsViewController.m; sourceTree = "<group>"; };
+		059687D01CFDE70D005D525B /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		059687D11CFDE70D005D525B /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		059687D31CFDE986005D525B /* AllSites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllSites.h; sourceTree = "<group>"; };
+		059687D41CFDE986005D525B /* AllSites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllSites.m; sourceTree = "<group>"; };
 		05BCB2841CF340D40083D708 /* iHunters.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iHunters.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		05BCB2881CF340D40083D708 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		05BCB28A1CF340D40083D708 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		05BCB28B1CF340D40083D708 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		05BCB28D1CF340D40083D708 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		05BCB28E1CF340D40083D708 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		05BCB2911CF340D40083D708 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		05BCB2931CF340D40083D708 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		05BCB2961CF340D40083D708 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -39,6 +45,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		059687CB1CFDE0C8005D525B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				059687D31CFDE986005D525B /* AllSites.h */,
+				059687D41CFDE986005D525B /* AllSites.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		059687CC1CFDE0D2005D525B /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				059687D01CFDE70D005D525B /* ViewController.h */,
+				059687D11CFDE70D005D525B /* ViewController.m */,
+				0509B6A01CF7107F00C0980E /* TotalStatsViewController.h */,
+				0509B6A11CF7107F00C0980E /* TotalStatsViewController.m */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
 		05BCB27B1CF340D40083D708 = {
 			isa = PBXGroup;
 			children = (
@@ -58,10 +84,10 @@
 		05BCB2861CF340D40083D708 /* iHunters */ = {
 			isa = PBXGroup;
 			children = (
+				059687CB1CFDE0C8005D525B /* Model */,
+				059687CC1CFDE0D2005D525B /* Controller */,
 				05BCB28A1CF340D40083D708 /* AppDelegate.h */,
 				05BCB28B1CF340D40083D708 /* AppDelegate.m */,
-				05BCB28D1CF340D40083D708 /* ViewController.h */,
-				05BCB28E1CF340D40083D708 /* ViewController.m */,
 				05BCB2901CF340D40083D708 /* Main.storyboard */,
 				05BCB2931CF340D40083D708 /* Assets.xcassets */,
 				05BCB2951CF340D40083D708 /* LaunchScreen.storyboard */,
@@ -150,9 +176,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05BCB28F1CF340D40083D708 /* ViewController.m in Sources */,
 				05BCB28C1CF340D40083D708 /* AppDelegate.m in Sources */,
 				05BCB2891CF340D40083D708 /* main.m in Sources */,
+				0509B6A21CF7107F00C0980E /* TotalStatsViewController.m in Sources */,
+				059687D51CFDE986005D525B /* AllSites.m in Sources */,
+				059687D21CFDE70D005D525B /* ViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,6 +327,7 @@
 				05BCB29D1CF340D40083D708 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
