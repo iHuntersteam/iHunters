@@ -10,7 +10,11 @@
 	<?php endforeach ?>
 </div>
 <div class="edit">
-<a href="index.php?c=persons&action=add">Добавить</a>
-<a href="index.php?c=sites&action=delete&id=<?=$person['id']?>">Удалить</a>
+<ul>
+	<li><a href="index.php?c=persons&action=add">добавить</a></li>
+	<li><a href="index.php?c=sites&action=delete&id=<?=$person['id']?>">удалить</a>
+</li>
+	<li><a href="index.php?c=persons&action=edit&id=<?=$person['id']?>"">редактировать</a></li>
+</ul>
 </div>
 	

@@ -20,6 +20,7 @@ class C_Sites extends C_Base
 			if(M_Sites::addSite($_POST['name']))
 			{
 				header("location: index.php?c=sites");
+				exit();
 			}
 			$this->name=$_POST['name'];
 
@@ -39,20 +40,17 @@ class C_Sites extends C_Base
 	}
 	public function actionDelete()
 	{
-		if($this->isPost())
+		if(!empty($this->isPost()))
 		{
 			
-			if(isset($_POST['chb']))
+			if(M_Sites::deleteSite($_POST['check']))
 			{
-				$delete=M_Sites::getInstance();
-				$delete->deleteSite($_POST['chb']);
-				header("location:index.php");
+				header("location:index.php?c=sites");
 				exit();
-				
-				
 			}
 		}
-	$this->content=$this->template('view/sites.php', array('sites'=>$sites));	
+		
+		$this->content=$this->template('view/sites.php', array('sites'=>$sites));	
 			
 	}
 	

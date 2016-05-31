@@ -1,6 +1,6 @@
 <h2>Ключевые слова</h2>
-
-<form method="post" class="select">	
+<div class="select">
+	<form method="post" >	
 	<select name="select">
 		<?php foreach ($persons as $person): ?>
 		<option value="<?=$person['id']?>">
@@ -10,11 +10,6 @@
 	</select>
 <input type="submit" name="submit" value="OK" class="choose">
 </form>
-<?=var_dump($_POST['select']);?>
-<pre>
-<?=var_dump($persons[0]['id']);?>
-</pre>
-
-<div>
-	<?=$keywordsList?>
 </div>
+<?=$keywordsList?>
+
