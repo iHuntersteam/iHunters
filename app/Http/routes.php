@@ -20,8 +20,13 @@ Route::group(['prefix' => 'api/admin'], function () {
     Route::post('persons', 'Person\PersonController@store');
     Route::put('persons', 'Person\PersonController@update');
     Route::delete('persons', 'Person\PersonController@destroy');
-});
+    Route::get('sites', 'Site\SiteController@show');
+    Route::post('sites', 'Site\SiteController@store');
+    Route::put('sites', 'Site\SiteController@update');
+    Route::delete('sites', 'Site\SiteController@destroy');
+    Route::get('keywords', 'Keyword\KeywordController@show');
+    Route::post('keywords', 'Keyword\KeywordController@store');
+    Route::put('keywords', 'Keyword\KeywordController@update');
+    Route::delete('keywords', 'Keyword\KeywordController@destroy');
 
-Route::group(['prefix' => 'api'], function () {
-    Route::get('statistics', 'Statistics\StatisticController@show');
 });

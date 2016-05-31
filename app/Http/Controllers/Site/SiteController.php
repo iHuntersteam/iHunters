@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Person;
+namespace App\Http\Controllers\Site;
 
-use App\Models\Person;
+use App\Models\Site;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class PersonController extends Controller
+class SiteController extends Controller
 {
     /**
      * Store a newly created resource in storage.
@@ -18,23 +18,23 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        if (!$request->has('operation_type') or !$request->has('person_name')) {
+        if (!$request->has('operation_type') or !$request->has('site_name')) {
             return response()->json([
                 'response_info' => [
                     "error"        => "true",
-                    "errorMessage" => "Нет параметра operation_type ли person_name",
+                    "errorMessage" => "Нет параметра operation_type ли site_name",
                 ]],
                 422);
         }
 
-        $person = Person::create([
-            'name' => $request->get('person_name'),
+        $site = Site::create([
+            'name' => $request->get('site_name'),
         ]);
 
         return response()->json([
             'response_info' => [
                 "error"        => "false",
-                "errorMessage" => "Личность добавлена: {$person->id}",
+                "errorMessage" => "Новый сайт добавлен: {$site->id}",
             ]], 201);
     }
 
@@ -55,13 +55,13 @@ class PersonController extends Controller
                 422);
         }
 
-        $value = $request->get('person_id');
+        $value = $request->get('site_id');
 
         try {
-            $person = Person::select(['name', 'id'])->findOrFail($value);
+            $site = Site::select(['name', 'id'])->findOrFail($value);
 
             return response()->json([
-                'data'          => $person,
+                'data'          => $site,
                 'response_info' => [
                     "error"        => "false",
                     "errorMessage" => "no errors",
@@ -70,7 +70,7 @@ class PersonController extends Controller
             return response()->json([
                 'response_info' => [
                     "error"        => "true",
-                    "errorMessage" => "Такая личность отсутствует в базе данных",
+                    "errorMessage" => "Такой сайт отсутствует в базе данных",
                 ]], 404);
         }
     }
@@ -83,36 +83,36 @@ class PersonController extends Controller
      */
     public function update(Request $request)
     {
-        if (!$request->has('operation_type') or !$request->has('person_id')) {
+        if (!$request->has('operation_type') or !$request->has('site_id')) {
             return response()->json([
                 'response_info' => [
                     "error"        => "true",
-                    "errorMessage" => "Нет параметра operation_type ли person_id",
+                    "errorMessage" => "Нет параметра operation_type ли site_id",
                 ]],
                 422);
         }
 
         try {
-            /** @var Person $person */
-            $person = Person::findOrFail($request->get('person_id'));
-            $person->update($request->except([
+            /** @var Site $site */
+            $site = Site::findOrFail($request->get('site_id'));
+            $site->update($request->except([
                 'operation_type',
                 'middleware_token',
-                'person_id',
+                'site_id',
                 '_method',
             ]));
 
             return response()->json([
                 'response_info' => [
                     "error"        => "false",
-                    "errorMessage" => "Новое имя личности: {$person->name}",
+                    "errorMessage" => "Новое имя сайта: {$site->name}",
                 ]],
                 200);
         } catch (\Exception $e) {
             return response()->json([
                 'response_info' => [
                     "error"        => "true",
-                    "errorMessage" => "Такая личность отсутствует в базе данных",
+                    "errorMessage" => "Такой сайт отсутствует в базе данных",
                 ]], 404);
         }
     }
@@ -125,24 +125,24 @@ class PersonController extends Controller
      */
     public function destroy(Request $request)
     {
-        if (!$request->has('operation_type') or !$request->has('person_id')) {
+        if (!$request->has('operation_type') or !$request->has('site_id')) {
             return response()->json([
                 'response_info' => [
                     "error"        => "true",
-                    "errorMessage" => "Нет параметра operation_type или person_id",
+                    "errorMessage" => "Нет параметра operation_type или site_id",
                 ]],
                 200);
         }
 
         try {
-            if (!Person::destroy($request->get('person_id'))) {
+            if (!Site::destroy($request->get('site_id'))) {
                 throw new \Exception("Не было удаления, проверьте параметры");
             }
 
             return response()->json([
                 'response_info' => [
                     "error"        => "false",
-                    "errorMessage" => "Личность удалена",
+                    "errorMessage" => "Сайт удален",
                 ]], 200);
         } catch (\Exception $e) {
             return response()->json([
