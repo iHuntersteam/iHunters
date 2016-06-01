@@ -93,6 +93,19 @@ class CrawlerPersonPageRankConnector:
                 except MySQLError as e:
                     print(err(e))
 
+    def get_last_rank_(self, page_id, person_id):
+        try:
+            CURSOR.execute('''
+                SELECT rank, date_modified FROM person_page_rank
+                WHERE page_id = '{0}' AND person_id = '{1}' AND date_modified = (SELECT MAX(date_modified)
+                FROM person_page_rank
+                WHERE page_id = '{0}' and person_id = '{1}')
+                '''.format(page_id, person_id))
+            return CURSOR.fetchall()
+
+        except MySQLError as e:
+            print(err(e))
+
 
 class CrawlerPersonsConnector:
 

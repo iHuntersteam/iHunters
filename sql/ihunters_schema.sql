@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS pages (
 	url TEXT NOT NULL, 
 	site_id INT NOT NULL, 
 	found_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-	last_scan_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	last_scan_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
 	url_hash CHAR(32) UNIQUE, 
 	PRIMARY KEY (id), 
 	FOREIGN KEY (site_id) 
@@ -105,7 +105,7 @@ CREATE TRIGGER PersonPageRank_AfterInsert
 AFTER INSERT ON person_page_rank
 FOR EACH ROW
 BEGIN
-	UPDATE pages SET last_scan_date=NEW.scan_date
+	UPDATE pages SET last_scan_date=NEW.date_modified
 	WHERE pages.id = NEW.page_id;
 END$$
 
