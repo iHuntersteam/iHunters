@@ -1,14 +1,17 @@
 <h2><?=$title?></h2>
+<ul class="add">
+	<li><a href="index.php?c=sites&action=add" class="btn">добавить</a></li>
+</ul>
 <div class="table">
 	<div class="row top ">
-		Наименование
+		<p>Наименование</p>
 	</div>
 	<?php foreach ($sites as $site): ?>
 	<div class="row">
 				
-		<?=$site['name']?>
+		<p><?=$site['name']?></p> 
 			
-			<ul>
+			<ul class="delete_edit">
 				<li>
 					<a href="index.php?c=sites&action=edit&id=<?=$site['id']?>">
 						редактировать
@@ -24,7 +27,4 @@
 	<?php endforeach ?>
 </div>
 <div class="edit">
-<ul>
-	<li><a href="index.php?c=sites&action=add">добавить</a></li>
-</ul>
 </div>

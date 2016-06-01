@@ -67,6 +67,11 @@ class C_Keywords extends C_Base
 						header("location: index.php?c=keywords");
 						die();
 					}
+					else
+					{
+						header("location: index.php?c=keywords");
+						die();
+					}
 					$this->name=$_POST['name'];
 				}
 			}

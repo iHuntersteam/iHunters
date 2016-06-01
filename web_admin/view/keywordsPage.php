@@ -8,7 +8,10 @@
 		</option>
 		<?php endforeach ?>
 	</select>
-<input type="submit" value="OK">
+<input type="submit" value="OK" class="btn">
 </form>
 </div>
-<?=$keywordsList?>
+<div class="keylist">
+	<?=$keywordsList?>
+</div>
+

@@ -1,12 +1,12 @@
 <h2><?=$title?></h2>
 <div class="table">
 	<div class="row top ">
-		Вы действительно хотите удалить__<strong><?=$name?></strong>?
+	<p>Вы действительно хотите удалить<br><strong><?=$name?></strong>?</p>	
 	</div>
 	<div class="row">
 		<form method="post">
-			<button  type="submit"  name="yes">ДА</button>
-			<button type="submit" name="not">НЕТ</button>
+			<input  type="submit"  name="yes" class="btn" value="да">
+			<input type="submit" name="not" class="btn" value="нет">
 		</form>
 	</div>
 </div>

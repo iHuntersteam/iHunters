@@ -1,12 +1,16 @@
 <h2><?=$title?></h2>
+<ul>
+	<li><a href="index.php?c=persons&action=add" class="btn">добавить</a></li>
+</ul>
 <div class="table">
-	<div class="row top ">
-		Наименование
-	</div>
-	<?php foreach ($persons as $person): ?>
+<div class="row top">
+	<p>Наименование</p>
+</div>
+		
+<?php foreach ($persons as $person): ?>
 	<div class="row">
-	 <?=$person['name']?>
-	 	<ul>
+	 <p><?=$person['name']?></p> 
+	 	<ul class="delete_edit">
 	 		<li>
 				<a href="index.php?c=persons&action=edit&id=<?=$person['id']?>"">
 					редактировать
@@ -24,9 +28,6 @@
 	<?php endforeach ?>
 </div>
 <div class="edit">
-<ul>
-	<li><a href="index.php?c=persons&action=add">добавить</a></li>
-	
-</ul>
+
 </div>
 	

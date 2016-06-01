@@ -1,30 +1,48 @@
 *{
 	box-sizing: border-box;
+	font-family: 'Open Sans', sans-serif;
 }
 .section-main{
 	margin: 0 auto;
 	width: 900px;
-}
+	font-family: 'Open Sans', sans-serif;
 
+}
+.content{
+	margin-top: 40px
+
+}
 h2{
-	width: 900px;
 	margin: 15px auto;
 	text-align: center;
+}
+p{
+	margin: 0;
 }
 .table{
 	display: table;
 	border: collapse;
 	width: 400px;
 	margin: 0 auto;
+	border:1px solid #ccc;
 }
+
 .row{
-	padding: 10px;
-	border:1px solid black;
+	padding: 15px;
+	border:1px solid #ccc;
 	width: 100%;
+	text-align: center;
 }
 .top{
-	background: lightgrey;
-	border-bottom: 1px solid black;
+	background: #fbfcfc;
+}
+.row p{
+	font-weight: 600;
+	text-align: center;
+}
+.top p{
+	
+	font-weight: 500;
 }
 
 .edit{
@@ -36,33 +54,96 @@ h2{
 }
 ul{
 	list-style: none;
-	margin: 0 auto;
 	text-align: center;
-
+	padding: 0;
 }
 
 li{
 	display: inline-block;
+	margin-right: 10px;
+	
 }
 li a{
 	display: block;
-	padding: 10px;
-	font-variant: small-caps;
+	padding: 7px 7px;
 	text-decoration: none;
+	
+}
+li:last-child{
+	margin-right: 0;
 }
 .select{
 	margin: 0 auto;
-	width: 150px;
-	padding-top:15px;
+	margin-top:20px;
+	width: 300px;
 	text-align: center;
 }
  select{
 	padding: 8px 10px;
-	border-radius: 10px;
-	margin-bottom: 15px;
-	/*width: 100%;*/
+	border-radius:8px;
+	border:1px solid #3498db;
 }
 select:focus{
 	outline: none;
 }
-
+.btn
+{
+	border:1px solid #3498db;
+	border-radius: 6px;
+	padding:7px 13px;
+	font-variant: small-caps;
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	color:#3498db;
+}
+.btn:hover{
+	background:  #3498db;
+	color: #fff;
+}
+input{
+	background: transparent;
+	border:1px solid #3498db;
+	border-radius: 6px;
+	padding: 7px 13px
+}
+input:focus{
+	outline: none;
+}
+.delete_edit a{
+ font-size: 12px;
+ color: #e74c3c;
+}
+.delete_edit a:hover{
+	text-decoration: underline;
+}
+.menu a{
+	font-variant: small-caps;
+	color: #2980b9;
+}
+.menu a:active,.menu a:hover{
+ background: #2980b9;
+ color: #fff;
+}
+.keylist{
+	margin-top: 50px;
+}
+.name{
+	height:80px;
+	width: 400px;
+	margin: 0 auto;
+}
+.name p,.name ul{
+	width: 50%;
+	float: left;
+}
+.name p{
+	text-align: right;
+	height: 100%;
+	padding:  25px 0;
+	text-decoration: underline;
+}
+.name ul{
+	text-align: left;
+	padding-left: 15px;
+}

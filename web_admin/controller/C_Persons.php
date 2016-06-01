@@ -42,6 +42,11 @@ class C_Persons extends C_Base
 						header("location: index.php?c=persons");
 						die();
 					}
+					else
+					{
+						header("location: index.php?c=persons");
+						die();
+					}
 					$this->name=$_POST['name'];
 				}
 			}

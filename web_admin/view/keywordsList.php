@@ -1,16 +1,25 @@
 
-<h2><?=$name?></h2>
-<ul>
-		<li><a href="index.php?c=keywords&action=add&id=<?=$id?>">добавить</a></li>
+<div class="name">
+	<p>
+		<?=$name?>
+	</p>
+	<ul>
+		<li>
+			<a href="index.php?c=keywords&action=add&id=<?=$id?>" class="btn" >
+			добавить
+			</a>
+		</li>
 	</ul>
+</div>
+
 <div class="table">
 	<div class="row top ">
-		Наименование
+		<p>Наименование</p>
 	</div>
 	<?php foreach ($keywords as $keyword):?>
 	<div class="row">
-		<?=$keyword['name']?>
-		<ul>
+		<p><?=$keyword['name']?></p>
+		<ul class="delete_edit">
 			<li>
 				<a href="index.php?c=keywords&action=edit&id=<?=$keyword['id']?>">	редактировать
 				</a>
@@ -24,6 +33,3 @@
 	<?php endforeach ?>
 </div>
 
-<div class="edit">
-	<
-</div>

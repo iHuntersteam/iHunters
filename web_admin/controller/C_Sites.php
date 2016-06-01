@@ -44,6 +44,11 @@ class C_Sites extends C_Base
 						header("location: index.php?c=sites");
 						die();
 					}
+					else
+					{
+						header("location: index.php?c=sites");
+						die();
+					}
 					$this->name=$_POST['name'];
 				}
 			}
