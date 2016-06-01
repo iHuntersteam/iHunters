@@ -55,7 +55,7 @@ class CrawlerSitesConnector:
             VALUES(%s, %s, %s)
             ''', data)
         except MySQLError as e:
-            print(err())
+            print(err(e))
         CONN.commit()
 
     def count_urls(self, one_id):
