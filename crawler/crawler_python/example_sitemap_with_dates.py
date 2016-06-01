@@ -2,6 +2,7 @@
 # После запуска этого файла добавляются 2258 ссылок с гикбрэйнса.
 
 from urllib import parse
+from datetime import datetime
 
 from parse import SitemapParser, RobotsParser
 from db_connect import CrawlerSitesConnector
@@ -10,6 +11,7 @@ crawler_sites_conn = CrawlerSitesConnector()
 sitemap_reader = SitemapParser()
 robotstxt_reader = RobotsParser()
 
+start_time = datetime.now()
 # Получаем список id сайтов, которые есть в базе.
 sites = crawler_sites_conn.get_sites_id()
 
@@ -36,7 +38,13 @@ for site_id in sites:
             print('Обрабатываем Sitemap по адресу: {}'.format(sitemap_link))
             urls_generator = sitemap_reader.get_parsed_urls(sitemap_link)
             url_counter = 0
+            insert_many = []
             for url, found_date in urls_generator:
-                crawler_sites_conn.save(url, site_id, found_date)
+                found_date = found_date or datetime.now()
+                found_date = found_date.strftime('%Y-%m-%d %H:%M:%S')
+                insert_many.append((url, site_id, found_date))
+                # crawler_sites_conn.save(url, site_id, found_date)
                 url_counter += 1
+            crawler_sites_conn.save_stack(insert_many)
             print('Готово. Обработано ссылок: {}'.format(url_counter))
+print(datetime.now() - start_time)

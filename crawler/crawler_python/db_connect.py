@@ -1,15 +1,15 @@
 import pymysql
 import logging
 from pymysql import MySQLError
-from db_settings import HOST, USER, PASSWORD, DBNAME
+from db_settings import HOST, PORT, USER, PASSWORD, DBNAME
 from collections import defaultdict
 from datetime import datetime
 
 
-CONN = pymysql.connect(host=HOST, user=USER,
+CONN = pymysql.connect(host=HOST, port=PORT, user=USER,
                        password=PASSWORD, db=DBNAME,
                        use_unicode=True, charset='utf8',
-                       autocommit=True)
+                       autocommit=False)
 
 CURSOR = CONN.cursor(pymysql.cursors.Cursor)
 
@@ -46,6 +46,17 @@ class CrawlerSitesConnector:
                 ''', (url, id, found))
         except MySQLError as e:
             print(err(e))
+
+    def save_stack(self, data):
+        # found_time - date object
+        try:
+            CURSOR.executemany('''
+            INSERT INTO pages(url, site_id, found_date_time)
+            VALUES(%s, %s, %s)
+            ''', data)
+        except MySQLError as e:
+            print(err())
+        CONN.commit()
 
     def count_urls(self, one_id):
         try:
