@@ -50,8 +50,11 @@ class ReqDownloader:
         :return:
         """
         # TODO Add configuring (user-agent etc)
+        http_headers = {
+            'User-Agent': 'GeekBrains Bot 1.0',
+        }
         try:
-            res = requestslib.get(request.url, **kwargs)
+            res = requestslib.get(request.url, headers=http_headers, **kwargs)
             return ReqResponse(request, res)
         except (SSLError, ConnectionError, URLRequired,
                 MissingSchema, InvalidSchema, InvalidURL, TooManyRedirects) as e:
