@@ -87,7 +87,7 @@ class CrawlerPersonPageRankConnector:
         try:
             CURSOR.execute('''
                 SELECT rank, date_modified FROM person_page_rank
-                WHERE date_modified = (SELECT MAX(date_modified)
+                WHERE page_id = '{0}' AND person_id = '{1}' date_modified = (SELECT MAX(date_modified)
                 FROM person_page_rank
                 WHERE page_id = '{0}' and person_id = '{1}')
                 '''.format(page_id, person_id))
