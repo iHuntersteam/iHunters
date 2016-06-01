@@ -15,9 +15,10 @@ class C_Keywords extends C_Base
 			if(isset($_POST['select']))
 			{
 				$this->id=$_POST['select'];
+				$person=M_Persons::getPerson($this->id);
 				$keywords=M_Keywords::allKeywords($this->id);
 				$keywordsList=$this->template('view/keywordsList.php',
-				array('keywords'=>$keywords));
+				array('keywords'=>$keywords,'name'=>$person['name'],'id'=>$person['id']));
 			}
 		
 		}
@@ -34,11 +35,11 @@ class C_Keywords extends C_Base
 
 		if (isset($_GET['id'])) 
 		{
-			$this->person_id=$_GET['id'];
+			$this->id=$_GET['id'];
 		
 		if(!empty($this->isPost()))
 		{
-			if(M_Keywords::addKeywords($_POST['name'],$this->person_id))
+			if(M_Keywords::addKeywords($_POST['name'],$this->id))
 			{
 				header("location: index.php?c=keywords");
 				exit();
@@ -48,7 +49,7 @@ class C_Keywords extends C_Base
 		}
 	}
 		$this->content=$this->template('view/add.php',
-			array('name'=>$this->name,'person_id'=>$this->person_id,'title'=>$this->title));
+			array('name'=>$this->name,'id'=>$this->id,'title'=>$this->title));
 	}
 	public function actionEdit()
 	{

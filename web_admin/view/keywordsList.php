@@ -1,3 +1,8 @@
+
+<h2><?=$name?></h2>
+<ul>
+		<li><a href="index.php?c=keywords&action=add&id=<?=$id?>">добавить</a></li>
+	</ul>
 <div class="table">
 	<div class="row top ">
 		Наименование
@@ -18,8 +23,7 @@
 	</div>
 	<?php endforeach ?>
 </div>
+
 <div class="edit">
-	<ul>
-		<li><a href="index.php?c=keywords&action=add&id=<?=$keyword['person_id']?>">добавить</a></li>
-	</ul>
+	<
 </div>

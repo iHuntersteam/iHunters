@@ -11,10 +11,10 @@ class M_Keywords
 		$rows=$db->select("SELECT * FROM keywords WHERE person_id=$id ORDER BY id");
 		return $rows;
 	}
-	public static function addKeywords($name,$person_id)
+	public static function addKeywords($name,$id)
 	{
 		$db=M_Mysql::getInstance();
-		$db->insert("keywords",['name'=>$name,'person_id'=>$person_id]);
+		$db->insert("keywords",['name'=>$name,'person_id'=>$id]);
 		return $db;
 	}
 	 public function getKeyword($id)
