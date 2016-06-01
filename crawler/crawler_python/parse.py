@@ -232,4 +232,3 @@ class HTMLParser:
                 result['date_modified'] = page_date_modified
             page_ranks[page_id] = result
         return page_ranks
-
