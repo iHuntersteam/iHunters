@@ -35,16 +35,15 @@ class CrawlerSitesConnector:
             print(err(e))
 
     def save(self, url, id, found_time=None):
-        # found_time - date object
         try:
             found_time = found_time or datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
             CURSOR.execute('''
                 INSERT INTO pages(url, site_id, found_date_time)
                 VALUES(%s, %s, %s)
                 ''', (url, id, found_time))
         except MySQLError as e:
             print(err(e))
+        CONN.commit()
 
     def save_stack(self, data):
         try:
@@ -83,15 +82,15 @@ class CrawlerPersonPageRankConnector:
             page_modified_date = v.pop('date_modified', datetime.now())
             page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
             for person_id, rank in v.items():
-
                 try:
                     CURSOR.execute('''
                         INSERT INTO person_page_rank(person_id, page_id, rank, date_modified)
                         VALUES('{0}', '{1}', '{2}', '{3}')
                         '''.format(person_id, page_id, rank, page_modified_date))
-
                 except MySQLError as e:
                     print(err(e))
+            # after inserting all items - commiting transaction
+            CONN.commit()
 
     def get_last_rank_(self, page_id, person_id):
         try:
