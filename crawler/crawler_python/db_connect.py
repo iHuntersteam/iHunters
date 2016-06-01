@@ -37,18 +37,16 @@ class CrawlerSitesConnector:
     def save(self, url, id, found_time=None):
         # found_time - date object
         try:
-            found_time = found_time or datetime.now()
-            found = found_time.strftime('%Y-%m-%d %H:%M:%S')
+            found_time = found_time or datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             CURSOR.execute('''
                 INSERT INTO pages(url, site_id, found_date_time)
                 VALUES(%s, %s, %s)
-                ''', (url, id, found))
+                ''', (url, id, found_time))
         except MySQLError as e:
             print(err(e))
 
     def save_stack(self, data):
-        # found_time - date object
         try:
             CURSOR.executemany('''
             INSERT INTO pages(url, site_id, found_date_time)
@@ -85,6 +83,7 @@ class CrawlerPersonPageRankConnector:
             page_modified_date = v.pop('date_modified', datetime.now())
             page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
             for person_id, rank in v.items():
+
                 try:
                     CURSOR.execute('''
                         INSERT INTO person_page_rank(person_id, page_id, rank, date_modified)

@@ -14,7 +14,6 @@ robotstxt_reader = RobotsParser()
 start_time = datetime.now()
 # Получаем список id сайтов, которые есть в базе.
 sites = crawler_sites_conn.get_sites_id()
-# sites = [2]
 
 # Для каждого сайта получаем количество записей в таблице pages.
 # Если запись только одна, значит это новый сайт, и нужно обработаеть его sitemap
@@ -22,7 +21,6 @@ for site_id in sites:
     start_time = datetime.now()
     print('Проверяем сайт с ID = {}'.format(site_id))
     page_count = crawler_sites_conn.count_urls(site_id)
-    # page_count = 1
     print('Найдено ссылок в базе с этого сайта: {}'.format(page_count))
     print('------')
     if page_count == 1:
@@ -49,14 +47,16 @@ for site_id in sites:
                 found_date = found_date.strftime('%Y-%m-%d %H:%M:%S')
                 insert_many.append((url, site_id, found_date))
                 split_counter += 1
-                if split_counter > 4000:
+                if split_counter > 2000:
                     crawler_sites_conn.save_stack(insert_many)
                     split_counter = 0
                     insert_many.clear()
-                    print('Вставляем 4к записей.')
-                # crawler_sites_conn.save(url, site_id, found_date)
+                    print('\rОбработано: {}.'.format(url_counter))
                 url_counter += 1
             crawler_sites_conn.save_stack(insert_many)
             print('Готово. Обработано ссылок: {}'.format(url_counter))
-            print(datetime.now() - start_time)
-print('------------------')
+print('------------------ Общее время -------------')
+t = datetime.now() - start_time
+print(t)
+print('------------------ Запросов в секунду -------------')
+print(url_counter / t.seconds)
