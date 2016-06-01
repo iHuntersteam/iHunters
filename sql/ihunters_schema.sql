@@ -105,7 +105,7 @@ CREATE TRIGGER PersonPageRank_AfterInsert
 AFTER INSERT ON person_page_rank
 FOR EACH ROW
 BEGIN
-	UPDATE pages SET last_scan_date=NEW.date_modified
+	UPDATE pages SET last_scan_date=CURRENT_TIMESTAMP
 	WHERE pages.id = NEW.page_id;
 END$$
 
