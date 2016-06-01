@@ -85,11 +85,11 @@ class SitemapParser:
         :return: BytesIO file-like object
         """
         r = ReqDownloader.fetch(ReqRequest(url), allow_redirects=False)
-        if r.status_code != 200:
-            logging.debug('Sitemap not found on {}, status code {} '.format(url, r.status_code))
-            return BytesIO()
         if isinstance(r, BaseCrawlException):
             logging.debug('Sitemap isn\'t available on {}'.format(url))
+            return BytesIO()
+        if r.status_code != 200:
+            logging.debug('Sitemap not found on {}, status code {} '.format(url, r.status_code))
             return BytesIO()
         if url.endswith('gz'):
             return gzip.GzipFile(fileobj=BytesIO(r.content))
