@@ -29,7 +29,6 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
     public function block_title($context, array $blocks = array())
     {
         // line 4
-        echo "\t";
         echo twig_escape_filter($this->env, (isset($context["title"]) ? $context["title"] : null), "html", null, true);
         echo "
 ";
@@ -39,8 +38,28 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
     public function block_content($context, array $blocks = array())
     {
         // line 8
-        echo "
-\t<div class=\"container\" style=\"margin-top:30px\">
+        echo "\t\t\t\t\t\t\t";
+        $context['_parent'] = $context;
+        $context['_seq'] = twig_ensure_traversable((isset($context["daily"]) ? $context["daily"] : null));
+        foreach ($context['_seq'] as $context["_key"] => $context["day"]) {
+            // line 9
+            echo "\t\t\t\t\t\t\t\t<tr>
+\t\t\t\t\t\t\t\t\t<td>";
+            // line 10
+            echo twig_escape_filter($this->env, $this->getAttribute($context["day"], "last_scan_date", array()), "html", null, true);
+            echo "</td>
+\t\t\t\t\t\t\t\t\t<td>";
+            // line 11
+            echo twig_escape_filter($this->env, $this->getAttribute($context["day"], "rank", array()), "html", null, true);
+            echo " </td>
+\t\t\t\t\t\t\t\t</tr>
+\t\t\t\t\t\t\t";
+        }
+        $_parent = $context['_parent'];
+        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['day'], $context['_parent'], $context['loop']);
+        $context = array_intersect_key($context, $_parent) + $_parent;
+        // line 14
+        echo "\t<div class=\"container\" style=\"margin-top:30px\">
 
 \t\t<div class=\"row\">
 \t\t\t<div class=\"col-md-3\">
@@ -52,17 +71,17 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
 
 \t\t\t</div>
 \t\t\t<div class=\"col-md-7\">
-\t\t\t\t<form action=\"/stats/showAll/\" method=\"POST\">
+\t\t\t\t<form action=\"/stats/showStatisticsPerDay/\" method=\"POST\">
 \t\t\t\t\t<p class=\"col-md-2\">Сайт:</p>
 
 \t\t\t\t\t<select name=\"siteId\" id=\"sites\" class=\"col-md-4 pull-left\">
 \t\t\t\t\t\t";
-        // line 25
+        // line 30
         $context['_parent'] = $context;
         $context['_seq'] = twig_ensure_traversable((isset($context["sites"]) ? $context["sites"] : null));
         $context['_iterated'] = false;
         foreach ($context['_seq'] as $context["_key"] => $context["site"]) {
-            // line 26
+            // line 31
             echo "\t\t\t\t\t\t\t<option value=\"";
             echo twig_escape_filter($this->env, $this->getAttribute($context["site"], "id", array()), "html", null, true);
             echo "\">";
@@ -72,28 +91,28 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
             $context['_iterated'] = true;
         }
         if (!$context['_iterated']) {
-            // line 28
+            // line 33
             echo "\t\t\t\t\t\t\t<p>Нет сайтов</p>
 \t\t\t\t\t\t";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['_key'], $context['site'], $context['_parent'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 29
+        // line 34
         echo "  
 \t\t\t\t\t</select>
 
 \t\t\t\t\t<br><br>
 \t\t\t\t\t<p class=\"col-md-2\">Личность:</p>
 
-\t\t\t\t\t<select name=\"perosnId\" class=\"col-md-4 pull-left\">
+\t\t\t\t\t<select name=\"personId\" class=\"col-md-4 pull-left\">
 \t\t\t\t\t\t";
-        // line 36
+        // line 41
         $context['_parent'] = $context;
         $context['_seq'] = twig_ensure_traversable((isset($context["persons"]) ? $context["persons"] : null));
         $context['_iterated'] = false;
         foreach ($context['_seq'] as $context["_key"] => $context["person"]) {
-            // line 37
+            // line 42
             echo "\t\t\t\t\t\t\t<option value=\"";
             echo twig_escape_filter($this->env, $this->getAttribute($context["person"], "id", array()), "html", null, true);
             echo "\">";
@@ -103,22 +122,22 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
             $context['_iterated'] = true;
         }
         if (!$context['_iterated']) {
-            // line 39
+            // line 44
             echo "\t\t\t\t\t\t\t<p>Нет личностей</p>
 \t\t\t\t\t\t";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['_key'], $context['person'], $context['_parent'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 40
+        // line 45
         echo "  
 \t\t\t\t\t</select>
 
 \t\t\t\t\t<br><br>
 
 \t\t\t\t\t<p class=\"col-md-2\">Период с:</p>
-\t\t\t\t\t\t<input type=\"date\" value=\"2016-06-01\"> 
-\t\t\t\t\t\tпо <input type=\"date\" value=\"2016-06-02\"> 
+\t\t\t\t\t\t<input type=\"date\" name=\"beginDate\" value=\"2016-05-27\"> 
+\t\t\t\t\t\tпо <input type=\"date\" name=\"endDate\" value=\"2016-05-30\"> 
 
 \t\t\t\t\t\t<button type=\"submit\" class=\"btn btn-primary pull-right\">Применить</button>
 
@@ -134,27 +153,27 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
 \t\t\t\t\t\t</thead>
 \t\t\t\t\t\t<tbody>
 \t\t\t\t\t\t\t";
-        // line 62
+        // line 67
         $context['_parent'] = $context;
-        $context['_seq'] = twig_ensure_traversable((isset($context["stats"]) ? $context["stats"] : null));
-        foreach ($context['_seq'] as $context["_key"] => $context["stat"]) {
-            // line 63
+        $context['_seq'] = twig_ensure_traversable((isset($context["daily"]) ? $context["daily"] : null));
+        foreach ($context['_seq'] as $context["_key"] => $context["day"]) {
+            // line 68
             echo "\t\t\t\t\t\t\t\t<tr>
 \t\t\t\t\t\t\t\t\t<td>";
-            // line 64
-            echo twig_escape_filter($this->env, $this->getAttribute($context["stat"], "name", array()), "html", null, true);
+            // line 69
+            echo twig_escape_filter($this->env, $this->getAttribute($context["day"], "last_scan_date", array()), "html", null, true);
             echo "</td>
 \t\t\t\t\t\t\t\t\t<td>";
-            // line 65
-            echo twig_escape_filter($this->env, $this->getAttribute($context["stat"], "Qty", array()), "html", null, true);
+            // line 70
+            echo twig_escape_filter($this->env, $this->getAttribute($context["day"], "rank", array()), "html", null, true);
             echo " </td>
 \t\t\t\t\t\t\t\t</tr>
 \t\t\t\t\t\t\t";
         }
         $_parent = $context['_parent'];
-        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['stat'], $context['_parent'], $context['loop']);
+        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['day'], $context['_parent'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 67
+        // line 72
         echo " 
 
 \t\t\t\t\t\t</tbody>
@@ -177,17 +196,22 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
 
     public function getDebugInfo()
     {
-        return array (  158 => 67,  149 => 65,  145 => 64,  142 => 63,  138 => 62,  114 => 40,  107 => 39,  97 => 37,  92 => 36,  83 => 29,  76 => 28,  66 => 26,  61 => 25,  42 => 8,  39 => 7,  32 => 4,  29 => 3,  11 => 1,);
+        return array (  177 => 72,  168 => 70,  164 => 69,  161 => 68,  157 => 67,  133 => 45,  126 => 44,  116 => 42,  111 => 41,  102 => 34,  95 => 33,  85 => 31,  80 => 30,  62 => 14,  53 => 11,  49 => 10,  46 => 9,  41 => 8,  38 => 7,  32 => 4,  29 => 3,  11 => 1,);
     }
 }
 /* {% extends "template.html" %}*/
 /* */
 /* {% block title %}*/
-/* 	{{ title }}*/
+/* {{ title }}*/
 /* {% endblock %}*/
 /* */
 /* {% block content %}*/
-/* */
+/* 							{% for day in daily %}*/
+/* 								<tr>*/
+/* 									<td>{{ day.last_scan_date }}</td>*/
+/* 									<td>{{ day.rank }} </td>*/
+/* 								</tr>*/
+/* 							{% endfor %}*/
 /* 	<div class="container" style="margin-top:30px">*/
 /* */
 /* 		<div class="row">*/
@@ -200,7 +224,7 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
 /* */
 /* 			</div>*/
 /* 			<div class="col-md-7">*/
-/* 				<form action="/stats/showAll/" method="POST">*/
+/* 				<form action="/stats/showStatisticsPerDay/" method="POST">*/
 /* 					<p class="col-md-2">Сайт:</p>*/
 /* */
 /* 					<select name="siteId" id="sites" class="col-md-4 pull-left">*/
@@ -214,7 +238,7 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
 /* 					<br><br>*/
 /* 					<p class="col-md-2">Личность:</p>*/
 /* */
-/* 					<select name="perosnId" class="col-md-4 pull-left">*/
+/* 					<select name="personId" class="col-md-4 pull-left">*/
 /* 						{% for person in persons %}*/
 /* 							<option value="{{ person.id }}">{{ person.name }}</option>*/
 /* 							{% else %}*/
@@ -225,8 +249,8 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
 /* 					<br><br>*/
 /* */
 /* 					<p class="col-md-2">Период с:</p>*/
-/* 						<input type="date" value="2016-06-01"> */
-/* 						по <input type="date" value="2016-06-02"> */
+/* 						<input type="date" name="beginDate" value="2016-05-27"> */
+/* 						по <input type="date" name="endDate" value="2016-05-30"> */
 /* */
 /* 						<button type="submit" class="btn btn-primary pull-right">Применить</button>*/
 /* */
@@ -241,10 +265,10 @@ class __TwigTemplate_df60d30bee0d58aebde52768bbb681a76166b3a1cf32024e18bc2c56a16
 /* */
 /* 						</thead>*/
 /* 						<tbody>*/
-/* 							{% for stat in stats %}*/
+/* 							{% for day in daily %}*/
 /* 								<tr>*/
-/* 									<td>{{ stat.name }}</td>*/
-/* 									<td>{{ stat.Qty }} </td>*/
+/* 									<td>{{ day.last_scan_date }}</td>*/
+/* 									<td>{{ day.rank }} </td>*/
 /* 								</tr>*/
 /* 							{% endfor %} */
 /* */

@@ -1,7 +1,7 @@
 {% extends "template.html" %}
 
 {% block title %}
-	{{ title }}
+{{ title }}
 {% endblock %}
 
 {% block content %}
@@ -18,7 +18,7 @@
 
 			</div>
 			<div class="col-md-7">
-				<form action="/stats/showAll/" method="POST">
+				<form action="/stats/showStatisticsPerDay/" method="POST">
 					<p class="col-md-2">Сайт:</p>
 
 					<select name="siteId" id="sites" class="col-md-4 pull-left">
@@ -32,7 +32,7 @@
 					<br><br>
 					<p class="col-md-2">Личность:</p>
 
-					<select name="perosnId" class="col-md-4 pull-left">
+					<select name="personId" class="col-md-4 pull-left">
 						{% for person in persons %}
 							<option value="{{ person.id }}">{{ person.name }}</option>
 							{% else %}
@@ -43,8 +43,8 @@
 					<br><br>
 
 					<p class="col-md-2">Период с:</p>
-						<input type="date" value="2016-06-01"> 
-						по <input type="date" value="2016-06-02"> 
+						<input type="date" name="beginDate" value="2016-05-27"> 
+						по <input type="date" name="endDate" value="2016-05-30"> 
 
 						<button type="submit" class="btn btn-primary pull-right">Применить</button>
 
@@ -59,10 +59,10 @@
 
 						</thead>
 						<tbody>
-							{% for stat in stats %}
+							{% for day in daily %}
 								<tr>
-									<td>{{ stat.name }}</td>
-									<td>{{ stat.Qty }} </td>
+									<td>{{ day.last_scan_date }}</td>
+									<td>{{ day.rank }} </td>
 								</tr>
 							{% endfor %} 
 

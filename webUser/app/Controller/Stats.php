@@ -6,12 +6,13 @@ use App\Model as Model;
 
 class Stats extends Controller
 {
-	private $stats, $sites, $persons;
+	private $stats, $sites, $persons, $daily;
 
 	function __construct() {
 		$this->stats = new Model\Sites();
 		$this->sites = new Model\Sites();
 		$this->persons = new Model\Persons();
+		$this->daily = new Model\Sites();
 	}
 
 	public function showAll()
@@ -43,12 +44,27 @@ class Stats extends Controller
 			]);
 	}
 
-		public function showDailyStatistics()
+	public function showDailyStatistics()
 	{
 		$this->sites->getAll();
 		$this->persons->getAll();
 		echo $this->view("dailyStatistics.html", [
 			'title' => "Ежедневная статистика",
+			'sites' => $this->sites->collection,
+			'persons' => $this->persons->collection
+			]);
+	}
+
+	public function showStatisticsPerDay()
+	{
+		
+		$this->daily->getDailyStats();
+var_dump($this->daily->collection);
+		$this->sites->getAll();
+		$this->persons->getAll();
+		echo $this->view("dailyStatistics.html", [
+			'title' => "Ежедневная статистика",
+			'daily' => $this->daily->collection,
 			'sites' => $this->sites->collection,
 			'persons' => $this->persons->collection
 			]);

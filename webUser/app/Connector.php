@@ -95,10 +95,28 @@ class Connector
         }
     }
 
-        public function selectAllStats($value)
+    public function selectAllStats($value)
     {
 
         $result = $this->query('SELECT Persons.name, sum(Person_Page_Rank.Rank) AS Qty FROM Persons JOIN Person_Page_Rank ON Persons.id = Person_Page_Rank.Person_id WHERE Person_Page_Rank.Page_ID IN (SELECT id FROM Pages WHERE site_id = '.$value.') GROUP BY Persons.name');
+
+        if ($this->numRows($result) > 0) {
+            $rows = array();
+
+            while ($r = $this->fetchObject($result)) {
+                $rows[] = $r;
+            }
+
+            return $rows;
+        } else {
+            return false;
+        }
+    }
+
+    public function selectDailyStats($siteId, $beginDate, $endDate, $personId)
+    {
+
+        $result = $this->query('SELECT Pages.Last_Scan_Date, Person_Page_Rank.Rank FROM Person_Page_Rank JOIN Pages ON Person_Page_Rank.Page_ID = Pages.id WHERE Person_Page_Rank.Page_ID IN (SELECT id FROM Pages WHERE site_id = '.$siteId.' AND Last_Scan_Date BETWEEN "'.$beginDate.'" AND "'.$endDate.'") AND Person_Page_Rank.Person_id = '.$personId);
 
         if ($this->numRows($result) > 0) {
             $rows = array();
@@ -221,7 +239,7 @@ class Connector
     {var_dump($where);
         $where = ($where) ? " WHERE id IN ({$where})" : "";
        // $limit = ($limit) ? "LIMIT {$limit}" : "";
-var_dump($where);
+        var_dump($where);
         if ($this->query("DELETE FROM " .$table.$where)) {
             return true;
         } else {

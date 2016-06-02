@@ -41,44 +41,55 @@ abstract class Model
           $this->collection = $this->connection->selectAllStats($value);        
         }
 
-        public function getByPk($value)
+        public function getDailyStats()
         {
+
+         $siteId = $_POST['siteId'];
+         $beginDate = $_POST['beginDate'];
+         $endDate = $_POST['endDate'];
+         $personId = $_POST['personId'];
+
+         $this->collection = $this->connection->selectDailyStats($siteId, $beginDate, $endDate, $personId);        
+       }
+
+       public function getByPk($value)
+       {
          $this->collection = $this->connection->selectOne('*', $this->table, $this->primaryKey." = $value");
 
+       }
+
+       public function add($item) {
+
+        foreach ($item as $key => &$value) {
+          if (in_array($key, $this->guarded) || !in_array($key, $this->fillable)) unset($item[$key]);
+          if (in_array($key, $this->specialchars)) $value = htmlspecialchars($value);
         }
 
-        public function add($item) {
+        if ($this->connection->insert($item, $this->table)) {
 
-          foreach ($item as $key => &$value) {
-            if (in_array($key, $this->guarded) || !in_array($key, $this->fillable)) unset($item[$key]);
-            if (in_array($key, $this->specialchars)) $value = htmlspecialchars($value);
-          }
-
-          if ($this->connection->insert($item, $this->table)) {
-
-            $item[$this->primaryKey] =  $this->connection->insertId();
-            $this->collection[] = $item;
-          }
+          $item[$this->primaryKey] =  $this->connection->insertId();
+          $this->collection[] = $item;
         }
-
-        public function del($item) {
-          $item=htmlspecialchars(implode(",",$item));
-          $this->connection->delete($this->table,$item); 
-        }
-
-        public function updates($item) {
-
-          $id=intval($item['id']);
-
-          foreach ($item as $key => &$value) {
-            if (in_array($key, $this->guarded) || !in_array($key, $this->fillable)) unset($item[$key]);
-            if (in_array($key, $this->specialchars)) $value = htmlspecialchars($value);
-          }
-   
-          if ($this->connection->update($item, $this->table, $id)) {
-            $this->collection[] = $item;
-          }
-        }
-
       }
+
+      public function del($item) {
+        $item=htmlspecialchars(implode(",",$item));
+        $this->connection->delete($this->table,$item); 
+      }
+
+      public function updates($item) {
+
+        $id=intval($item['id']);
+
+        foreach ($item as $key => &$value) {
+          if (in_array($key, $this->guarded) || !in_array($key, $this->fillable)) unset($item[$key]);
+          if (in_array($key, $this->specialchars)) $value = htmlspecialchars($value);
+        }
+
+        if ($this->connection->update($item, $this->table, $id)) {
+          $this->collection[] = $item;
+        }
+      }
+
+    }
 
