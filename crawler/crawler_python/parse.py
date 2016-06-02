@@ -176,7 +176,7 @@ class HTMLParser:
         Returns rank dictionary like {'id': number of needed words on the page}
         :return: Calculated rank
         """
-        # {pages.id: pages.name, pages.other_id: pages.name и так далее?}
+        # {pages.id: (pages.name, pages.page_date), pages.other_id: pages.name и так далее?}
         # {1: ('http://lenta.ru/', '2016-05-30 21:41:15'), 12: ('http://example.com/', '2016-05-30 21:41:15')}
         #
         # на выходе ({page_id: { 'date_modified': 'date', person_id: rank, person_id2: rank2...},
@@ -204,9 +204,9 @@ class HTMLParser:
             # в результате
             # А иначе пробуем определить дату.
             # page_date_modified = datetime.strptime(page_date_modified, '%Y-%m-%d %H:%M:%S').date()
-            page_date_modified = page_date_modified.date()
+            page_date_only = page_date_modified.date()
             now_date = datetime.now().date()
-            if page_date_modified == now_date:
+            if page_date_only == now_date:
                 last_modified_header = page_content.headers.get('Last-Modified')
                 if last_modified_header:
                     try:
