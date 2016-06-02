@@ -104,6 +104,13 @@ class CrawlerPersonPageRankConnector:
             page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
             for person_id, rank in v.items():
                 if rank == 0:
+                    try:
+                        CURSOR.execute('''
+                        UPDATE pages
+                        SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;
+                        ''', page_id)
+                    except MySQLError as e:
+                        print(err(e))
                     continue
                 # if rank haven't changed don't create a new record in the database
                 last_rank_info = self.get_last_rank_(page_id, person_id)
