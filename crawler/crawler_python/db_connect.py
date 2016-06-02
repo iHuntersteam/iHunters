@@ -34,6 +34,17 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
+    def get_pages_by_site_id_gen(self, ids):
+        try:
+            CURSOR.execute('''
+                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND last_scan_date IS NULL
+                '''.format(ids))
+            for k, v, d in CURSOR.fetchall():
+                yield {k: (v, d)}
+            # return {k: (v, d) for k, v, d in CURSOR.fetchall()}
+        except MySQLError as e:
+            print(err(e))
+
     def save(self, url, id, found_time=None):
         try:
             found_time = found_time or datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -71,7 +82,7 @@ class CrawlerSitesConnector:
             CURSOR.execute('''
             SELECT id FROM sites;
             ''')
-            return list(site_id[0] for site_id in CURSOR.fetchall())
+            return tuple(site_id[0] for site_id in CURSOR.fetchall())
         except MySQLError as e:
             print(err(e))
 
@@ -92,6 +103,21 @@ class CrawlerPersonPageRankConnector:
             page_modified_date = v.pop('date_modified', datetime.now())
             page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
             for person_id, rank in v.items():
+                if rank == 0:
+                    try:
+                        CURSOR.execute('''
+                        UPDATE pages
+                        SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;
+                        ''', page_id)
+                    except MySQLError as e:
+                        print(err(e))
+                    continue
+                # if rank haven't changed don't create a new record in the database
+                last_rank_info = self.get_last_rank_(page_id, person_id)
+                if last_rank_info:
+                    last_rank, last_date = last_rank_info
+                    if last_rank == rank:
+                        continue
                 try:
                     CURSOR.execute('''
                         INSERT INTO person_page_rank(person_id, page_id, rank, date_modified)
@@ -133,5 +159,14 @@ class CrawlerPersonsConnector:
             for k, v in keywords:
                 persons_dict[k].append(v)
             return dict(persons_dict)
+        except MySQLError as e:
+            print(err(e))
+
+    def get_persons_ids(self):
+        try:
+            CURSOR.execute('''
+            SELECT id FROM persons
+            ''')
+            return tuple(person_id[0] for person_id in CURSOR.fetchall())
         except MySQLError as e:
             print(err(e))
