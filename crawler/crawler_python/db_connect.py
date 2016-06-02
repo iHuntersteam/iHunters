@@ -48,8 +48,9 @@ class CrawlerSitesConnector:
     def save_stack(self, data):
         try:
             CURSOR.executemany('''
-            INSERT INTO pages(url, site_id, found_date_time)
-            VALUES(%s, %s, %s)
+            INSERT INTO pages (url, site_id, found_date_time) VALUES (%s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+            last_scan_date = IF(last_scan_date < VALUES(found_date_time), null, last_scan_date)
             ''', data)
         except MySQLError as e:
             print(err(e))
@@ -71,6 +72,15 @@ class CrawlerSitesConnector:
             SELECT id FROM sites;
             ''')
             return list(site_id[0] for site_id in CURSOR.fetchall())
+        except MySQLError as e:
+            print(err(e))
+
+    def get_page_info(self, site_id):
+        try:
+            CURSOR.execute('''
+            SELECT site_id, url FROM pages WHERE site_id = %s
+            ''', site_id)
+            return CURSOR.fetchone()
         except MySQLError as e:
             print(err(e))
 
