@@ -2,6 +2,7 @@
 
 class C_Persons extends C_Base
 {	
+	
 	public function actionIndex()
 	{
 		$this->title .="Личности";
@@ -55,7 +56,7 @@ class C_Persons extends C_Base
 	}
 	public function actionDelete()
 	{
-		$this->title .="Удаление имени личности из справочника";
+		$this->title .="Удаление из справочника";
 			
 			if(isset($_GET['id']))
 			{

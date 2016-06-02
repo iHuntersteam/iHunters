@@ -1,13 +1,18 @@
-<h2><?=$title?></h2>
-<ul>
-	<li><a href="index.php?c=persons&action=add" class="btn">добавить</a></li>
-</ul>
-<div class="table">
-<div class="row top">
-	<p>Наименование</p>
+<div class="header">
+	<h2><?=$title?></h2>
+	<ul>
+		<li>
+			<a href="index.php?c=persons&action=add" class="btn">
+				добавить
+			</a>
+		</li>
+	</ul>	
 </div>
-		
-<?php foreach ($persons as $person): ?>
+<div class="table">
+	<div class="row top">
+		<p>Наименование</p>
+	</div>
+	<?php foreach ($persons as $person): ?>
 	<div class="row">
 	 <p><?=$person['name']?></p> 
 	 	<ul class="delete_edit">
@@ -16,18 +21,12 @@
 					редактировать
 				</a>
 			</li>
-			
 			<li>
 				<a href="index.php?c=persons&action=delete&id=<?=$person['id']?>">
 					удалить
 				</a>
 			</li>
-			
 		</ul>
 	</div>
 	<?php endforeach ?>
 </div>
-<div class="edit">
-
-</div>
-	

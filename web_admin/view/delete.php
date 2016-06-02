@@ -1,4 +1,4 @@
-<h2><?=$title?></h2>
+<h3><?=$title?></h3>
 <div class="table">
 	<div class="row top ">
 	<p>Вы действительно хотите удалить<br><strong><?=$name?></strong>?</p>	

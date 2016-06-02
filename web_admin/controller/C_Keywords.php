@@ -1,5 +1,4 @@
 <?php 
- include_once("model/M_Persons.php");
 
 class C_Keywords extends C_Base
 {
@@ -81,7 +80,7 @@ class C_Keywords extends C_Base
 	
 	public function actionDelete()
 	{
-		$this->title .="Удаление ключевого слова из справочника";
+		$this->title .="Удаление из справочника";
 			
 			if(isset($_GET['id']))
 			{

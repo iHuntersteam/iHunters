@@ -1,4 +1,5 @@
-<h2><?=$title?></h2>
+
+<h3><?=$title?></h3>
 <div class="table">
 	<div class="row top ">
 		Наименование<?=$name?>
@@ -11,3 +12,4 @@
 		</form>
 	</div>
 </div>
+

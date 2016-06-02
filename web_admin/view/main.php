@@ -5,7 +5,7 @@
 	<meta content="text/html; charset=utf-8" http-equiv="content-type">
 	<link rel="stylesheet" href="view/normalize.css">
 	<link rel="stylesheet"  href="view/style.css" />
-	<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Play' rel='stylesheet' type='text/css'>
 </head>
 <body>
 <section class="section-main">

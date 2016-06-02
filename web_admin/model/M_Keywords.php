@@ -1,7 +1,5 @@
 <?php 
-/**
-* 
-*/
+
 class M_Keywords
 {
 	

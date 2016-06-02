@@ -1,8 +1,6 @@
 
 <div class="name">
-	<p>
-		<?=$name?>
-	</p>
+	<p><?=$name?></p>
 	<ul>
 		<li>
 			<a href="index.php?c=keywords&action=add&id=<?=$id?>" class="btn" >
@@ -11,7 +9,6 @@
 		</li>
 	</ul>
 </div>
-
 <div class="table">
 	<div class="row top ">
 		<p>Наименование</p>

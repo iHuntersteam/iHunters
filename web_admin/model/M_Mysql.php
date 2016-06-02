@@ -24,6 +24,7 @@ class M_Mysql
 		mysqli_query($this->link,"SET NAMES UTF8");	
 	}
 
+	
 	public static function getInstance()
 	{
 		if(self::$instance==null)
@@ -32,6 +33,7 @@ class M_Mysql
 		}
 		return self::$instance;
 	}
+	
 	public function select($sql)
 	{
 		$result=mysqli_query($this->link,$sql);
@@ -48,6 +50,7 @@ class M_Mysql
 		} 	
 		return $row;
 	}
+	
 	public  function delete($table,$where)
 	{
 		$sql=sprintf("DELETE FROM %s WHERE %s",$table,$where);
@@ -58,21 +61,25 @@ class M_Mysql
 		return mysqli_affected_rows($this->link);
 		
 	}
-	public function insert($table,$object){
+	
+	public function insert($table,$object)
+	{
 
 		$colunms=array();
 		$values=array();
 
-		foreach ($object as $key => $value) {
+		foreach ($object as $key => $value) 
+		{
 			
 			$key=mysqli_real_escape_string($this->link,$key);
 			$colunms[]=$key;
 			
 			if($value==NULL) $values[]="NULL";
-			else{
+			else
+			{
 					$value=mysqli_real_escape_string($this->link,$value);
 				 	$values[]="'$value'";
-				}
+			}
 		}
 		
 		$colums_s=implode(",", $colunms);
@@ -86,6 +93,7 @@ class M_Mysql
 		return mysqli_insert_id($this->link);
 
 	}
+	
 	public function update($table,$object,$where)
 	{
 		$sets=array();
@@ -110,12 +118,4 @@ class M_Mysql
 		 return mysqli_affected_rows($this->link);
 	}
 }
-
-
-
-
-
-
-
-
- ?>
+?>

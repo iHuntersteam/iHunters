@@ -27,8 +27,8 @@ abstract class C_Controller
 
 	protected function template($file,$var=array())
 	{
-		foreach ($var as $key => $value) {
-			
+		foreach ($var as $key => $value) 
+		{
 			$$key=$value;
 		}
 		ob_start();

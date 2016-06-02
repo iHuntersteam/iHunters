@@ -18,24 +18,25 @@
 	$action .=(isset($_GET['action']))? $_GET['action']: 'Index';		
 	$controller='';
 	
-	if(isset($_GET['c'])){
-switch ($_GET['c']) {
-		case 'sites':
-			$controller=new C_Sites();
+	if(isset($_GET['c']))
+	{
+		switch ($_GET['c']) 
+		{
+			case 'sites':
+				$controller=new C_Sites();
 			break;
-		case 'persons':
-			$controller=new C_Persons();
+			case 'persons':
+				$controller=new C_Persons();
 			break;
-		case 'keywords':
-			$controller=new C_Keywords();
+			case 'keywords':
+				$controller=new C_Keywords();
 			break;
-		default:
-			$controller=new C_Sites();
+			default:
+				$controller=new C_Sites();
 			break;
-	}
-} else $controller=new C_Persons();
+		}
+	} 
+	else $controller=new C_Persons();
 
 	$controller->request($action);
-
-
- ?>
+?>

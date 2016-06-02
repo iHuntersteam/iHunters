@@ -57,7 +57,7 @@ class C_Sites extends C_Base
 	}
 	public function actionDelete()
 	{
-		$this->title .="Удаление ресурса из справочника";
+		$this->title .="Удаление из справочника";
 			
 			if(isset($_GET['id']))
 			{
