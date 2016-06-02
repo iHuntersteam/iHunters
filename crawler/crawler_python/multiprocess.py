@@ -12,6 +12,5 @@ def crawl_site(site_id):
 
 
 if __name__ == '__main__':
-    processes = [mp.Process(target=crawl_site, args=(x, )) for x in sites_id]
-    for process in processes:
-        process.start()
+    p = mp.Pool(4)
+    p.map(crawl_site, sites_id)
