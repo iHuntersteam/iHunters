@@ -51,7 +51,7 @@ class ReqDownloader:
         """
         # TODO Add configuring (user-agent etc)
         http_headers = {
-            'User-Agent': 'GeekBrains Bot 1.0',
+            'User-Agent': 'iHunters Bot 1.0',
         }
         try:
             res = requestslib.get(request.url, headers=http_headers, **kwargs)
