@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\User;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -26,6 +27,14 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies($gate);
 
-        //
+        $gate->define('update-password', function (User $currentUser, User $forUser) {
+            if ($currentUser->id == $forUser->id) {
+                return true;
+            }
+            if ($currentUser->isAdmin() and $forUser->isMyAdmin($currentUser)) {
+                return true;
+            }
+            return false;
+        });
     }
 }

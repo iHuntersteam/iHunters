@@ -32,6 +32,7 @@ Route::group(['prefix' => 'api'], function () {
 
         Route::group(['prefix' => 'user'], function () {
             Route::post('create', 'User\UserController@create');
+            Route::post('update-password', 'User\UserController@updatePassword');
         });
     });
 

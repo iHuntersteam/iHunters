@@ -37,4 +37,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(User::class, 'my_admin', 'id');
     }
+
+    /**
+     * Является ли указанный пользователь админом для текущего
+     * @param $potentialAdmin
+     * @return bool
+     */
+    public function isMyAdmin($potentialAdmin)
+    {
+        return $this->my_admin == $potentialAdmin->id;
+    }
 }

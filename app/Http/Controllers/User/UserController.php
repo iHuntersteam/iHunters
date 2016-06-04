@@ -66,4 +66,30 @@ class UserController extends Controller
             ],
         ]);
     }
+
+    public function updatePassword()
+    {
+        if ($errorMessage = RequestHelpers::checkNeededParams($this->request, ['for_user', 'new_password'])) {
+            return ResponseHelper::makeResponse(['errorMessage' => $errorMessage]);
+        }
+
+        try {
+            /** @var User $forUser */
+            $forUser = User::findOrFail($this->request->get('for_user'));
+        } catch (\Exception $e) {
+            return ResponseHelper::makeResponse(['errorMessage' => $e->getMessage()]);
+        }
+        if (\Auth::user()->cannot('update-password', $forUser)) {
+            return ResponseHelper::makeResponse([
+                'errorMessage' => 'Пароль можно сменить самому себе, или админ может сменить, но только для ' .
+                    'подопечных',
+            ]);
+        }
+
+        $forUser->update([
+            'password' => bcrypt($this->request->get('new_password')),
+        ]);
+
+        return ResponseHelper::makeResponse(['data' => 'Пароль обновлен']);
+    }
 }
