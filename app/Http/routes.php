@@ -29,6 +29,10 @@ Route::group(['prefix' => 'api'], function () {
         Route::post('keywords', 'Keyword\KeywordController@store');
         Route::put('keywords', 'Keyword\KeywordController@update');
         Route::delete('keywords', 'Keyword\KeywordController@destroy');
+
+        Route::group(['prefix' => 'user'], function () {
+            Route::post('create', 'User\UserController@create');
+        });
     });
 
     Route::group(['prefix' => 'statistics'], function () {
