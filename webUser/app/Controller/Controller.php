@@ -26,6 +26,7 @@ abstract class Controller
 			]);
 
 		return $twig->render($view, $parameters);
+
 	}
 
 	protected function isGet()

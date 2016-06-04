@@ -2,9 +2,9 @@
 
 namespace App\Model;
 
-class PersonPageRank extends Model
+class Person_Page_Rank extends Model
 {
-    protected $fillable = ['PersonID', 'PageID', 'Rank'];
+    protected $fillable = ['Person_ID', 'Page_ID', 'Rank'];
     protected $guarded = [];
     protected $specialchars = [];
 }

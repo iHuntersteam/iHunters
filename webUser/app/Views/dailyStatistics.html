@@ -1,7 +1,7 @@
 {% extends "template.html" %}
 
 {% block title %}
-{{ title }}
+	{{ title }}
 {% endblock %}
 
 {% block content %}
@@ -43,32 +43,38 @@
 					<br><br>
 
 					<p class="col-md-2">Период с:</p>
-						<input type="date" name="beginDate" value="2016-05-27"> 
-						по <input type="date" name="endDate" value="2016-05-30"> 
+					<input type="date" name="beginDate" value="2016-05-27"> 
+					по <input type="date" name="endDate" value="2016-05-30"> 
 
-						<button type="submit" class="btn btn-primary pull-right">Применить</button>
+					<button type="submit" class="btn btn-primary pull-right">Применить</button>
 
-					</form>
-					<table class = "table">
-						<thead>
+				</form>
+				<table class = "table">
+					<thead>
 
+						<tr>
+							<th>Дата</th>
+							<th>Количество новых страниц</th>
+						</tr>
+
+					</thead>
+					<tbody>
+						{% for dail in daily %}
 							<tr>
-								<th>Дата</th>
-								<th>Количество новых страниц</th>
+								<td>{{ dail.last_scan_date }}</td>
+								<td>{{ dail.rank }} </td>
 							</tr>
-
-						</thead>
-						<tbody>
-							{% for day in daily %}
-								<tr>
-									<td>{{ day.last_scan_date }}</td>
-									<td>{{ day.rank }} </td>
-								</tr>
-							{% endfor %} 
-
-						</tbody>
-					</table>
+						{% endfor %} 
+					</tbody>
+					<tfoot>
+    <tr>
+      <td><b>Всего за период:</b></td>
+      <td>180</td>
+    </tr>
+  </tfoot>
 				</table>
 			</div>
 		</div>
+	</div>
+	
 	{% endblock %}

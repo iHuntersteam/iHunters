@@ -116,7 +116,7 @@ class Connector
     public function selectDailyStats($siteId, $beginDate, $endDate, $personId)
     {
 
-        $result = $this->query('SELECT Pages.Last_Scan_Date, Person_Page_Rank.Rank FROM Person_Page_Rank JOIN Pages ON Person_Page_Rank.Page_ID = Pages.id WHERE Person_Page_Rank.Page_ID IN (SELECT id FROM Pages WHERE site_id = '.$siteId.' AND Last_Scan_Date BETWEEN "'.$beginDate.'" AND "'.$endDate.'") AND Person_Page_Rank.Person_id = '.$personId);
+        $result = $this->query('SELECT * FROM Person_Page_Rank JOIN Pages ON Person_Page_Rank.Page_ID = Pages.id WHERE Person_Page_Rank.Page_ID IN (SELECT id FROM Pages WHERE site_id = '.$siteId.' AND Last_Scan_Date BETWEEN "'.$beginDate.'" AND "'.$endDate.'") AND Person_Page_Rank.Person_id = '.$personId);
 
         if ($this->numRows($result) > 0) {
             $rows = array();

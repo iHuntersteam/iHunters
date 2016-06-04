@@ -59,14 +59,14 @@ class Stats extends Controller
 	{
 		
 		$this->daily->getDailyStats();
-var_dump($this->daily->collection);
 		$this->sites->getAll();
 		$this->persons->getAll();
 		echo $this->view("dailyStatistics.html", [
 			'title' => "Ежедневная статистика",
-			'daily' => $this->daily->collection,
 			'sites' => $this->sites->collection,
-			'persons' => $this->persons->collection
+			'persons' => $this->persons->collection,
+			'daily' => $this->daily->collection
 			]);
+		var_dump($this->daily->collection);
 	}
 }
