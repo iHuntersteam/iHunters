@@ -35,13 +35,23 @@ class UserController extends Controller
         $isAdmin = $this->request->has('is_admin') ? (int)$this->request->get('is_admin') : 0;
         $myAdmin = $this->request->has('belongs_to_admin') ? (int)$this->request->get('belongs_to_admin') : null;
 
-        $newUser = User::create([
-            'username' => $this->request->get('username'),
-            'password' => bcrypt($this->request->get('password')),
-            'email'    => $email,
-            'is_admin' => $isAdmin,
-            'my_admin' => $myAdmin,
-        ]);
+        if ($myAdmin) {
+            if (!$user = User::find($myAdmin) or !$user->isAdmin()) {
+                return ResponseHelper::makeResponse(['errorMessage' => "Указанного админа нет"]);
+            }
+        }
+
+        try {
+            $newUser = User::create([
+                'username' => $this->request->get('username'),
+                'password' => bcrypt($this->request->get('password')),
+                'email'    => $email,
+                'is_admin' => $isAdmin,
+                'my_admin' => $myAdmin,
+            ]);
+        } catch (\Exception $e) {
+            return ResponseHelper::makeResponse(['errorMessage' => $e->getMessage()]);
+        }
 
         return ResponseHelper::makeResponse([
             'data' => [
