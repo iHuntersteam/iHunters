@@ -1,5 +1,6 @@
 <?php
 
+use App\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->sitesSeeder();
         $this->pageSeeder();
         $this->rankTableSeeder(3000);
+        $this->userSeeder();
     }
 
     private function personsSeeder()
@@ -38,11 +40,25 @@ class DatabaseSeeder extends Seeder
         for ($i = 0; $i < $rowCount; $i++) {
             DB::table('person_page_rank')->insert([
                 'person_id' => \App\Helpers\PersonHelpers::randomPersonId(),
-                'page_id' => \App\Helpers\PageHelpers::randomPageId(),
-                'rank' => $faker->randomNumber()
+                'page_id'   => \App\Helpers\PageHelpers::randomPageId(),
+                'rank'      => $faker->randomNumber(),
             ]);
         }
     }
 
+    private function userSeeder()
+    {
+        //admins
 
+        factory(User::class, 5)->create([
+            'is_admin' => 1,
+            'my_admin' => null,
+        ]);
+
+        //users
+
+        factory(User::class, 17)->create([
+            'is_admin' => 0,
+        ]);
+    }
 }

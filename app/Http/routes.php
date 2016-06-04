@@ -16,7 +16,7 @@ Route::get('/', function () {
 });
 
 Route::group(['prefix' => 'api'], function () {
-    Route::group(['prefix' => 'admin', 'middleware' => 'auth.admin'], function () {
+    Route::group(['prefix' => 'admin', 'middleware' => ''], function () {
         Route::get('persons', 'Person\PersonController@show');
         Route::post('persons', 'Person\PersonController@store');
         Route::put('persons', 'Person\PersonController@update');
@@ -31,11 +31,15 @@ Route::group(['prefix' => 'api'], function () {
         Route::delete('keywords', 'Keyword\KeywordController@destroy');
     });
 
-    Route::group(['prefix' => 'statistics', 'middleware' => 'auth'], function () {
+    Route::group(['prefix' => 'statistics', 'middleware' => ''], function () {
         Route::get('/', 'Statistics\StatisticController@show');
 
-        Route::group(['prefix' => 'crawler', 'middleware' => 'auth.admin'], function () {
+        Route::group(['prefix' => 'crawler', 'middleware' => ''], function () {
             Route::get('/', 'Statistics\StatisticsCrawlerController@show');
         });
     });
 });
+
+Route::auth();
+
+Route::get('/home', 'HomeController@index');

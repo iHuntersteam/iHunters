@@ -12,9 +12,6 @@ class ExampleTest extends TestCase
      */
     public function testBasicExample()
     {
-        /** @var \App\Models\Person $person */
-        $person = \App\Models\Person::first();
-
-        dd($person->rank($person->pages[0]));
+        
     }
 }

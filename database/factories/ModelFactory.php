@@ -11,12 +11,16 @@
 |
 */
 
+use App\Helpers\UserHelpers;
+
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->safeEmail,
-        'password' => bcrypt(str_random(10)),
+        'username'       => $faker->userName,
+        'email'          => $faker->safeEmail,
+        'password'       => bcrypt('password'),
         'remember_token' => str_random(10),
+        'is_admin'       => random_int(0, 1),
+        'my_admin'       => UserHelpers::randomAdminId(),
     ];
 });
 
@@ -28,16 +32,17 @@ $factory->define(\App\Models\Person::class, function (Faker\Generator $faker) {
 
 $factory->define(\App\Models\Site::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->domainWord . "." . $faker->tld
+        'name' => $faker->domainWord . "." . $faker->tld,
     ];
 });
 
 $factory->define(\App\Models\Page::class, function (Faker\Generator $faker) {
     $site = \App\Helpers\SiteHelpers::randomSite();
+
     return [
-        'url' => $site->name . "/" . $faker->domainWord . "." . $faker->tld,
-        'site_id' => $site->id,
+        'url'             => $site->name . "/" . str_random(8) . "." . $faker->tld,
+        'site_id'         => $site->id,
         'found_date_time' => $faker->dateTime,
-        'last_scan_date' => $faker->dateTime
+        'last_scan_date'  => $faker->dateTime,
     ];
 });
