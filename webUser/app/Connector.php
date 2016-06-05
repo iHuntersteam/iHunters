@@ -7,11 +7,18 @@ use PDOException;
 class Connector
 {
     private static $instance;
-
+/*
     private $host = "localhost:3306";
     private $dbname = "ihunters";
     private $user = "root";
     private $password = "";
+    private $charset = "utf8";
+*/
+
+    private $host = "185.5.250.86:6612";
+    private $dbname = "ihunters";
+    private $user = "ihunters";
+    private $password = "ua2o7UK3frukqgG81h2i";
     private $charset = "utf8";
 
     public $connection;
@@ -51,7 +58,7 @@ class Connector
     {
         try {
             $dsn = "mysql:host=$this->host;dbname=$this->dbname;charset=$this->charset";
-            $this->connection = new PDO($dsn, $this->user, $this->password);
+            $this->connection = new PDO($dsn, $this->user, $this->password);           
         } catch (PDOException $e) {
             die($e->getMessage());
         }
@@ -98,7 +105,7 @@ class Connector
     public function selectAllStats($value)
     {
 
-        $result = $this->query('SELECT Persons.name, sum(Person_Page_Rank.Rank) AS Qty FROM Persons JOIN Person_Page_Rank ON Persons.id = Person_Page_Rank.Person_id WHERE Person_Page_Rank.Page_ID IN (SELECT id FROM Pages WHERE site_id = '.$value.') GROUP BY Persons.name');
+        $result = $this->query('SELECT persons.name, sum(person_page_rank.rank) AS Qty FROM persons JOIN person_page_rank ON persons.id = person_page_rank.person_id WHERE person_page_rank.page_ID IN (SELECT id FROM pages WHERE site_id = '.$value.') GROUP BY persons.name');
 
         if ($this->numRows($result) > 0) {
             $rows = array();
@@ -116,7 +123,7 @@ class Connector
     public function selectDailyStats($siteId, $beginDate, $endDate, $personId)
     {
 
-        $result = $this->query('SELECT * FROM Person_Page_Rank JOIN Pages ON Person_Page_Rank.Page_ID = Pages.id WHERE Person_Page_Rank.Page_ID IN (SELECT id FROM Pages WHERE site_id = '.$siteId.' AND Last_Scan_Date BETWEEN "'.$beginDate.'" AND "'.$endDate.'") AND Person_Page_Rank.Person_id = '.$personId);
+        $result = $this->query('SELECT * FROM person_page_rank JOIN pages ON person_page_rank.page_ID = pages.id WHERE person_page_rank.Page_ID IN (SELECT id FROM pages WHERE site_id = '.$siteId.' AND last_scan_date BETWEEN "'.$beginDate.'" AND "'.$endDate.'") AND person_page_rank.person_id = '.$personId);
 
         if ($this->numRows($result) > 0) {
             $rows = array();
@@ -131,10 +138,10 @@ class Connector
         }
     }
 
-        public function selectLastScanDate($value)
+    public function selectLastScanDate($value)
     {
 
-        $result = $this->query('SELECT MAX(last_scan_date) AS LastScanDate FROM Pages WHERE site_id = '.$value);
+        $result = $this->query('SELECT MAX(last_scan_date) AS LastScanDate FROM pages WHERE site_id = '.$value);
 
         if ($this->numRows($result) > 0) {
             $rows = array();
@@ -254,10 +261,10 @@ class Connector
      * @return bool|string
      */
     public function delete($table, $where = false, $limit = 1)
-    {var_dump($where);
+    {
         $where = ($where) ? " WHERE id IN ({$where})" : "";
        // $limit = ($limit) ? "LIMIT {$limit}" : "";
-        var_dump($where);
+       
         if ($this->query("DELETE FROM " .$table.$where)) {
             return true;
         } else {
@@ -350,16 +357,16 @@ class Connector
      */
     public function numRows($result)
     {
-        $this->_ensureResult($result);
+       $this->_ensureResult($result);
 
         if (is_array($result)) {
             return count($result);
         }
 
         $query = $result->queryString;
-        $cloned = $this->query($query);
-        $data = $cloned->fetchAll();
+        $cloned = $this->query($query);     
 
+        $data = $cloned->fetchAll();      
         return count($data);
     }
 

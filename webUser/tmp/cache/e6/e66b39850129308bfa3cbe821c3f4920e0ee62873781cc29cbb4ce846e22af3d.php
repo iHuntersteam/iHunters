@@ -94,55 +94,54 @@ class __TwigTemplate_6f1ac155ec06fcf80a5ee9e1668500111eeca9329afe8dbf3229aba5984
         $context['_seq'] = twig_ensure_traversable((isset($context["lastScanDates"]) ? $context["lastScanDates"] : null));
         foreach ($context['_seq'] as $context["_key"] => $context["lastScanDate"]) {
             // line 39
-            echo "\t\t\t";
+            echo "\t\t\t\t\t\t\t";
             echo twig_escape_filter($this->env, $this->getAttribute($context["lastScanDate"], "LastScanDate", array()), "html", null, true);
             echo "
-\t\t\t";
+\t\t\t\t\t\t\t";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['_key'], $context['lastScanDate'], $context['_parent'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
         // line 40
-        echo " </th>
+        echo " </th>\t\t\t\t\t\t
+\t\t\t\t\t\t</tr>
+\t\t\t\t\t\t<tr>
+\t\t\t\t\t\t\t<th>Имя</th>
+\t\t\t\t\t\t\t<th>Количество упоминаний</th>
+\t\t\t\t\t\t</tr>
 \t\t\t\t\t\t
-\t\t\t\t\t</tr>
-\t\t\t\t\t<tr>
-\t\t\t\t\t\t<th>Имя</th>
-\t\t\t\t\t\t<th>Количество упоминаний</th>
-\t\t\t\t\t</tr>
-\t\t\t\t\t
-\t\t\t\t</thead>
-\t\t\t\t<tbody>
-\t\t\t\t\t";
-        // line 50
+\t\t\t\t\t</thead>
+\t\t\t\t\t<tbody>
+\t\t\t\t\t\t";
+        // line 49
         $context['_parent'] = $context;
         $context['_seq'] = twig_ensure_traversable((isset($context["stats"]) ? $context["stats"] : null));
         foreach ($context['_seq'] as $context["_key"] => $context["stat"]) {
+            // line 50
+            echo "\t\t\t\t\t\t<tr>
+\t\t\t\t\t\t\t<td>";
             // line 51
-            echo "\t\t\t\t\t<tr>
-\t\t\t\t\t\t<td>";
-            // line 52
             echo twig_escape_filter($this->env, $this->getAttribute($context["stat"], "name", array()), "html", null, true);
             echo "</td>
-\t\t\t\t\t\t<td>";
-            // line 53
+\t\t\t\t\t\t\t<td>";
+            // line 52
             echo twig_escape_filter($this->env, $this->getAttribute($context["stat"], "Qty", array()), "html", null, true);
             echo " </td>
-\t\t\t\t\t</tr>
-\t\t\t\t\t";
+\t\t\t\t\t\t</tr>
+\t\t\t\t\t\t";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['_key'], $context['stat'], $context['_parent'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 55
+        // line 54
         echo " 
 
-\t\t\t\t</tbody>
+\t\t\t\t\t</tbody>
+\t\t\t\t</table>
 \t\t\t</table>
-\t\t</table>
+\t\t</div>
 \t</div>
-</div>
-";
+\t";
     }
 
     public function getTemplateName()
@@ -157,7 +156,7 @@ class __TwigTemplate_6f1ac155ec06fcf80a5ee9e1668500111eeca9329afe8dbf3229aba5984
 
     public function getDebugInfo()
     {
-        return array (  138 => 55,  129 => 53,  125 => 52,  122 => 51,  118 => 50,  106 => 40,  97 => 39,  93 => 38,  82 => 29,  75 => 28,  65 => 26,  60 => 25,  41 => 8,  38 => 7,  32 => 4,  29 => 3,  11 => 1,);
+        return array (  137 => 54,  128 => 52,  124 => 51,  121 => 50,  117 => 49,  106 => 40,  97 => 39,  93 => 38,  82 => 29,  75 => 28,  65 => 26,  60 => 25,  41 => 8,  38 => 7,  32 => 4,  29 => 3,  11 => 1,);
     }
 }
 /* {% extends "template.html" %}*/
@@ -198,27 +197,26 @@ class __TwigTemplate_6f1ac155ec06fcf80a5ee9e1668500111eeca9329afe8dbf3229aba5984
 /* 				<thead>*/
 /* 					<tr>*/
 /* 						<th>Дата: {% for lastScanDate in lastScanDates %}*/
-/* 			{{ lastScanDate.LastScanDate }}*/
-/* 			{% endfor %} </th>*/
+/* 							{{ lastScanDate.LastScanDate }}*/
+/* 							{% endfor %} </th>						*/
+/* 						</tr>*/
+/* 						<tr>*/
+/* 							<th>Имя</th>*/
+/* 							<th>Количество упоминаний</th>*/
+/* 						</tr>*/
 /* 						*/
-/* 					</tr>*/
-/* 					<tr>*/
-/* 						<th>Имя</th>*/
-/* 						<th>Количество упоминаний</th>*/
-/* 					</tr>*/
-/* 					*/
-/* 				</thead>*/
-/* 				<tbody>*/
-/* 					{% for stat in stats %}*/
-/* 					<tr>*/
-/* 						<td>{{ stat.name }}</td>*/
-/* 						<td>{{ stat.Qty }} </td>*/
-/* 					</tr>*/
-/* 					{% endfor %} */
+/* 					</thead>*/
+/* 					<tbody>*/
+/* 						{% for stat in stats %}*/
+/* 						<tr>*/
+/* 							<td>{{ stat.name }}</td>*/
+/* 							<td>{{ stat.Qty }} </td>*/
+/* 						</tr>*/
+/* 						{% endfor %} */
 /* */
-/* 				</tbody>*/
+/* 					</tbody>*/
+/* 				</table>*/
 /* 			</table>*/
-/* 		</table>*/
+/* 		</div>*/
 /* 	</div>*/
-/* </div>*/
-/* {% endblock %}*/
+/* 	{% endblock %}*/
