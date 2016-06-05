@@ -131,6 +131,24 @@ class Connector
         }
     }
 
+        public function selectLastScanDate($value)
+    {
+
+        $result = $this->query('SELECT MAX(last_scan_date) AS LastScanDate FROM Pages WHERE site_id = '.$value);
+
+        if ($this->numRows($result) > 0) {
+            $rows = array();
+
+            while ($r = $this->fetchObject($result)) {
+                $rows[] = $r;
+            }
+
+            return $rows;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Получить одну запись из БД
      *

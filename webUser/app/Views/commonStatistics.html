@@ -31,26 +31,31 @@
 				<button type="submit" class="btn btn-primary pull-right">Применить</button>
 				
 			</form>
+			
 			<table class = "table">
 				<thead>
-
 					<tr>
-						<th>Имя</th>
-						<th>Количество упоминаний</th>
-					</tr>
-					
-				</thead>
-				<tbody>
-					{% for stat in stats %}
-					<tr>
-						<td>{{ stat.name }}</td>
-						<td>{{ stat.Qty }} </td>
-					</tr>
-					{% endfor %} 
+						<th>Дата: {% for lastScanDate in lastScanDates %}
+							{{ lastScanDate.LastScanDate }}
+							{% endfor %} </th>						
+						</tr>
+						<tr>
+							<th>Имя</th>
+							<th>Количество упоминаний</th>
+						</tr>
+						
+					</thead>
+					<tbody>
+						{% for stat in stats %}
+						<tr>
+							<td>{{ stat.name }}</td>
+							<td>{{ stat.Qty }} </td>
+						</tr>
+						{% endfor %} 
 
-				</tbody>
+					</tbody>
+				</table>
 			</table>
-		</table>
+		</div>
 	</div>
-</div>
-{% endblock %}
+	{% endblock %}

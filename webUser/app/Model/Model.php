@@ -49,8 +49,14 @@ abstract class Model
          $endDate = $_POST['endDate'];
          $personId = $_POST['personId'];
 
-         $this->collection = $this->connection->selectDailyStats($siteId, $beginDate, $endDate, $personId);        
+         $this->collection = $this->connection->selectDailyStats($siteId, $beginDate, $endDate, $personId); 
        }
+
+        public function getLastScanDate($value)
+        {
+          $this->collection = $this->connection->selectLastScanDate($value);        
+        }
+
 
        public function getByPk($value)
        {
