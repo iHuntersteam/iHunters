@@ -114,7 +114,7 @@ class CrawlerPersonPageRankConnector:
                     continue
                 # if rank haven't changed don't create a new record in the database
                 last_rank_info = self.get_last_rank_(page_id, person_id)
-                if last_rank_info:
+                if len(last_rank_info) == 2:
                     last_rank, last_date = last_rank_info
                     if last_rank == rank:
                         continue
