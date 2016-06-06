@@ -56,12 +56,19 @@ p{
 	font-weight: normal;
 }
 
-.edit{
-	margin: 0 auto;
+.statistic{
+	margin: 0 auto 15px auto;
 	width: 400px;
-	padding-top:15px;
-	text-align: center;
+	text-align:left;
+	background: #F8EAFF;
 
+}
+.statistic p{
+	border-bottom:1px solid #E4B2FF;
+	padding: 8px;
+}
+.statistic p:last-child{
+	border-bottom:none;
 }
 ul{
 	list-style: none;

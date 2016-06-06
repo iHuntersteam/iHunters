@@ -8,8 +8,12 @@ class C_Sites extends C_Base
 	{
 		$this->title .="Сайты";
 		$sites=M_Sites::allSites();
+		$totalUrls=M_Sites::allUrls();
+		$totalScanUrls=M_Sites::allScanUrls();
+		$totalNoScanUrls=M_Sites::allNoScanUrls();
+
 		$this->content=$this->template('view/sites.php', 
-			array('sites'=>$sites,
+			array('sites'=>$sites,'totalUrls'=>$totalUrls,'totalScanUrls'=>$totalScanUrls,'totalNoScanUrls'=>$totalNoScanUrls,
 				'title'=>$this->title));
 	}
 	

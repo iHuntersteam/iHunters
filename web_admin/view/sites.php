@@ -8,6 +8,17 @@
 		</li>
 	</ul>
 </div>
+<div class="statistic">
+	<?php foreach($totalUrls as $urls):?>
+	<p>Общее кол-во ссылок в базе:_<b><?=$urls?></b> </p>
+	<?php endforeach ?>
+	<?php foreach($totalScanUrls as $ScanUrls):?>
+	<p>Отсканированных страниц:_<b><?=$ScanUrls?></b> </p>
+	<?php endforeach ?>
+	<?php foreach($totalNoScanUrls as $NoScanUrls):?>
+	<p>Неотсканированных страниц:_<b><?=$NoScanUrls?></b> </p>
+	<?php endforeach ?>
+</div>
 <div class="table">
 	<div class="row top ">
 		<p>Наименование</p>
