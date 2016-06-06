@@ -11,6 +11,6 @@ require_once('AuthProvider.php');
 
 $provider = new AuthProvider();
 
-$user = $provider->login(['username' => 'norval48', 'password' => 'password']);
+$user = $provider->login(['username' => 'qhaag', 'password' => 'password']);
 
 var_dump($user);

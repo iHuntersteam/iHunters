@@ -54,10 +54,10 @@ class AuthProvider
      */
     private function makeDbConnection()
     {
-        $host = 'localhost';
+        $host = '188.225.72.43';
         $engine = 'mysql';
-        $user = 'root';
-        $password = 'Nsk!2015';
+        $user = 'ihunters';
+        $password = '4O1y8H8i';
         $dbname = 'ihunters';
         $dsn = "$engine:dbname=$dbname;host=$host";
 
