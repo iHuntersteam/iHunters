@@ -1,4 +1,4 @@
-import threading
+import sys
 from parse import HTMLParser
 from db_connect import (CrawlerSitesConnector,
                         CrawlerPersonsConnector, CrawlerPersonPageRankConnector)
@@ -34,10 +34,10 @@ class PageRankWorker:
         return ','.join(map(str, data))
 
 
-# test = PageRankWorker()
-# # print(test.person_ids)
-# print(test.site_ids)
-# print(test.keywords_dict)
-# test.crawl_all()
-
-# test.crawl_website(1)
+if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        test = PageRankWorker()
+        test.crawl_website(int(sys.argv[1]))
+    else:
+        test = PageRankWorker()
+        test.crawl_all()
