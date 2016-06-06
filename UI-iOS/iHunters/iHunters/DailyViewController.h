@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AllSites.h"
 
-@interface DailyViewController : UIViewController
+@interface DailyViewController : UIViewController <UIPickerViewDelegate, UIPickerViewDataSource>
 
 @property (strong, nonatomic) NSDate *startDate;
 @property (strong, nonatomic) NSDate *endDate;

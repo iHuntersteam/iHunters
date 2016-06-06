@@ -14,7 +14,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _sites = @[@"Lenta.ru", @"Newsru.com", @"Meduza.io"];
+        self.sites = @[@"Lenta.ru", @"Newsru.com", @"Meduza.io"];
     }
     return self;
 }
