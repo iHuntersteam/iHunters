@@ -124,5 +124,65 @@ BEGIN
 	WHERE pages.id = NEW.page_id;
 END$$
 
+CREATE TRIGGER Persons_AfterUpdate
+AFTER UPDATE ON persons
+FOR EACH ROW
+BEGIN
+	UPDATE handler SET 
+		create_upd_date_pers_keys = NEW.create_upd_date,
+		need_scan_keys_pers = 1
+	WHERE id = 1;
+END$$
+
+CREATE TRIGGER Persons_AfterInsert
+AFTER INSERT ON persons
+FOR EACH ROW
+BEGIN
+	UPDATE handler SET 
+		create_upd_date_pers_keys = NEW.create_upd_date,
+		need_scan_keys_pers = 1
+	WHERE id = 1;
+END$$
+
+CREATE TRIGGER Keywords_AfterInsert
+AFTER INSERT ON keywords
+FOR EACH ROW
+BEGIN
+	UPDATE handler SET 
+		create_upd_date_pers_keys = NEW.create_upd_date,
+		need_scan_keys_pers = 1
+	WHERE id = 1;
+END$$
+
+CREATE TRIGGER Keywords_AfterUpdate
+AFTER UPDATE ON keywords
+FOR EACH ROW
+BEGIN
+	UPDATE handler SET 
+		create_upd_date_pers_keys = NEW.create_upd_date,
+		need_scan_keys_pers = 1
+	WHERE id = 1;
+END$$
+
+CREATE TRIGGER Pages_AfterUpdate
+AFTER UPDATE ON pages
+FOR EACH ROW
+BEGIN
+	UPDATE handler SET 
+		create_upd_date_pers_keys = NEW.create_upd_date,
+		need_scan_pages = 1
+	WHERE id = 1;
+END$$
+
+CREATE TRIGGER Pages_AfterInsert
+AFTER INSERT ON pages
+FOR EACH ROW
+BEGIN
+	UPDATE handler SET 
+		create_upd_date_pers_keys = NEW.create_upd_date,
+		need_scan_pages = 1
+	WHERE id = 1;
+END$$
+
 DELIMITER ;
 
