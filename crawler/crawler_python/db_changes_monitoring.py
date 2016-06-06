@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     while True:
         print('Starting new loop. It\'ll start in 60 seconds.')
-        time.sleep(6)
+        time.sleep(60)
         db_data = get_count_from_db()
         if db_data:
             sites_count, keywords_count, unscanned_pages_count = get_count_from_db()
