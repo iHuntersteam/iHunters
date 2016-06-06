@@ -23,6 +23,10 @@ class PageRankWorker:
             ranks = self.parser.get_info_from(page)
             self.crawler_person_page_rank_conn.save(ranks)
 
+    def crawl_url(self, page):
+        ranks = self.parser.get_info_from(page)
+        self.crawler_person_page_rank_conn.save(ranks)
+
     def crawl_all(self):
         for site in self.site_ids:
             self.crawl_website(site)
