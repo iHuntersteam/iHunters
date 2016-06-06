@@ -35,11 +35,23 @@ class M_Sites
 		$rows=$db->Select("SELECT * FROM sites WHERE id=$id");
 		return $rows[0];
 	}
-	public static function getStatisticById($id)
+	public static function getAllUrlById($id)
 	{
 		$db=M_Mysql::getInstance();
-		$rows=$db->select("SELECT * FROM pages WHERE site_id=$id");
-		return $rows;
+		$rows=$db->select("SELECT count(url) FROM pages WHERE site_id=$id");
+		return $rows[0];
+	}
+	public static function getNoScanUrl($id)
+	{
+		$db=M_Mysql::getInstance();
+		$rows=$db->select("SELECT count(url) FROM pages WHERE site_id=$id AND last_scan_date IS NULL");
+		return $rows[0];
+	}
+	public static function getScanUrl($id)
+	{
+		$db=M_Mysql::getInstance();
+		$rows=$db->select("SELECT count(url) FROM pages WHERE site_id=$id AND last_scan_date IS NOT NULL");
+		return $rows[0];
 	}
 }
 

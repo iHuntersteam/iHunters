@@ -8,7 +8,9 @@ class C_Sites extends C_Base
 	{
 		$this->title .="Сайты";
 		$sites=M_Sites::allSites();
-		$this->content=$this->template('view/sites.php', array('sites'=>$sites,'title'=>$this->title));
+		$this->content=$this->template('view/sites.php', 
+			array('sites'=>$sites,
+				'title'=>$this->title));
 	}
 	
 	public function actionAdd()
@@ -26,7 +28,9 @@ class C_Sites extends C_Base
 
 		}
 
-		$this->content=$this->template('view/add.php', array('name'=>$this->name,'title'=>$this->title));
+		$this->content=$this->template('view/add.php', 
+			array('name'=>$this->name,
+				'title'=>$this->title));
 	}
 	public function actionEdit()
 	{
@@ -53,7 +57,9 @@ class C_Sites extends C_Base
 				}
 			}
 
-		$this->content=$this->template('view/edit.php', array('name'=>$site['name'],'title'=>$this->title));
+		$this->content=$this->template('view/edit.php', 
+			array('name'=>$site['name'],
+				'title'=>$this->title));
 	}
 	public function actionDelete()
 	{
@@ -81,7 +87,9 @@ class C_Sites extends C_Base
 				}
 			}
 		
-		$this->content=$this->template('view/delete.php', array('name'=>$site['name'],'title'=>$this->title ));
+		$this->content=$this->template('view/delete.php', 
+			array('name'=>$site['name'],
+				'title'=>$this->title ));
 	}
 	public function actionStatisticById()
 	{
@@ -91,9 +99,16 @@ class C_Sites extends C_Base
 		{
 			$this->id=$_GET['id'];
 			$site=M_Sites::getSite($this->id);
-			$pages=M_Sites::getStatisticById($this->id);
+			$allUrls=M_Sites::getAllUrlById($this->id);
+			$noScanUrls=M_Sites::getNoScanUrl($this->id);
+			$scanUrls=M_Sites::getScanUrl($this->id);
 		}
-		$this->content=$this->template('view/siteStatistic.php', array('name'=>$site['name'],'pages'=>$pages,'title'=>$this->title ));
+		$this->content=$this->template('view/siteStatistic.php', 
+			array('name'=>$site['name'],
+				'allUrls'=>$allUrls,
+				'noScanUrls'=>$noScanUrls,
+				'scanUrls'=>$scanUrls, 
+				'title'=>$this->title ));
 	}
 	
 }
