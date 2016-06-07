@@ -66,19 +66,19 @@ class CrawlerSitesConnector:
             ''')
             is_change = CURSOR.fetchone()
             if is_change:
+
                 CURSOR.execute('''
                     SELECT id, url, found_date_time 
                     FROM pages 
-                    WHERE pages.create_upd_date 
-                        BETWEEN (
-                            SELECT handler.last_scan_pages 
-                            FROM handler
-                            WHERE handler.id = 1)
-                        AND (
-                            SELECT handler.create_upd_date_pages
-                            FROM handler
-                            WHERE handler.id = 1
-                            )
+                    WHERE pages.create_upd_date > (
+                        SELECT handler.last_scan_pages 
+                        FROM handler
+                        WHERE handler.id = 1)
+                    AND pages.create_upd_date <= (
+                        SELECT handler.create_upd_date_pages
+                        FROM handler
+                        WHERE handler.id = 1
+                        )
                 ''')
             return {k: (v, d) for k, v, d in CURSOR.fetchall()}
         except MySQLError as e:
