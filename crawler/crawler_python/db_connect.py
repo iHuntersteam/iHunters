@@ -57,7 +57,7 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
-    def get_pages_by_site_id_gen():
+    def get_not_scan_pages_gen():
         try:
             CURSOR.execute('''
                 SELECT IF((SELECT handler.last_scan_pages FROM handler WHERE handler.id=1) 
