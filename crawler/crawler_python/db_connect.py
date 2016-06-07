@@ -25,7 +25,7 @@ def err(e):
 
 class CrawlerHandlerConnector:
 
-    def update_last_scan_pages(self, date):
+    def update_last_scan_pages(date):
         try:
             CURSOR.execute('''
                 UPDATE handler
@@ -35,7 +35,7 @@ class CrawlerHandlerConnector:
         except MySQLError as e:
             print(err(e))
 
-    def update_last_scan_pers_keys(self, date):
+    def update_last_scan_pers_keys(date):
         try:
             CURSOR.execute('''
                 UPDATE handler
