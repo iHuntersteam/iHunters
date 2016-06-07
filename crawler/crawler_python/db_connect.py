@@ -84,14 +84,10 @@ class CrawlerSitesConnector:
             '''.format(val)
 
     def get_not_scan_pages_gen(self):
-        try:
-            CURSOR.execute('''
-                SELECT IF((SELECT handler.last_scan_pages FROM handler WHERE handler.id=1) 
-                !=
-                (SELECT handler.create_upd_date_pages FROM handler WHERE handler.id=1), 1, 0)
-            ''')
-            is_change = CURSOR.fetchone()
-            if is_change:
+        is_change = CrawlerHandlerConnector.check_for_scan(
+            'last_scan_pages', 'create_upd_date_pages')
+        if is_change:
+            try:
                 CURSOR.execute(self.query_for_last_scan_pages(
                     'MAX(create_upd_date)'))
                 max_create_update = CURSOR.fetchone()
