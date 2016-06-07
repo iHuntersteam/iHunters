@@ -240,3 +240,41 @@ class CrawlerPersonsConnector:
             return tuple(person_id[0] for person_id in CURSOR.fetchall())
         except MySQLError as e:
             print(err(e))
+
+    ## TODO in progress
+    def query_for_last_scan_persons(self, val):
+        return '''
+                SELECT {0} 
+                FROM persons 
+                WHERE persons.create_upd_date > (
+                    SELECT handler.last_scan_pers_keys 
+                    FROM handler
+                    WHERE handler.id = 1)
+                AND persons.create_upd_date <= (
+                    SELECT handler.create_upd_date_pers_keys
+                    FROM handler
+                    WHERE handler.id = 1
+                    )
+            '''.format(val)
+
+    ## TODO in progress
+    def get_not_scan_pages_gen(self):
+        is_change = CrawlerHandlerConnector.check_for_scan(
+            'last_scan_pers_keys', 'create_upd_date_pers_keys')
+        if is_change:
+            try:
+                CURSOR.execute(self.query_for_last_scan_persons(
+                    'MAX(create_upd_date)'))
+                max_create_update = CURSOR.fetchone()
+                CURSOR.execute(self.query_for_last_scan_persons(
+                    'id, name'))
+                persons = CURSOR.fetchall()
+
+                print(pages)
+                # date update only on commit
+                CrawlerHandlerConnector.update_last_scan_pages(
+                    max_create_update)
+
+                return {k: (v, d) for k, v, d in pages}
+            except MySQLError as e:
+                print(err(e))
