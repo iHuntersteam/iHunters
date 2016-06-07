@@ -34,14 +34,30 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
-    def get_pages_by_site_id_gen(self, ids):
+    def get_pages_by_site_id_gen():
         try:
             CURSOR.execute('''
-                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND last_scan_date IS NULL
-                '''.format(ids))
-            for k, v, d in CURSOR.fetchall():
-                yield {k: (v, d)}
-            # return {k: (v, d) for k, v, d in CURSOR.fetchall()}
+                SELECT IF((SELECT handler.last_scan_pages FROM handler WHERE handler.id=1) 
+                !=
+                (SELECT handler.create_upd_date_pages FROM handler WHERE handler.id=1), 1, 0)
+            ''')
+            is_change = CURSOR.fetchone()
+            if is_change:
+                CURSOR.execute('''
+                    SELECT id, url, found_date_time 
+                    FROM pages 
+                    WHERE pages.create_upd_date 
+                        BETWEEN (
+                            SELECT handler.last_scan_pages 
+                            FROM handler
+                            WHERE handler.id = 1)
+                        AND (
+                            SELECT handler.create_upd_date_pages
+                            FROM handler
+                            WHERE handler.id = 1
+                            )
+                ''')
+            return {k: (v, d) for k, v, d in CURSOR.fetchall()}
         except MySQLError as e:
             print(err(e))
 
@@ -101,7 +117,8 @@ class CrawlerPersonPageRankConnector:
     def save(self, dict_ranks):
         for page_id, v in dict_ranks.items():
             page_modified_date = v.pop('date_modified', datetime.now())
-            page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
+            page_modified_date = page_modified_date.strftime(
+                '%Y-%m-%d %H:%M:%S')
             for person_id, rank in v.items():
                 if rank == 0:
                     try:
@@ -112,7 +129,8 @@ class CrawlerPersonPageRankConnector:
                     except MySQLError as e:
                         print(err(e))
                     continue
-                # if rank haven't changed don't create a new record in the database
+                # if rank haven't changed don't create a new record in the
+                # database
                 last_rank_info = self.get_last_rank_(page_id, person_id)
                 if len(last_rank_info) == 2:
                     last_rank, last_date = last_rank_info
