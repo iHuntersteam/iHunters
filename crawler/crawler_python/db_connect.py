@@ -83,12 +83,12 @@ class CrawlerSitesConnector:
             if is_change:
                 CURSOR.execute(self.query_for_last_scan(
                     'MAX(create_upd_date)'))
-                max_create_ud_date = CURSOR.fetchone()
+                max_create_update = CURSOR.fetchone()
                 CURSOR.execute(self.query_for_last_scan(
                     'id, url, found_date_time'))
                 ## date update only on commit
                 CrawlerHandlerConnector.update_last_scan_pages(
-                    max_create_ud_date)
+                    max_create_update)
             return {k: (v, d) for k, v, d in CURSOR.fetchall()}
         except MySQLError as e:
             print(err(e))
