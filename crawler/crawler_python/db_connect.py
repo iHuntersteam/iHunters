@@ -93,12 +93,14 @@ class CrawlerSitesConnector:
                 max_create_update = CURSOR.fetchone()
                 CURSOR.execute(self.query_for_last_scan_pages(
                     'id, url, found_date_time'))
-                ## date update only on commit
+                pages = CURSOR.fetchall()
+                # date update only on commit
                 CrawlerHandlerConnector.update_last_scan_pages(
                     max_create_update)
-            return {k: (v, d) for k, v, d in CURSOR.fetchall()}
-        except MySQLError as e:
-            print(err(e))
+
+                return {k: (v, d) for k, v, d in pages}
+            except MySQLError as e:
+                print(err(e))
 
     # def get_pages_by_site_id_gen(self, ids):
     #     try:
