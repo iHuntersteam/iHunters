@@ -81,10 +81,10 @@ class CrawlerSitesConnector:
             ''')
             is_change = CURSOR.fetchone()
             if is_change:
-                CURSOR.execute(self.query_for_last_scan(
+                CURSOR.execute(self.query_for_last_scan_pages(
                     'MAX(create_upd_date)'))
                 max_create_update = CURSOR.fetchone()
-                CURSOR.execute(self.query_for_last_scan(
+                CURSOR.execute(self.query_for_last_scan_pages(
                     'id, url, found_date_time'))
                 ## date update only on commit
                 CrawlerHandlerConnector.update_last_scan_pages(
