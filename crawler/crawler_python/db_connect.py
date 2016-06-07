@@ -45,6 +45,17 @@ class CrawlerHandlerConnector:
         except MySQLError as e:
             print(err(e))
 
+    def check_for_scan(last_scan_field, create_upd_date_field):
+        try:
+            CURSOR.execute('''
+                SELECT IF((SELECT {0} FROM handler WHERE handler.id=1) 
+                !=
+                (SELECT {1} FROM handler WHERE handler.id=1), 1, 0)
+            '''.format(last_scan_field, create_upd_date_field))
+            return CURSOR.fetchone()[0]
+        except MySQLError as e:
+            print(err(e))
+
 
 class CrawlerSitesConnector:
 
