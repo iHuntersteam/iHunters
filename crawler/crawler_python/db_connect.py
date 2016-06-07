@@ -57,7 +57,22 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
-    def get_not_scan_pages_gen():
+    def query_for_last_scan_pages(self, val):
+        return '''
+                SELECT {0} 
+                FROM pages 
+                WHERE pages.create_upd_date > (
+                    SELECT handler.last_scan_pages 
+                    FROM handler
+                    WHERE handler.id = 1)
+                AND pages.create_upd_date <= (
+                    SELECT handler.create_upd_date_pages
+                    FROM handler
+                    WHERE handler.id = 1
+                    )
+            '''.format(val)
+
+    def get_not_scan_pages_gen(self):
         try:
             CURSOR.execute('''
                 SELECT IF((SELECT handler.last_scan_pages FROM handler WHERE handler.id=1) 
