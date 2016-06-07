@@ -23,6 +23,29 @@ def err(e):
     return 'Got error {!r}, error is {}'.format(e, e.args[0])
 
 
+class CrawlerHandlerConnector:
+
+    def update_last_scan_pages(self, date):
+        try:
+            CURSOR.execute('''
+                UPDATE handler
+                SET last_scan_pages = %s
+                WHERE handler.id = 1
+            ''', date)
+        except MySQLError as e:
+            print(err(e))
+
+    def update_last_scan_pers_keys(self, date):
+        try:
+            CURSOR.execute('''
+                UPDATE handler
+                SET last_scan_pesr_keys = %s
+                WHERE handler.id = 1
+            ''', date)
+        except MySQLError as e:
+            print(err(e))
+
+
 class CrawlerSitesConnector:
 
     def get_pages_by_site_id(self, ids):
