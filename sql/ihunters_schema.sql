@@ -148,20 +148,26 @@ CREATE TRIGGER Keywords_AfterInsert
 AFTER INSERT ON keywords
 FOR EACH ROW
 BEGIN
-	UPDATE handler SET 
-		create_upd_date_pers_keys = NEW.create_upd_date,
-		need_scan_keys_pers = 1
-	WHERE id = 1;
+	UPDATE persons SET
+		persons.create_upd_date = NEW.create_upd_date
+		WHERE persons.id = NEW.person_id;
+	UPDATE handler SET
+		handler.create_upd_date_pers_keys = NEW.create_upd_date,
+		handler.need_scan_keys_pers = 1
+	WHERE handler.id = 1;
 END$$
 
 CREATE TRIGGER Keywords_AfterUpdate
 AFTER UPDATE ON keywords
 FOR EACH ROW
 BEGIN
-	UPDATE handler SET 
-		create_upd_date_pers_keys = NEW.create_upd_date,
-		need_scan_keys_pers = 1
-	WHERE id = 1;
+	UPDATE persons SET
+		persons.create_upd_date = NEW.create_upd_date
+		WHERE persons.id = NEW.person_id;
+	UPDATE handler SET
+		handler.create_upd_date_pers_keys = NEW.create_upd_date,
+		handler.need_scan_keys_pers = 1
+	WHERE handler.id = 1;
 END$$
 
 CREATE TRIGGER Pages_AfterUpdate
