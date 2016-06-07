@@ -61,6 +61,17 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
+    # def get_pages_by_site_id_gen(self, ids):
+    #     try:
+    #         CURSOR.execute('''
+    #             SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND last_scan_date IS NULL
+    #             '''.format(ids))
+    #         for k, v, d in CURSOR.fetchall():
+    #             yield {k: (v, d)}
+    #         # return {k: (v, d) for k, v, d in CURSOR.fetchall()}
+    #     except MySQLError as e:
+    #         print(err(e))
+
     def save(self, url, id, found_time=None):
         try:
             found_time = found_time or datetime.now().strftime('%Y-%m-%d %H:%M:%S')
