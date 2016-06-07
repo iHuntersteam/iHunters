@@ -169,7 +169,7 @@ AFTER UPDATE ON pages
 FOR EACH ROW
 BEGIN
 	UPDATE handler SET 
-		create_upd_date_pers_keys = NEW.create_upd_date,
+		create_upd_date_pages = NEW.create_upd_date,
 		need_scan_pages = 1
 	WHERE id = 1;
 END$$
@@ -179,7 +179,7 @@ AFTER INSERT ON pages
 FOR EACH ROW
 BEGIN
 	UPDATE handler SET 
-		create_upd_date_pers_keys = NEW.create_upd_date,
+		create_upd_date_pages = NEW.create_upd_date,
 		need_scan_pages = 1
 	WHERE id = 1;
 END$$
