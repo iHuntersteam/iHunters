@@ -83,7 +83,7 @@ class CrawlerSitesConnector:
                     FROM handler
                     WHERE handler.id = 1
                     )
-            '''.format(val)
+            '''
 
     def need_scan(self):
         return CrawlerHandlerConnector.check_for_scan(
