@@ -70,12 +70,12 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
-    def __query_for_last_scan_pages(self, val):
+    def __query_for_last_scan_pages(self):
         return '''
-                SELECT {0} 
-                FROM pages 
+                SELECT id, url, found_date_time
+                FROM pages
                 WHERE pages.create_upd_date > (
-                    SELECT handler.last_scan_pages 
+                    SELECT handler.last_scan_pages
                     FROM handler
                     WHERE handler.id = 1)
                 AND pages.create_upd_date <= (
