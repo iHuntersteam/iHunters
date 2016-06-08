@@ -25,23 +25,25 @@ def err(e):
 
 class CrawlerHandlerConnector:
 
-    def update_last_scan_pages(date):
+    def update_last_scan_pages():
         try:
             CURSOR.execute('''
                 UPDATE handler
-                SET last_scan_pages = %s
+                SET last_scan_pages = create_upd_date_pages
                 WHERE handler.id = 1
-            ''', date)
+            ''')
+            CONN.commit()
         except MySQLError as e:
             print(err(e))
 
-    def update_last_scan_pers_keys(date):
+    def update_last_scan_pers_keys():
         try:
             CURSOR.execute('''
                 UPDATE handler
-                SET last_scan_pesr_keys = %s
+                SET last_scan_pers_keys = create_upd_date_pers_keys
                 WHERE handler.id = 1
-            ''', date)
+            ''')
+            CONN.commit()
         except MySQLError as e:
             print(err(e))
 
