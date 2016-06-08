@@ -40,17 +40,18 @@ class PasswordController extends Controller
 
     private function sendPasswordOnEmail(Request $request)
     {
-        $this->validate($request, ['email' => 'required|email']);
-
-        /** @var User $user */
-        if (!$user = User::where('email', $request->email)->first()) {
-            return ResponseHelper::makeResponse([
-                'errorMessage' => "Юзера с email {$request->get('email')} нет",
-            ]);
-        }
-
         try {
+            $this->validate($request, ['email' => 'required|email']);
+            /** @var User $user */
+            if (!$user = User::where('email', $request->email)->first()) {
+                return ResponseHelper::makeResponse([
+                    'errorMessage' => "Юзера с email {$request->get('email')} нет",
+                ]);
+            }
+
             $newPassword = str_random(7);
+            $user->password = bcrypt($newPassword);
+            $user->save();
             $emailText = "Ваш аккаунт {$user->username}, ваш новый пароль {$newPassword}";
             Mail::raw($emailText, function ($message) use ($user) {
                 $message->from('ihunters@srv-ft-dev.ru', 'iHunters');
@@ -59,12 +60,6 @@ class PasswordController extends Controller
 
                 $message->subject('Сброс пароля');
             });
-
-
-            dd($user->update([
-                'password' => bcrypt($newPassword),
-            ]));
-
 
             return $this->getSendResetLinkEmailSuccessResponse(null, $request);
         } catch (\Exception $e) {
