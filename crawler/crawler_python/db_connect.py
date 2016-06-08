@@ -70,7 +70,7 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
-    def query_for_last_scan_pages(self, val):
+    def __query_for_last_scan_pages(self, val):
         return '''
                 SELECT {0} 
                 FROM pages 
