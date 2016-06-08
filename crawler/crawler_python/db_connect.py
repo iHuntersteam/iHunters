@@ -259,6 +259,22 @@ class CrawlerPersonsConnector:
                     )
             '''
 
+    def __query_for_last_scan_keywords(self, persons_id):
+        return '''
+                SELECT person_id, name
+                FROM keywords
+                WHERE keywords.create_upd_date > (
+                    SELECT handler.last_scan_pers_keys
+                    FROM handler
+                    WHERE handler.id = 1)
+                AND keywords.create_upd_date <= (
+                    SELECT handler.create_upd_date_pers_keys
+                    FROM handler
+                    WHERE handler.id = 1
+                    )
+                AND keywords.person_id in ({0})
+            '''.format(persons_id)
+
     def need_scan(self):
         return CrawlerHandlerConnector.check_for_scan(
             'last_scan_pers_keys', 'create_upd_date_pers_keys')
