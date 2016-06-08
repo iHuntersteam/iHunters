@@ -89,6 +89,14 @@ class CrawlerSitesConnector:
         return CrawlerHandlerConnector.check_for_scan(
             'last_scan_pages', 'create_upd_date_pages')
 
+    def get_create_upd_date_pages(self):
+        CURSOR.execute('''
+                SELECT create_upd_date_pages
+                FROM handler
+                WHERE id = 1
+            ''')
+        return CURSOR.fetchone()
+
     def get_not_scan_pages_gen(self):
         try:
             CURSOR.execute(self.__query_for_last_scan_pages(
