@@ -6,7 +6,7 @@ from collections import defaultdict
 from datetime import datetime
 
 
-CONN = pymysql.connect(host=HOST, port=PORT, user=USER,
+CONN = pymysql.connect(host=HOST, user=USER,
                        password=PASSWORD, db=DBNAME,
                        use_unicode=True, charset='utf8',
                        autocommit=False)
@@ -83,26 +83,25 @@ class CrawlerSitesConnector:
                     )
             '''.format(val)
 
-    def get_not_scan_pages_gen(self):
-        is_change = CrawlerHandlerConnector.check_for_scan(
     def need_scan(self):
         return CrawlerHandlerConnector.check_for_scan(
             'last_scan_pages', 'create_upd_date_pages')
-        if is_change:
-            try:
-                CURSOR.execute(self.query_for_last_scan_pages(
-                    'MAX(create_upd_date)'))
-                max_create_update = CURSOR.fetchone()
-                CURSOR.execute(self.query_for_last_scan_pages(
-                    'id, url, found_date_time'))
-                pages = CURSOR.fetchall()
-                # date update only on commit
-                CrawlerHandlerConnector.update_last_scan_pages(
-                    max_create_update)
 
-                return {k: (v, d) for k, v, d in pages}
-            except MySQLError as e:
-                print(err(e))
+    def get_not_scan_pages_gen(self):
+        try:
+            CURSOR.execute(self.query_for_last_scan_pages(
+                'MAX(create_upd_date)'))
+            max_create_update = CURSOR.fetchone()
+            CURSOR.execute(self.query_for_last_scan_pages(
+                'id, url, found_date_time'))
+            pages = CURSOR.fetchall()
+            # date update only on commit
+            CrawlerHandlerConnector.update_last_scan_pages(
+                max_create_update)
+
+            return {k: (v, d) for k, v, d in pages}
+        except MySQLError as e:
+            print(err(e))
 
     # def get_pages_by_site_id_gen(self, ids):
     #     try:
@@ -265,22 +264,19 @@ class CrawlerPersonsConnector:
 
     ## TODO in progress
     def get_not_scan_pages_gen(self):
-        is_change = CrawlerHandlerConnector.check_for_scan(
-            'last_scan_pers_keys', 'create_upd_date_pers_keys')
-        if is_change:
-            try:
-                CURSOR.execute(self.query_for_last_scan_persons(
-                    'MAX(create_upd_date)'))
-                max_create_update = CURSOR.fetchone()
-                CURSOR.execute(self.query_for_last_scan_persons(
-                    'id, name'))
-                persons = CURSOR.fetchall()
+        try:
+            CURSOR.execute(self.query_for_last_scan_persons(
+                'MAX(create_upd_date)'))
+            max_create_update = CURSOR.fetchone()
+            CURSOR.execute(self.query_for_last_scan_persons(
+                'id, name'))
+            persons = CURSOR.fetchall()
 
-                print(pages)
-                # date update only on commit
-                CrawlerHandlerConnector.update_last_scan_pages(
-                    max_create_update)
+            print(pages)
+            # date update only on commit
+            CrawlerHandlerConnector.update_last_scan_pages(
+                max_create_update)
 
-                return {k: (v, d) for k, v, d in pages}
-            except MySQLError as e:
-                print(err(e))
+            return {k: (v, d) for k, v, d in pages}
+        except MySQLError as e:
+            print(err(e))
