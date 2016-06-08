@@ -99,9 +99,9 @@ class CrawlerSitesConnector:
 
     def get_not_scan_pages_gen(self):
         try:
-            CURSOR.execute(self.__query_for_last_scan_pages(
-                'id, url, found_date_time'))
-            return {k: (v, d) for k, v, d in CURSOR.fetchall()}
+            CURSOR.execute(self.__query_for_last_scan_pages())
+            for k, v, d in CURSOR.fetchall():
+                yield {k: (v, d)}
         except MySQLError as e:
             print(err(e))
 
