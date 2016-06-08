@@ -244,13 +244,12 @@ class CrawlerPersonsConnector:
         except MySQLError as e:
             print(err(e))
 
-    ## TODO in progress
-    def query_for_last_scan_persons(self, val):
+    def __query_for_last_scan_persons(self):
         return '''
-                SELECT {0} 
-                FROM persons 
+                SELECT id, name
+                FROM persons
                 WHERE persons.create_upd_date > (
-                    SELECT handler.last_scan_pers_keys 
+                    SELECT handler.last_scan_pers_keys
                     FROM handler
                     WHERE handler.id = 1)
                 AND persons.create_upd_date <= (
@@ -258,7 +257,7 @@ class CrawlerPersonsConnector:
                     FROM handler
                     WHERE handler.id = 1
                     )
-            '''.format(val)
+            '''
 
     def need_scan(self):
         return CrawlerHandlerConnector.check_for_scan(
