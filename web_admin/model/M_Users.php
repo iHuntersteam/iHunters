@@ -31,12 +31,12 @@ class M_Users
 	{
 		$username=trim($username);
 		$password=trim($password);
-		$password=$this->generateHash($password);
 		$email=trim($email);
 		$check_username=$this->getByLogin($username);
 		if($password !== $password_comfirm) return false;
 		if($check_username==true) return false;
-		
+		$option=['cost'=>10];
+		$password=password_hash($password,PASSWORD_BCRYPT,$option);
 		$table="users";
 		$object=["username"=>$username,"password"=>$password,'email'=>$email];
 		$this->msql->Insert($table,$object);
@@ -59,12 +59,6 @@ class M_Users
 			setcookie('password', $password, $expire);
 		}
 		return true;	
-	}
-	public function generateHash($password)
-	{
-		$option=['cost'=>10];
-		$password=password_hash($password,PASSWORD_BCRYPT,$option);
-		return $password;
 	}
 }
 
