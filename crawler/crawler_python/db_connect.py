@@ -85,6 +85,8 @@ class CrawlerSitesConnector:
 
     def get_not_scan_pages_gen(self):
         is_change = CrawlerHandlerConnector.check_for_scan(
+    def need_scan(self):
+        return CrawlerHandlerConnector.check_for_scan(
             'last_scan_pages', 'create_upd_date_pages')
         if is_change:
             try:
@@ -256,6 +258,10 @@ class CrawlerPersonsConnector:
                     WHERE handler.id = 1
                     )
             '''.format(val)
+
+    def need_scan(self):
+        return CrawlerHandlerConnector.check_for_scan(
+            'last_scan_pers_keys', 'create_upd_date_pers_keys')
 
     ## TODO in progress
     def get_not_scan_pages_gen(self):
