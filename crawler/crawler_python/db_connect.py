@@ -197,22 +197,6 @@ class CrawlerPersonsConnector:
         except MySQLError as e:
             print(err(e))
 
-    def __query_for_last_scan_persons(self):
-        return '''
-                SELECT id, name
-                FROM persons
-                WHERE persons.create_upd_date > (
-                    SELECT handler.last_scan_pers_keys
-                    FROM handler
-                    WHERE handler.id = 1)
-                AND persons.create_upd_date <= (
-                    SELECT handler.create_upd_date_pers_keys
-                    FROM handler
-                    WHERE handler.id = 1
-                    )
-            '''
-
-    def __query_for_last_scan_keywords(self, persons_id):
     def __query_for_last_scan_keywords(self):
         return '''
                 SELECT person_id, name
