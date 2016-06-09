@@ -57,15 +57,17 @@ CREATE TABLE IF NOT EXISTS person_page_rank (
 ALTER TABLE person_page_rank ADD scan_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE person_page_rank CHANGE COLUMN scan_date date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-CREATE TABLE `ihunters`.`pages_content` (
-  `page_id` INT NOT NULL,
-  `page_body_text` LONGTEXT NULL,
-  UNIQUE INDEX `page_id_UNIQUE` (`page_id` ASC),
-  CONSTRAINT `id`
-    FOREIGN KEY (`page_id`)
-    REFERENCES `ihunters`.`pages` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION);
+CREATE TABLE `pages_content` (
+  `page_id` int(11) NOT NULL,
+  `page_body_text` longtext,
+  UNIQUE KEY `page_id_UNIQUE` (`page_id`),
+  CONSTRAINT `id` FOREIGN KEY (`page_id`) REFERENCES `pages` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE keywords ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
+ALTER TABLE pages ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
+ALTER TABLE persons ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
+ALTER TABLE sites ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
 
 DELIMITER $$
 
@@ -121,3 +123,52 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+USE ihunters;
+
+DROP TRIGGER IF EXISTS Persons_BeforeUpdate;
+DROP TRIGGER IF EXISTS Persons_BeforeInsert;
+DROP TRIGGER IF EXISTS Keywords_BeforeInsert;
+DROP TRIGGER IF EXISTS Keywords_BeforeUpdate;
+DROP TRIGGER IF EXISTS Pages_BeforeInsert;
+DROP TRIGGER IF EXISTS Pages_BeforeUpdate;
+DROP TRIGGER IF EXISTS PersonPageRank_AfterInsert;
+DROP TRIGGER IF EXISTS Persons_AfterUpdate;
+DROP TRIGGER IF EXISTS Persons_AfterInsert;
+DROP TRIGGER IF EXISTS Keywords_AfterInsert;
+DROP TRIGGER IF EXISTS Keywords_AfterUpdate;
+DROP TRIGGER IF EXISTS Pages_AfterUpdate;
+DROP TRIGGER IF EXISTS Pages_AfterInsert;
+
+DELIMITER ;
+
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Keywords_BeforeInsert` BEFORE INSERT ON ihunters.keywords FOR EACH ROW
+BEGIN
+	SET NEW.name_hash = MD5(NEW.name);
+END;
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Keywords_BeforeUpdate` BEFORE UPDATE ON ihunters.keywords FOR EACH ROW
+BEGIN
+	SET NEW.name_hash = MD5(NEW.name);
+        IF NEW.name != OLD.name THEN
+		SET NEW.rescan_needed = 1;
+    END IF;
+END;
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Pages_BeforeInsert` BEFORE INSERT ON ihunters.pages FOR EACH ROW
+BEGIN
+	SET NEW.url_hash = MD5(NEW.url);
+END;
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Pages_BeforeUpdate` BEFORE UPDATE ON ihunters.pages FOR EACH ROW
+BEGIN
+	SET NEW.url_hash = MD5(NEW.url);
+END;
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_BeforeInsert` BEFORE INSERT ON ihunters.persons FOR EACH ROW
+BEGIN
+	SET NEW.name_hash = MD5(NEW.name);
+END;
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_BeforeUpdate` BEFORE UPDATE ON ihunters.persons FOR EACH ROW
+BEGIN
+	SET NEW.name_hash = MD5(NEW.name);
+    IF NEW.name != OLD.name THEN
+		SET NEW.rescan_needed = 1;
+    END IF;
+END;
