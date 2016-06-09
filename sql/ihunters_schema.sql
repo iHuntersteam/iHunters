@@ -71,42 +71,42 @@ ALTER TABLE sites ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
 
 DELIMITER $$
 
-CREATE TRIGGER Persons_BeforeInsert 
+CREATE TRIGGER Persons_BeforeInsert
 BEFORE INSERT ON persons
 FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
 END$$
 
-CREATE TRIGGER Persons_BeforeUpdate 
+CREATE TRIGGER Persons_BeforeUpdate
 BEFORE UPDATE ON persons
 FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
 END$$
 
-CREATE TRIGGER Keywords_BeforeInsert 
+CREATE TRIGGER Keywords_BeforeInsert
 BEFORE INSERT ON keywords
 FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
 END$$
 
-CREATE TRIGGER Keywords_BeforeUpdate 
+CREATE TRIGGER Keywords_BeforeUpdate
 BEFORE UPDATE ON keywords
 FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
 END$$
 
-CREATE TRIGGER Pages_BeforeInsert 
+CREATE TRIGGER Pages_BeforeInsert
 BEFORE INSERT ON pages
 FOR EACH ROW
 BEGIN
 	SET NEW.url_hash = MD5(NEW.url);
 END$$
 
-CREATE TRIGGER Pages_BeforeUpdate 
+CREATE TRIGGER Pages_BeforeUpdate
 BEFORE UPDATE ON pages
 FOR EACH ROW
 BEGIN
@@ -121,10 +121,8 @@ BEGIN
 	WHERE pages.id = NEW.page_id;
 END$$
 
-DELIMITER ;
 
-DELIMITER $$
-USE ihunters;
+
 
 DROP TRIGGER IF EXISTS Persons_BeforeUpdate;
 DROP TRIGGER IF EXISTS Persons_BeforeInsert;
@@ -140,35 +138,35 @@ DROP TRIGGER IF EXISTS Keywords_AfterUpdate;
 DROP TRIGGER IF EXISTS Pages_AfterUpdate;
 DROP TRIGGER IF EXISTS Pages_AfterInsert;
 
-DELIMITER ;
 
 CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Keywords_BeforeInsert` BEFORE INSERT ON ihunters.keywords FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
-END;
+END$$
 CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Keywords_BeforeUpdate` BEFORE UPDATE ON ihunters.keywords FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
         IF NEW.name != OLD.name THEN
 		SET NEW.rescan_needed = 1;
     END IF;
-END;
+END$$
 CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Pages_BeforeInsert` BEFORE INSERT ON ihunters.pages FOR EACH ROW
 BEGIN
 	SET NEW.url_hash = MD5(NEW.url);
-END;
+END$$
 CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Pages_BeforeUpdate` BEFORE UPDATE ON ihunters.pages FOR EACH ROW
 BEGIN
 	SET NEW.url_hash = MD5(NEW.url);
-END;
+END$$
 CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_BeforeInsert` BEFORE INSERT ON ihunters.persons FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
-END;
+END$$
 CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_BeforeUpdate` BEFORE UPDATE ON ihunters.persons FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
     IF NEW.name != OLD.name THEN
 		SET NEW.rescan_needed = 1;
     END IF;
-END;
+END$$
+DELIMITER ;
