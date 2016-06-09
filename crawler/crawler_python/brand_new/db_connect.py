@@ -29,7 +29,7 @@ class CrawlerSitesConnector:
     def get_pages_by_site_id(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND last_scan_date IS NULL
+                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND rescan_needed = 1
                 '''.format(ids))
             return {k: (v, d) for k, v, d in CURSOR.fetchall()}
         except MySQLError as e:
@@ -38,7 +38,7 @@ class CrawlerSitesConnector:
     def get_pages_by_site_id_gen(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND last_scan_date IS NULL
+                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND rescan_needed = 1
                 '''.format(ids))
             for k, v, d in CURSOR.fetchall():
                 yield {k: (v, d)}
@@ -98,6 +98,16 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
+    def get_site_rate_limit(self, site_id):
+        try:
+            CURSOR.execute('''
+            SELECT rate_limit FROM sites
+            WHERE id=%s;
+            ''', site_id)
+            return CURSOR.fetchone()[0]
+        except MySQLError as e:
+            print(err(e))
+
 
 class CrawlerPersonPageRankConnector:
 
@@ -109,16 +119,27 @@ class CrawlerPersonPageRankConnector:
             for person_id, rank in v.items():
                 if rank == 0:
                     try:
-                        CURSOR.execute('''UPDATE pages
-                                          SET last_scan_date = CURRENT_TIMESTAMP
-                                          WHERE `id` = %s;''', page_id)
-                        CURSOR.execute('''INSERT INTO pages_content(page_id, page_body_text)
+                        # CURSOR.execute('''UPDATE pages
+                        #                   SET last_scan_date = CURRENT_TIMESTAMP
+                        #                   WHERE `id` = %s;''', page_id)
+                        # CURSOR.execute('''INSERT INTO pages_content(page_id, page_body_text)
+                        #                   VALUES (%s, %s)
+                        #                   ON DUPLICATE KEY
+                        #                   UPDATE page_body_text = VALUES (page_body_text)''', (page_id, page_text))
+                        # CURSOR.execute('''UPDATE pages
+                        #                   SET rescan_needed = 0
+                        #                   WHERE id = %s;''', page_id)
+                        CURSOR.execute('''UPDATE pages SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;
+
+                                          INSERT INTO pages_content(page_id, page_body_text)
                                           VALUES (%s, %s)
                                           ON DUPLICATE KEY
-                                          UPDATE page_body_text = VALUES (page_body_text)''', (page_id, page_text))
-                        CURSOR.execute('''UPDATE pages
+                                          UPDATE page_body_text = VALUES (page_body_text);
+
+                                          UPDATE pages
                                           SET rescan_needed = 0
-                                          WHERE id = %s;''', page_id)
+                                          WHERE id = %s;''', (page_id, page_id, page_text, page_id))
+
                     except MySQLError as e:
                         print(err(e))
                     continue
