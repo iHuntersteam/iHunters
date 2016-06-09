@@ -1,0 +1,28 @@
+1. В БД создана доп. таблица для хранения текста просканированных страниц
+CREATE TABLE `ihunters`.`pages_content` (
+  `page_id` INT NOT NULL,
+  `page_body_text` LONGTEXT NULL,
+  UNIQUE INDEX `page_id_UNIQUE` (`page_id` ASC),
+  CONSTRAINT `id`
+    FOREIGN KEY (`page_id`)
+    REFERENCES `ihunters`.`pages` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
+Установлен RabbitMQ. Там сделан пользователь testuser с паролем test
+и virtual host с разванием testvhost
+
+2. Скрипт db_fill заполняет таблицу pages заданным количеством ссылок
+на http://192.168.1.119/ у меня висит nginx с такой директивой в конфиге
+location / {
+        try_files $uri $uri/ /rbc.html;
+        root   /usr/share/nginx/html;
+    }
+поэтому все ссылки http://192.168.1.119/1 http://192.168.1.119/130 и т.п. получают один и тот-же ответ - страницу РБК
+(я её выбрал, потому что она довольно тяжеловесная)
+
+3. run.py соответственно закидывает все задачи в celery и всё.
+
+Воркера запускаю так из директории crawler_python
+celery.exe worker --app=async_downloader.downloader_async -b amqp://testuser:test@192.168.1.119:5672/testvhost -n worker1.%h --loglevel=INFO
+Дальше всё через chain - страница скачивается, страница парсится, страница сохраняется в БД.
