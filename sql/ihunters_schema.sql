@@ -87,6 +87,14 @@ BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
 END$$
 
+CREATE TRIGGER Persons_AfterInsert 
+AFTER INSERT ON persons
+FOR EACH ROW
+BEGIN
+	INSERT INTO keywords(name, person_id)
+	VALUES(NEW.name, NEW.id);
+END$$
+
 CREATE TRIGGER Persons_BeforeUpdate 
 BEFORE UPDATE ON persons
 FOR EACH ROW
