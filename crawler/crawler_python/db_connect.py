@@ -38,20 +38,13 @@ class CrawlerSitesConnector:
         return '''
                 SELECT id, url, found_date_time
                 FROM pages
-                WHERE pages.create_upd_date > (
-                    SELECT handler.last_scan_pages
-                    FROM handler
-                    WHERE handler.id = 1)
-                AND pages.create_upd_date <= (
-                    SELECT handler.create_upd_date_pages
-                    FROM handler
-                    WHERE handler.id = 1
-                    )
+                WHERE pages.rescan_needed = 1
             '''
 
     def need_scan(self):
-        return CrawlerHandlerConnector.check_for_scan(
-            'last_scan_pages', 'create_upd_date_pages')
+        return CURSOR.execute('''
+            SELECT COUNT(id) FROM pages WHERE rescan_needed = 1
+            ''')
 
     def get_create_upd_date_pages(self):
         CURSOR.execute('''
@@ -184,18 +177,14 @@ class CrawlerPersonsConnector:
     def get_person_with_keywords(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, name FROM persons WHERE id IN ({0})
-                '''.format(ids))
-            persons = CURSOR.fetchall()
-            CURSOR.execute('''
                 SELECT person_id, name FROM keywords WHERE person_id IN ({0})
             '''.format(ids))
             keywords = list(CURSOR.fetchall())
-            keywords.extend(persons)
             persons_dict = defaultdict(list)
             for k, v in keywords:
                 persons_dict[k].append(v)
             return dict(persons_dict)
+
         except MySQLError as e:
             print(err(e))
 
@@ -224,33 +213,22 @@ class CrawlerPersonsConnector:
             '''
 
     def __query_for_last_scan_keywords(self, persons_id):
+    def __query_for_last_scan_keywords(self):
         return '''
                 SELECT person_id, name
                 FROM keywords
-                WHERE keywords.create_upd_date > (
-                    SELECT handler.last_scan_pers_keys
-                    FROM handler
-                    WHERE handler.id = 1)
-                AND keywords.create_upd_date <= (
-                    SELECT handler.create_upd_date_pers_keys
-                    FROM handler
-                    WHERE handler.id = 1
-                    )
-                AND keywords.person_id in ({0})
-            '''.format(persons_id)
+                WHERE keywords.rescan_needed = 1
+            '''
 
     def need_scan(self):
-        return CrawlerHandlerConnector.check_for_scan(
-            'last_scan_pers_keys', 'create_upd_date_pers_keys')
+        return CURSOR.execute('''
+            SELECT COUNT(id) FROM keywords WHERE rescan_needed = 1
+            ''')
 
     def get_not_scan_pers(self):
         try:
-            CURSOR.execute(self.__query_for_last_scan_persons())
-            persons = CURSOR.fetchall()
-            persons_id = ' ,'.join(str(_id) for _id, name in persons)
-            CURSOR.execute(self.__query_for_last_scan_keywords(persons_id))
+            CURSOR.execute(self.__query_for_last_scan_keywords())
             keywords = list(CURSOR.fetchall())
-            keywords.extend(persons)
             persons_dict = defaultdict(list)
             for k, v in keywords:
                 persons_dict[k].append(v)
