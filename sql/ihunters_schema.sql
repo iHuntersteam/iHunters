@@ -110,9 +110,6 @@ BEFORE INSERT ON keywords
 FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
-	UPDATE persons 
-	SET persons.rescan_needed = 1
-	WHERE persons.id = NEW.person_id;
 END$$
 
 CREATE TRIGGER Keywords_BeforeUpdate 
