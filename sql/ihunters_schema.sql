@@ -57,6 +57,18 @@ CREATE TABLE IF NOT EXISTS person_page_rank (
 ALTER TABLE person_page_rank ADD scan_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE person_page_rank CHANGE COLUMN scan_date date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+CREATE TABLE IF NOT EXISTS handler (
+	id INT NOT NULL,
+	need_scan_keys_pers BOOL NOT NULL DEFAULT 0,
+	need_scan_pages BOOL NOT NULL DEFAULT 0,
+	create_upd_date_pers_keys TIMESTAMP NULL,
+	create_upd_date_pages TIMESTAMP NULL,
+	last_scan_pers_keys TIMESTAMP NULL,
+	last_scan_pages TIMESTAMP NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+INSERT INTO handler(id) VALUES('1');
+
 CREATE TABLE `pages_content` (
   `page_id` int(11) NOT NULL,
   `page_body_text` longtext,
