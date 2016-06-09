@@ -6,7 +6,7 @@ from collections import defaultdict
 from datetime import datetime
 
 
-CONN = pymysql.connect(host=HOST, user=USER,
+CONN = pymysql.connect(host=HOST, port=PORT, user=USER,
                        password=PASSWORD, db=DBNAME,
                        use_unicode=True, charset='utf8',
                        autocommit=False)
