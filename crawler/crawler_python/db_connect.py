@@ -188,6 +188,19 @@ class CrawlerPersonsConnector:
         except MySQLError as e:
             print(err(e))
 
+    def get_all_persons_with_keywords(self):
+        try:
+            CURSOR.execute('''
+            SELECT person_id, name FROM keywords
+            ''')
+            keywords = list(CURSOR.fetchall())
+            persons_dict = defaultdict(list)
+            for k, v in keywords:
+                persons_dict[k].append(v)
+            return dict(persons_dict)
+        except MySQLError as e:
+            print(err(e))
+
     def get_persons_ids(self):
         try:
             CURSOR.execute('''
