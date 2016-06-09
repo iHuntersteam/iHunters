@@ -57,6 +57,16 @@ CREATE TABLE IF NOT EXISTS person_page_rank (
 ALTER TABLE person_page_rank ADD scan_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE person_page_rank CHANGE COLUMN scan_date date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+CREATE TABLE `ihunters`.`pages_content` (
+  `page_id` INT NOT NULL,
+  `page_body_text` LONGTEXT NULL,
+  UNIQUE INDEX `page_id_UNIQUE` (`page_id` ASC),
+  CONSTRAINT `id`
+    FOREIGN KEY (`page_id`)
+    REFERENCES `ihunters`.`pages` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
 DELIMITER $$
 
 CREATE TRIGGER Persons_BeforeInsert 

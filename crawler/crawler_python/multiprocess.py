@@ -12,5 +12,5 @@ def crawl_site(site_id):
 
 
 if __name__ == '__main__':
-    p = mp.Pool(4)
+    p = mp.Pool(8)
     p.map(crawl_site, sites_id)

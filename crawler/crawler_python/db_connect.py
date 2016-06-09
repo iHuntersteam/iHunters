@@ -100,8 +100,9 @@ class CrawlerPersonPageRankConnector:
 
     def save(self, dict_ranks):
         for page_id, v in dict_ranks.items():
-            page_modified_date = v.pop('date_modified', datetime.now())
+            page_modified_date = v.pop('date-modified', datetime.now())
             page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
+            page_text = v.pop('page-text', 'No text')
             for person_id, rank in v.items():
                 if rank == 0:
                     try:
@@ -109,6 +110,11 @@ class CrawlerPersonPageRankConnector:
                         UPDATE pages
                         SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;
                         ''', page_id)
+                        CURSOR.execute('''INSERT INTO pages_content(page_id, page_body_text)
+                            VALUES (%s, %s)
+                            ON DUPLICATE KEY UPDATE
+                            page_body_text = VALUES (page_body_text)
+                            ''', (page_id, page_text))
                     except MySQLError as e:
                         print(err(e))
                     continue
@@ -123,6 +129,11 @@ class CrawlerPersonPageRankConnector:
                         INSERT INTO person_page_rank(person_id, page_id, rank, date_modified)
                         VALUES('{0}', '{1}', '{2}', '{3}')
                         '''.format(person_id, page_id, rank, page_modified_date))
+                    CURSOR.execute('''INSERT INTO pages_content(page_id, page_body_text)
+                        VALUES (%s, %s)
+                        ON DUPLICATE KEY UPDATE
+                        page_body_text = VALUES (page_body_text)
+                        ''', (page_id, page_text))
                 except MySQLError as e:
                     print(err(e))
             # after inserting all items - commiting transaction
@@ -136,7 +147,7 @@ class CrawlerPersonPageRankConnector:
                 FROM person_page_rank
                 WHERE page_id = '{0}' and person_id = '{1}')
                 '''.format(page_id, person_id))
-            return CURSOR.fetchall()
+            return CURSOR.fetchone()
 
         except MySQLError as e:
             print(err(e))
