@@ -55,6 +55,9 @@ CREATE TABLE IF NOT EXISTS person_page_rank (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 
+ALTER TABLE persons DROP COLUMN rescan_needed;
+ALTER TABLE pages DROP COLUMN rescan_needed;
+ALTER TABLE keywords DROP COLUMN rescan_needed;
 
 ALTER TABLE person_page_rank ADD scan_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE person_page_rank CHANGE COLUMN scan_date date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
