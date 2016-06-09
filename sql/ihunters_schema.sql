@@ -91,7 +91,10 @@ CREATE TRIGGER Persons_BeforeUpdate
 BEFORE UPDATE ON persons
 FOR EACH ROW
 BEGIN
-	SET NEW.name_hash = MD5(NEW.name);
+	IF NEW.name != OLD.name || NEW.create_upd_date != OLD.create_upd_date THEN
+		SET NEW.name_hash = MD5(NEW.name);
+		SET NEW.rescan_needed = 1;
+	END IF;
 END$$
 
 CREATE TRIGGER Keywords_BeforeInsert 
@@ -99,13 +102,22 @@ BEFORE INSERT ON keywords
 FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
+	UPDATE persons 
+	SET persons.rescan_needed = 1
+	WHERE persons.id = NEW.person_id;
 END$$
 
 CREATE TRIGGER Keywords_BeforeUpdate 
 BEFORE UPDATE ON keywords
 FOR EACH ROW
 BEGIN
-	SET NEW.name_hash = MD5(NEW.name);
+	IF NEW.name != OLD.name || NEW.person_id != OLD.person_id THEN
+		SET NEW.name_hash = MD5(NEW.name);
+		SET NEW.rescan_needed = 1;
+		UPDATE persons 
+		SET persons.rescan_needed = 1
+		WHERE persons.id = NEW.person_id;
+	END IF;
 END$$
 
 CREATE TRIGGER Pages_BeforeInsert 
@@ -119,7 +131,12 @@ CREATE TRIGGER Pages_BeforeUpdate
 BEFORE UPDATE ON pages
 FOR EACH ROW
 BEGIN
-	SET NEW.url_hash = MD5(NEW.url);
+	IF NEW.url != OLD.url || 
+		NEW.site_id != OLD.site_id || 
+		NEW.found_date_time != OLD.found_date_time THEN
+			SET NEW.url_hash = MD5(NEW.url);
+			SET NEW.rescan_needed = 1;
+	END IF;
 END$$
 
 CREATE TRIGGER PersonPageRank_AfterInsert
