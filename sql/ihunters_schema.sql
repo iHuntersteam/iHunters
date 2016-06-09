@@ -61,7 +61,6 @@ ALTER TABLE keywords DROP COLUMN rescan_needed;
 
 ALTER TABLE person_page_rank ADD scan_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE person_page_rank CHANGE COLUMN scan_date date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE persons ADD rescan_needed BOOL NOT NULL DEFAULT 1;
 ALTER TABLE pages ADD rescan_needed BOOL NOT NULL DEFAULT 1;
 ALTER TABLE keywords ADD rescan_needed BOOL NOT NULL DEFAULT 1;
 DROP TRIGGER IF EXISTS Pages_AfterInsert;
