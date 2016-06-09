@@ -34,6 +34,17 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
+    def get_all_pages_gen(self):
+        try:
+            CURSOR.execute('''
+                SELECT id, url, found_date_time
+                FROM pages
+            ''')
+            for k, v, d in CURSOR.fetchall():
+                yield {k: (v, d)}
+        except MySQLError as e:
+            print(err(e))
+
     def __query_for_last_scan_pages(self):
         return '''
                 SELECT id, url, found_date_time
