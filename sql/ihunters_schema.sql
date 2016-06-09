@@ -70,6 +70,7 @@ DROP TRIGGER IF EXISTS Keywords_AfterInsert;
 DROP TRIGGER IF EXISTS Persons_AfterInsert;
 DROP TRIGGER IF EXISTS Persons_AfterUpdate;
 DROP TRIGGER IF EXISTS Persons_BeforeUpdate;
+DROP TRIGGER IF EXISTS Persons_BeforeInsert;
 DROP TRIGGER IF EXISTS Keywords_BeforeInsert;
 DROP TRIGGER IF EXISTS Keywords_BeforeUpdate;
 DROP TRIGGER IF EXISTS Pages_BeforeUpdate;
