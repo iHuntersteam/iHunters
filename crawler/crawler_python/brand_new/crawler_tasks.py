@@ -14,6 +14,7 @@ from requests.exceptions import (SSLError, ConnectionError, URLRequired,
 
 from brand_new.celery_app import app
 from brand_new.db_connect import CrawlerPersonsConnector, CrawlerPersonPageRankConnector
+from brand_new.utils import create_search_patterns, rank_page
 
 
 class ReqRequest:
@@ -44,102 +45,7 @@ def backoff(attempts):
     return 5 ** attempts
 
 
-# Abstract classes for tasks. It helps share things like db connection between tasks
-class ParseTask(Task):
-    abstract = True
-    _search_patterns = None
-
-    @cached_property
-    def search_patterns(self):
-        if self._search_patterns is None:
-            self._search_patterns = {}
-            temp_connector = CrawlerPersonsConnector()
-            persons_ids = ','.join(map(str, temp_connector.get_persons_ids()))
-            persons_dict_wkeys = temp_connector.get_person_with_keywords(persons_ids)
-            for key, value in persons_dict_wkeys.items():
-                search_val = '|'.join(value)
-                self._search_patterns[key] = re.compile(r'\b{}\b'.format(search_val), re.IGNORECASE | re.MULTILINE)
-        return self._search_patterns
-
-
-class SaveTask(Task):
-    abstract = True
-    _db_connection = None
-
-    @cached_property
-    def get_connector(self):
-        if self._db_connection is None:
-            self._db_connection = CrawlerPersonPageRankConnector()
-        return self._db_connection
-
-
-@app.task(max_retries=3, bind=True, ignore_result=True)
-def fetch(self, page_id, request_url, page_date):
-    http_headers = {
-        'User-Agent': 'iHunters Bot 1.0',
-    }
-    try:
-        res = requestslib.get(request_url, headers=http_headers)
-    except (SSLError, ConnectionError, URLRequired,
-            MissingSchema, InvalidSchema, InvalidURL, TooManyRedirects) as e:
-        self.retry(countdown=backoff(self.request.retries), exc=e)
-    return page_id, ReqResponse(ReqRequest(request_url), res), page_date
-
-
-@app.task(base=ParseTask, ignore_result=True)
-def get_info_from(data):
-    page_id, page_response, page_date = data
-    page_ranks = {}
-    page_url = page_response.request.url
-    try:
-        converted = page_response.content.decode('utf-8')
-    except UnicodeDecodeError:
-        converted = UnicodeDammit(page_response.content)
-        if not converted.unicode_markup:
-            page_ranks[page_id] = {}
-            return page_ranks
-        converted = converted.unicode_markup
-
-    page_date_only = page_date.date()
-    now_date = datetime.now().date()
-    if page_date_only == now_date:
-        last_modified_header = page_response.headers.get('Last-Modified')
-        if last_modified_header:
-            try:
-                page_date = dateutil.parser.parse(last_modified_header)
-            except ValueError:
-                # if this error occurs page_date remains equal to page_date from arguments
-                pass
-        else:
-            # TODO Add parsing url to found datetime
-            pass
-
-    root = html.fromstring(converted)
-    #  delete all <script></script> tags
-    cleaner = Cleaner(scripts=True)
-    root = cleaner.clean_html(root)
-    # we only need data from <body></body> tag
-    body = root.xpath('body')[0]
-    body_text = body.text_content()
-    result = {}
-
-    for pattern_name in get_info_from.search_patterns:
-        rank = get_info_from.search_patterns[pattern_name].findall(body_text)
-        result[pattern_name] = len(rank)
-        result['date-modified'] = page_date
-    page_ranks[page_id] = result
-    # prepare body text to save. Remove multiple whitespaces and new-line sybmols
-    body_text = re.sub('\s+', ' ', body_text)
-    page_ranks[page_id]['page-text'] = body_text.strip()
-    return page_ranks
-
-
-@app.task(base=SaveTask, ignore_result=True)
-def save_rank_to_database(data):
-    save_rank_to_database.get_connector.save(data)
-
-
-class WarnerTask(Task):
+class WebCrawlerTask(Task):
 
     _search_patterns = None
     _db_connection = None
@@ -152,15 +58,25 @@ class WarnerTask(Task):
         return self._session
 
     @cached_property
+    # def search_patterns(self):
+    #     if self._search_patterns is None:
+    #         self._search_patterns = {}
+    #         temp_connector = CrawlerPersonsConnector()
+    #         # persons_ids = ','.join(map(str, temp_connector.get_persons_ids()))
+    #         persons_ids = temp_connector.get_persons_ids()
+    #         persons_dict_wkeys = temp_connector.get_person_with_keywords(persons_ids)
+    #         for key, value in persons_dict_wkeys.items():
+    #             search_val = '|'.join(value)
+    #             self._search_patterns[key] = re.compile(r'\b{}\b'.format(search_val), re.IGNORECASE | re.MULTILINE)
+    #     return self._search_patterns
     def search_patterns(self):
         if self._search_patterns is None:
             self._search_patterns = {}
             temp_connector = CrawlerPersonsConnector()
-            persons_ids = ','.join(map(str, temp_connector.get_persons_ids()))
+            # persons_ids = ','.join(map(str, temp_connector.get_persons_ids()))
+            persons_ids = temp_connector.get_persons_ids()
             persons_dict_wkeys = temp_connector.get_person_with_keywords(persons_ids)
-            for key, value in persons_dict_wkeys.items():
-                search_val = '|'.join(value)
-                self._search_patterns[key] = re.compile(r'\b{}\b'.format(search_val), re.IGNORECASE | re.MULTILINE)
+            self._search_patterns = create_search_patterns(persons_dict_wkeys)
         return self._search_patterns
 
     @cached_property
@@ -219,12 +135,13 @@ class WarnerTask(Task):
         # we only need data from <body></body> tag
         body = root.xpath('body')[0]
         body_text = body.text_content()
-        result = {}
+        # result = {}
+        result = rank_page(self.search_patterns, body_text)
+        # for pattern_name in self.search_patterns:
+        #     rank = self.search_patterns[pattern_name].findall(body_text)
+        #     result[pattern_name] = len(rank)
 
-        for pattern_name in self.search_patterns:
-            rank = self.search_patterns[pattern_name].findall(body_text)
-            result[pattern_name] = len(rank)
-            result['date-modified'] = page_date
+        result['date-modified'] = page_date
         page_ranks[page_id] = result
         # prepare body text to save. Remove multiple whitespaces and new-line sybmols
         body_text = re.sub('\s+', ' ', body_text)

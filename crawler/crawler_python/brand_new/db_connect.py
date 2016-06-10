@@ -76,7 +76,8 @@ class CrawlerSitesConnector:
                 SELECT COUNT(*) FROM pages
                 WHERE `site_id`=%s;
             ''', one_id)
-            return CURSOR.fetchone()[0]
+            result = CURSOR.fetchone()
+            return result[0] if result else None
         except MySQLError as e:
             print(err(e))
 
@@ -104,7 +105,61 @@ class CrawlerSitesConnector:
             SELECT rate_limit FROM sites
             WHERE id=%s;
             ''', site_id)
-            return CURSOR.fetchone()[0]
+            result = CURSOR.fetchone()
+            return result[0] if result else None
+        except MySQLError as e:
+            print(err(e))
+
+    def get_all_pages_id_gen(self):
+        try:
+            CURSOR.execute('''SELECT id, site_id, found_date_time FROM pages;''')
+            for id, site_id, found_date_time in CURSOR.fetchall():
+                yield id, site_id, found_date_time
+        except MySQLError as e:
+            print(err(e))
+
+    def get_page_text(self, one_page_id):
+        try:
+            CURSOR.execute('''SELECT page_body_text FROM pages_content WHERE page_id=%s;''', one_page_id)
+            # fetchone returns None when there are no row to fetch
+            result = CURSOR.fetchone()   # tuple if there is a text or None
+            return result[0] if result else None
+        except MySQLError as e:
+            print(err(e))
+
+    def mark_page_to_scan(self, page_id):
+        try:
+            CURSOR.execute('''
+            UPDATE pages SET rescan_needed = 1 WHERE id = %s;
+            ''', page_id)
+            CONN.commit()
+        except MySQLError as e:
+            print(err(e))
+
+    def get_newly_added_websites_ids(self):
+        try:
+            CURSOR.execute('''
+            SELECT id FROM sites WHERE rescan_needed = 1;
+            ''')
+            # из базы приходит ((1,), (2,) и т.п.) переводим в обычный список
+            # Этот запрос запускается только когда до этого БД показала, что есть сайты с флагом rescan_needed
+            # Поэтому обязательно что-нибудь вернётся
+            return [x[0] for x in CURSOR.fetchall()]
+        except MySQLError as e:
+            print(err(e))
+
+    def set_sites_scanned(self, ids):
+        if isinstance(ids, int):
+            # один айдишник передали
+            ids = [ids]
+        # Чтобы можно было сюда просто передать список и не париться.
+        var_string = ', '.join(['%s' for _ in range(len(ids))])
+        # получается строка %s, %s, %s по количеству idшников, вставляем её в запрос
+        query_string = 'UPDATE sites SET rescan_needed = 0  WHERE id IN ({});'.format(var_string)
+        try:
+            # вместо %s подставятся значения идшников
+            CURSOR.execute(query_string, ids)
+            CONN.commit()
         except MySQLError as e:
             print(err(e))
 
@@ -116,6 +171,9 @@ class CrawlerPersonPageRankConnector:
             page_modified_date = v.pop('date-modified', datetime.now())
             page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
             page_text = v.pop('page-text', 'No text')
+            # Если мы пересканируем персон по сохранённых текстам, то не будем обновлять last_scan_date
+            rescanned_flag = v.pop('rescanned', None)
+
             for person_id, rank in v.items():
                 if rank == 0:
                     try:
@@ -129,6 +187,11 @@ class CrawlerPersonPageRankConnector:
                         # CURSOR.execute('''UPDATE pages
                         #                   SET rescan_needed = 0
                         #                   WHERE id = %s;''', page_id)
+                        if rescanned_flag:
+                            # если пересканируем рейтинг по сохранённым страницам, то не обновляем дату сканирования
+                            # страницы и её текст.
+                            continue
+
                         CURSOR.execute('''UPDATE pages SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;
 
                                           INSERT INTO pages_content(page_id, page_body_text)
@@ -155,6 +218,8 @@ class CrawlerPersonPageRankConnector:
                                                                                    page_id,
                                                                                    rank,
                                                                                    page_modified_date))
+                    if rescanned_flag:
+                        continue
                     CURSOR.execute('''INSERT INTO pages_content(page_id, page_body_text)
                                       VALUES (%s, %s)
                                       ON DUPLICATE KEY
@@ -185,13 +250,14 @@ class CrawlerPersonsConnector:
 
     def get_person_with_keywords(self, ids):
         try:
-            CURSOR.execute('''
-                SELECT id, name FROM persons WHERE id IN ({0})
-                '''.format(ids))
+            # Чтобы можно было сюда просто передать список и не париться.
+            var_string = ', '.join(['%s' for _ in range(len(ids))])
+            # получается строка %s, %s, %s по количеству idшников, вставляем её в запрос
+            query_string = 'SELECT id, name FROM persons WHERE id IN ({0});'.format(var_string)
+            CURSOR.execute(query_string, ids)
             persons = CURSOR.fetchall()
-            CURSOR.execute('''
-                SELECT person_id, name FROM keywords WHERE person_id IN ({0})
-            '''.format(ids))
+            query_string = 'SELECT person_id, name FROM keywords WHERE person_id IN ({0});'.format(var_string)
+            CURSOR.execute(query_string, ids)
             keywords = list(CURSOR.fetchall())
             keywords.extend(persons)
             persons_dict = defaultdict(list)
@@ -210,7 +276,25 @@ class CrawlerPersonsConnector:
         except MySQLError as e:
             print(err(e))
 
+    def get_persons_id_for_newly_added_persons_or_keywords(self):
+        try:
+            CURSOR.execute('''
+            SELECT id FROM persons WHERE rescan_needed=1;
+            ''')
+            new_persons = [x[0] for x in CURSOR.fetchall()]
+            CURSOR.execute('''
+            SELECT person_id FROM keywords WHERE rescan_needed=1;
+            ''')
+            new_keywords = [x[0] for x in CURSOR.fetchall()]
+            return list(set(new_keywords + new_persons))
+        except MySQLError as e:
+            print(err(e))
+            return []
+
     def set_persons_scanned(self, ids):
+        if isinstance(ids, int):
+            # один айдишник передали
+            ids = [ids]
         # Чтобы можно было сюда просто передать список и не париться.
         var_string = ', '.join(['%s' for _ in range(len(ids))])
         # получается строка %s, %s, %s по количеству idшников, вставляем её в запрос
@@ -222,11 +306,29 @@ class CrawlerPersonsConnector:
         except MySQLError as e:
             print(err(e))
 
-    def set_keywords_scanned(self, ids):
+    def set_keywords_scanned_for_person_id(self, ids):
+        if isinstance(ids, int):
+            # один айдишник передали
+            ids = [ids]
         var_string = ', '.join(['%s' for _ in range(len(ids))])
-        query_string = 'UPDATE keywords SET rescan_needed = 0  WHERE id IN ({});'.format(var_string)
+        query_string = 'UPDATE keywords SET rescan_needed = 0  WHERE person_id IN ({});'.format(var_string)
         try:
             CURSOR.execute(query_string, ids)
             CONN.commit()
+        except MySQLError as e:
+            print(err(e))
+
+class CrawlerMonitoringConnection:
+
+    def get_stat_info(self):
+        try:
+            CURSOR.execute('''
+            SELECT
+            (SELECT COUNT(*) FROM `sites` WHERE `rescan_needed`=1) AS 'new_sites',
+            (SELECT COUNT(*) FROM `persons` WHERE `rescan_needed`=1) AS 'new_persons',
+            (SELECT COUNT(*) FROM `keywords` WHERE `rescan_needed`=1) AS 'new_keywords',
+            (SELECT COUNT(*) FROM `pages` WHERE `rescan_needed`=1) AS 'new_pages'
+            ''')
+            return CURSOR.fetchone()
         except MySQLError as e:
             print(err(e))

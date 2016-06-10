@@ -28,7 +28,14 @@ class RobotsParser:
         :param url: web-site url
         :return: A list of sitemaps OR an empty list if sitemaps are not found.
         """
+        if url is None:
+            print('Url in not defined')
+            return []
         parsed = parse.urlparse(url)
+        if not parsed.netloc:
+            # Bad url
+            print('Bad url! {}'.format(url))
+            return []
         robot_url = '{s.scheme}://{s.netloc}/robots.txt'.format(s=parsed)
         robots_txt = ReqDownloader.fetch(ReqRequest(robot_url))
         if isinstance(robots_txt, BaseCrawlException):
