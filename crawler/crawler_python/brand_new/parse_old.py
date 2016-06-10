@@ -142,6 +142,8 @@ class SitemapParser:
                         frontier_date = date(2015, 1, 1)
                         if lastmod_date.date() < frontier_date:
                             continue
+                    else:
+                        lastmod_date = None
                     if location:
                         # if xml tag <loc> is presented but empty location == None
                         # return only non-empty locations
