@@ -1,25 +1,8 @@
 <?php 
-
-/*private $host='';
-private $user='';
-private $password='';
-private $dbname='';
-$this->host
-$this->user
-$this->password
-$this->dbname
-
-
-
-
-*/
-
-
-
-/*define('DB_HOST', 'localhost');
+define('DB_HOST', 'localhost');
 define('DB_USER','root');
 define('DB_PASSWORD','');
-define('DB_NAME','ihunters');*/
+define('DB_NAME','ihunters');
 
 
 class M_Mysql
@@ -27,18 +10,14 @@ class M_Mysql
 	
 	private static $instance;
 	private $link;
-	private $host='localhost';
-private $user='root';
-private $password='';
-private $dbname='ihunters';
 
 
 	 private function __construct()
 	{
-		$this->link=mysqli_connect($this->host,$this->user,$this->password,$this->dbname)
+		$this->link=mysqli_connect(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME)
 			or die(mysqli_error($this->link));
 		
-		mysqli_select_db($this->link,$this->dbname)
+		mysqli_select_db($this->link,DB_NAME)
 			or die("Error:Select failed" . mysqli_error($this->link));
 		
 		mysqli_query($this->link,"SET NAMES UTF8");	
@@ -138,4 +117,5 @@ private $dbname='ihunters';
 		 return mysqli_affected_rows($this->link);
 	}
 }
+
 ?>

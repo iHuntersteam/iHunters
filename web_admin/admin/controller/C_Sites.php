@@ -1,9 +1,10 @@
 <?php 
-
-
 class C_Sites extends C_Base
 {
 	
+	private $name;
+	private $msg;
+
 	public function actionIndex()
 	{
 		$this->title .="Сайты";
@@ -123,5 +124,7 @@ class C_Sites extends C_Base
 	}
 	
 }
+
+
 
 ?>

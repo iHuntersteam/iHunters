@@ -6,7 +6,7 @@
 <h3><?=$title?></h3>
 <div class="table">
 	<div class="row top ">
-		Наименование<?=$name."<br>".$msg?>
+		Наименование<?="<br>".$msg?>
 	</div>
 	<div class="row">
 		<form method="post">

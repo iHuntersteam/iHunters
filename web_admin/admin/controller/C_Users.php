@@ -1,14 +1,12 @@
-
 <?php 	
-
 class C_Users extends C_Base
 {
+	private $username;
+	private $password;
+	private $password_confirm;
+	private $email;
+	private $msg;
 	
-	function __construct()
-	{
-		$this->mUser=M_Users::getInstance();
-	}
-
 
 	public function actionIndex()
 	{
@@ -20,19 +18,21 @@ class C_Users extends C_Base
 	public function actionLogin()
 	{
 		$this->title .="Авторизация";
-
+		$mUser=M_Users::getInstance();
+		
 		if($this->isPost())
 		{
-			$data=$this->mUser->login($_POST['username'],$_POST['password']);
+			$user=$mUser->getByLogin($_POST['username']);
+			$data=$mUser->login($_POST['username'],$_POST['password']);
 			if($data==true)
 			{
-				//$user=$mUser->getByLogin($_POST['username']);
+				
 				header("location: index.php?c=persons");
 				exit();
 			}
 			else
 			{
-				$msg="Проверьте верно ли введены логин и пароль";
+				$this->msg="Проверьте верно ли введены логин и пароль";
 			}
 
 			$this->username=$_POST['username'];
@@ -42,16 +42,17 @@ class C_Users extends C_Base
 		$this->content=$this->template('view/login.php', 
 			array('username' =>$this->username,
 				'password'=>$this->password,
-				'msg'=>$msg,
+				'msg'=>$this->msg,
 				'title'=>$this->title ));
 	}
 	public function actionRegister()
 	{
 		$this->title.="Регистрация";
+		$mUser=M_Users::getInstance();
 
 		if ($this->isPost()) 
 		{
-			$user=$this->mUser->getByLogin($_POST['username']);
+			$user=$mUser->getByLogin($_POST['username']);
 			$data=$mUser->register(
 				$_POST['username'],
 				$_POST['password'],
@@ -66,15 +67,15 @@ class C_Users extends C_Base
 				else
 				{
 					
-					$msg="Регистрация не удалась";
+					$this->msg="Регистрация не удалась";
 
 					if($_POST['password']!==$_POST['password_confirm']) 
 					{
-						$msg="Пароли не совпадают";
+						$this->msg="Пароли не совпадают";
 					}
 					if($user==true)
 					{
-						$msg="Пользователь c таким именем уже существует";
+						$this->msg="Пользователь c таким именем уже существует";
 					}
 				}
 			
@@ -83,10 +84,16 @@ class C_Users extends C_Base
 			$this->password_confirm=$_POST['password_confirm'];
 			$this->email=$_POST['email'];
 		}
-		$this->content=$this->template('view/register.php', array('username' =>$this->username,'password'=>$this->password,'password_confirm'=>$this->password_confirm,'email'=>$this->email,'msg'=>$msg,'title'=>$this->title));
+		
+		$this->content=$this->template('view/register.php', 
+										array('username' =>$this->username,
+											'password'=>$this->password,
+											'password_confirm'=>$this->password_confirm,
+											'email'=>$this->email,
+											'msg'=>$this->msg,
+											'title'=>$this->title));
 	}
 }
-
 
 
  ?>
