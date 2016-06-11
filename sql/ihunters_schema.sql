@@ -102,37 +102,37 @@ DROP TRIGGER IF EXISTS Pages_AfterUpdate;
 DROP TRIGGER IF EXISTS Pages_AfterInsert;
 
 
-CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Keywords_BeforeInsert` BEFORE INSERT ON ihunters.keywords FOR EACH ROW
+CREATE TRIGGER `ihunters`.`Keywords_BeforeInsert` BEFORE INSERT ON ihunters.keywords FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
 END$$
-CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Keywords_BeforeUpdate` BEFORE UPDATE ON ihunters.keywords FOR EACH ROW
+CREATE TRIGGER `ihunters`.`Keywords_BeforeUpdate` BEFORE UPDATE ON ihunters.keywords FOR EACH ROW
 BEGIN
     IF NEW.name != OLD.name || NEW.person_id != OLD.person_id THEN
         SET NEW.name_hash = MD5(NEW.name);
 		SET NEW.rescan_needed = 1;
     END IF;
 END$$
-CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Pages_BeforeInsert` BEFORE INSERT ON ihunters.pages FOR EACH ROW
+CREATE TRIGGER `ihunters`.`Pages_BeforeInsert` BEFORE INSERT ON ihunters.pages FOR EACH ROW
 BEGIN
 	SET NEW.url_hash = MD5(NEW.url);
 END$$
-CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Pages_BeforeUpdate` BEFORE UPDATE ON ihunters.pages FOR EACH ROW
+CREATE TRIGGER `ihunters`.`Pages_BeforeUpdate` BEFORE UPDATE ON ihunters.pages FOR EACH ROW
 BEGIN
 	SET NEW.url_hash = MD5(NEW.url);
 END$$
-CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_BeforeInsert` BEFORE INSERT ON ihunters.persons FOR EACH ROW
+CREATE TRIGGER `ihunters`.`Persons_BeforeInsert` BEFORE INSERT ON ihunters.persons FOR EACH ROW
 BEGIN
 	SET NEW.name_hash = MD5(NEW.name);
 END$$
-CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_BeforeUpdate` BEFORE UPDATE ON ihunters.persons FOR EACH ROW
+CREATE TRIGGER `ihunters`.`Persons_BeforeUpdate` BEFORE UPDATE ON ihunters.persons FOR EACH ROW
 BEGIN
     IF NEW.name != OLD.name THEN
     	SET NEW.name_hash = MD5(NEW.name);
     END IF;
 END$$
 
-CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_AfterInsert` AFTER INSERT ON ihunters.persons FOR EACH ROW
+CREATE TRIGGER `ihunters`.`Persons_AfterInsert` AFTER INSERT ON ihunters.persons FOR EACH ROW
 BEGIN
 	INSERT INTO keywords(name, person_id)
 	VALUES(NEW.name, NEW.id);
