@@ -128,4 +128,10 @@ BEGIN
     	SET NEW.name_hash = MD5(NEW.name);
     END IF;
 END$$
+
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_AfterInsert` AFTER INSERT ON ihunters.persons FOR EACH ROW
+BEGIN
+	INSERT INTO keywords(name, person_id)
+	VALUES(NEW.name, NEW.id);
+END$$
 DELIMITER ;
