@@ -105,8 +105,8 @@ BEGIN
 END$$
 CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Keywords_BeforeUpdate` BEFORE UPDATE ON ihunters.keywords FOR EACH ROW
 BEGIN
-	SET NEW.name_hash = MD5(NEW.name);
-        IF NEW.name != OLD.name THEN
+    IF NEW.name != OLD.name || NEW.person_id != OLD.person_id THEN
+        SET NEW.name_hash = MD5(NEW.name);
 		SET NEW.rescan_needed = 1;
     END IF;
 END$$
