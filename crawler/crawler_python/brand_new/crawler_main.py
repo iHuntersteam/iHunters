@@ -146,7 +146,7 @@ class CrawlerWorker:
 
             if active_tasks is None or reserved_tasks is None:
                 print('Celery worker не запущен.')
-                # TODO Добавить что-нибудь на этот случай.
+                # TODO Добавить что-нибудь на этот случай. Уведомление по почте, или, може быть, автозапуск.
                 exit()
 
             for key, item in active_tasks.items():
@@ -232,6 +232,6 @@ if __name__ == '__main__':
     test = CrawlerWorker()
     while True:
         print('Новая проверка')
-        time.sleep(10)
+        time.sleep(120)
         test.check_new_items()
 
