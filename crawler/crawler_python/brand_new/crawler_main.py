@@ -141,15 +141,23 @@ class CrawlerWorker:
         inspection_helper = app.control.inspect()
 
         while True:
-            for key, item in inspection_helper.active().items():
+            active_tasks = inspection_helper.active()
+            reserved_tasks = inspection_helper.reserved()
+
+            if active_tasks is None or reserved_tasks is None:
+                print('Celery worker не запущен.')
+                # TODO Добавить что-нибудь на этот случай.
+                exit()
+
+            for key, item in active_tasks.items():
                 active_count = len(item)
-            for key, item in inspection_helper.reserved().items():
+            for key, item in reserved_tasks.items():
                 reserved_count = len(item)
             if active_count + reserved_count == 0:
                 break
             else:
                 # Сейчас идёт какая-то работа. Подождём 2 минуты
-                print('Работа кипит')
+                print('Celery уже обрабатывает задания. Ждём окончания.')
                 time.sleep(120)
         # Очередь свободна, создаём задание
         my_task = WebCrawlerTask()
@@ -196,11 +204,14 @@ class CrawlerWorker:
             print('Запускаю сканирование страниц.')
             self.start_pages_crawling()
             self.crawler_sites_conn.set_sites_scanned(new_ids)
+            return
 
         if new_persons > 0 or new_keywords > 0:
             print('Обнаружены новые персоны или ключевые слова')
             new_ids = self.crawler_persons_conn.get_persons_id_for_newly_added_persons_or_keywords()
+            print('Id персон с изменениями = {}'.format(new_ids))
             self.rescan_new_persons(new_ids)
+            return
 
         if new_pages > 0:
             print('Обнаружены непросканированные страницы.')
@@ -221,6 +232,6 @@ if __name__ == '__main__':
     test = CrawlerWorker()
     while True:
         print('Новая проверка')
-        time.sleep(60)
+        time.sleep(10)
         test.check_new_items()
 
