@@ -5,72 +5,72 @@ CREATE DATABASE IF NOT EXISTS ihunters;
 
 USE ihunters;
 
-CREATE TABLE IF NOT EXISTS persons (
-	id INT NOT NULL AUTO_INCREMENT, 
-	name TEXT NOT NULL,
-	name_hash CHAR(32) UNIQUE, 
-	PRIMARY KEY (id)
+CREATE TABLE IF NOT EXISTS `persons` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT, 
+	`name` TEXT NOT NULL,
+	`name_hash` CHAR(32) UNIQUE, 
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
-CREATE TABLE IF NOT EXISTS sites (
-	id INT NOT NULL AUTO_INCREMENT, 
-	name NVARCHAR(256) NOT NULL UNIQUE, 
-	PRIMARY KEY (id)
+CREATE TABLE IF NOT EXISTS `sites` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT, 
+	`name` NVARCHAR(256) NOT NULL UNIQUE, 
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
-CREATE TABLE IF NOT EXISTS keywords (
-	id INT NOT NULL AUTO_INCREMENT, 
-	name TEXT NOT NULL,
-	name_hash CHAR(32) UNIQUE, 
-	person_id INT NOT NULL, 
-	PRIMARY KEY (id), 
-	FOREIGN KEY (person_id) 
-		REFERENCES persons(id) 
+CREATE TABLE IF NOT EXISTS `keywords` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT, 
+	`name` TEXT NOT NULL,
+	`name_hash` CHAR(32) UNIQUE, 
+	`person_id` INT(11) NOT NULL, 
+	PRIMARY KEY (`id`), 
+	FOREIGN KEY (`person_id`) 
+		REFERENCES persons(`id`) 
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
-CREATE TABLE IF NOT EXISTS pages (
-	id INT NOT NULL AUTO_INCREMENT, 
-	url TEXT NOT NULL, 
-	site_id INT NOT NULL, 
-	found_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-	last_scan_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
-	url_hash CHAR(32) UNIQUE, 
-	PRIMARY KEY (id), 
-	FOREIGN KEY (site_id) 
-		REFERENCES sites(id) 
+CREATE TABLE IF NOT EXISTS `pages` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT, 
+	`url` TEXT NOT NULL, 
+	`site_id` INT(11) NOT NULL, 
+	`found_date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+	`last_scan_date` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+	`url_hash` CHAR(32) UNIQUE, 
+	PRIMARY KEY (`id`), 
+	FOREIGN KEY (`site_id`) 
+		REFERENCES sites(`id`) 
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
-CREATE TABLE IF NOT EXISTS person_page_rank (
-	person_id INT NOT NULL, 
-	page_id INT NOT NULL, 
-	rank INT NOT NULL, 
-	FOREIGN KEY (person_id) 
-		REFERENCES persons(id) 
+CREATE TABLE IF NOT EXISTS `person_page_rank` (
+	`person_id` INT(11) NOT NULL, 
+	`page_id` INT(11) NOT NULL, 
+	`rank` INT(11) NOT NULL, 
+	FOREIGN KEY (`person_id`) 
+		REFERENCES `persons`(`id`) 
 		ON DELETE CASCADE, 
-	FOREIGN KEY (page_id) 
-		REFERENCES pages(id) 
+	FOREIGN KEY (`page_id`) 
+		REFERENCES pages(`id`) 
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 ALTER TABLE person_page_rank ADD scan_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE person_page_rank CHANGE COLUMN scan_date date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-CREATE TABLE IF NOT EXISTS handler (
-	id INT NOT NULL,
-	need_scan_keys_pers BOOL NOT NULL DEFAULT 0,
-	need_scan_pages BOOL NOT NULL DEFAULT 0,
-	create_upd_date_pers_keys TIMESTAMP NULL,
-	create_upd_date_pages TIMESTAMP NULL,
-	last_scan_pers_keys TIMESTAMP NULL,
-	last_scan_pages TIMESTAMP NULL
+CREATE TABLE IF NOT EXISTS `handler` (
+	`id` INT(11) NOT NULL,
+	`need_scan_keys_pers` BOOL NOT NULL DEFAULT 0,
+	`need_scan_pages` BOOL NOT NULL DEFAULT 0,
+	`create_upd_date_pers_keys` TIMESTAMP NULL,
+	`create_upd_date_pages` TIMESTAMP NULL,
+	`last_scan_pers_keys` TIMESTAMP NULL,
+	`last_scan_pages` TIMESTAMP NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 INSERT INTO handler(id) VALUES('1');
 
-CREATE TABLE `pages_content` (
-  `page_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `pages_content` (
+  `page_id` INT(11) NOT NULL,
   `page_body_text` longtext,
   UNIQUE KEY `page_id_UNIQUE` (`page_id`),
   CONSTRAINT `id` FOREIGN KEY (`page_id`) REFERENCES `pages` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
