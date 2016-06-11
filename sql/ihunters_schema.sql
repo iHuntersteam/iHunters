@@ -100,6 +100,7 @@ DROP TRIGGER IF EXISTS Keywords_AfterInsert;
 DROP TRIGGER IF EXISTS Keywords_AfterUpdate;
 DROP TRIGGER IF EXISTS Pages_AfterUpdate;
 DROP TRIGGER IF EXISTS Pages_AfterInsert;
+DROP TRIGGER IF EXISTS Sites_AfterInsert;
 
 
 CREATE TRIGGER `ihunters`.`Keywords_BeforeInsert` BEFORE INSERT ON ihunters.keywords FOR EACH ROW
@@ -137,4 +138,12 @@ BEGIN
 	INSERT INTO keywords(name, person_id)
 	VALUES(NEW.name, NEW.id);
 END$$
+
+CREATE TRIGGER `ihunters`.`Sites_AfterInsert` AFTER INSERT ON ihunters.sites FOR EACH ROW
+BEGIN
+	INSERT INTO pages(url, site_id)
+	VALUES(NEW.url, NEW.id);
+END$$
+
 DELIMITER ;
+
