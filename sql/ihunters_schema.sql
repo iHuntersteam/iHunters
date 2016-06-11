@@ -81,61 +81,7 @@ ALTER TABLE sites ADD COLUMN rate_limit TINYINT(2) NOT NULL DEFAULT 5 AFTER resc
 
 ALTER TABLE keywords ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
 ALTER TABLE pages ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
-ALTER TABLE persons ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
-ALTER TABLE sites ADD COLUMN rescan_needed TINYINT(1) NOT NULL DEFAULT 1;
 
-
-DELIMITER $$
-
-CREATE TRIGGER Persons_BeforeInsert
-BEFORE INSERT ON persons
-FOR EACH ROW
-BEGIN
-	SET NEW.name_hash = MD5(NEW.name);
-END$$
-
-CREATE TRIGGER Persons_BeforeUpdate
-BEFORE UPDATE ON persons
-FOR EACH ROW
-BEGIN
-	SET NEW.name_hash = MD5(NEW.name);
-END$$
-
-CREATE TRIGGER Keywords_BeforeInsert
-BEFORE INSERT ON keywords
-FOR EACH ROW
-BEGIN
-	SET NEW.name_hash = MD5(NEW.name);
-END$$
-
-CREATE TRIGGER Keywords_BeforeUpdate
-BEFORE UPDATE ON keywords
-FOR EACH ROW
-BEGIN
-	SET NEW.name_hash = MD5(NEW.name);
-END$$
-
-CREATE TRIGGER Pages_BeforeInsert
-BEFORE INSERT ON pages
-FOR EACH ROW
-BEGIN
-	SET NEW.url_hash = MD5(NEW.url);
-END$$
-
-CREATE TRIGGER Pages_BeforeUpdate
-BEFORE UPDATE ON pages
-FOR EACH ROW
-BEGIN
-	SET NEW.url_hash = MD5(NEW.url);
-END$$
-
-CREATE TRIGGER PersonPageRank_AfterInsert
-AFTER INSERT ON person_page_rank
-FOR EACH ROW
-BEGIN
-	UPDATE pages SET last_scan_date=NEW.date_modified
-	WHERE pages.id = NEW.page_id;
-END$$
 
 DELIMITER $$
 DROP TRIGGER IF EXISTS Persons_BeforeUpdate;
