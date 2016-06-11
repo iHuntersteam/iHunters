@@ -53,9 +53,10 @@ class CrawlerSitesConnector:
             '''
 
     def need_scan(self):
-        return CURSOR.execute('''
+        CURSOR.execute('''
             SELECT COUNT(id) FROM pages WHERE rescan_needed = 1
             ''')
+        return CURSOR.fetchone()
 
     def get_create_upd_date_pages(self):
         CURSOR.execute('''
@@ -229,9 +230,10 @@ class CrawlerPersonsConnector:
             '''
 
     def need_scan(self):
-        return CURSOR.execute('''
+        CURSOR.execute('''
             SELECT COUNT(id) FROM keywords WHERE rescan_needed = 1
             ''')
+        return CURSOR.fetchone()
 
     def get_not_scan_pers(self):
         try:
