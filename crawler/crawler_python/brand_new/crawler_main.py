@@ -150,7 +150,7 @@ class CrawlerWorker:
             else:
                 # Сейчас идёт какая-то работа. Подождём 2 минуты
                 print('Работа кипит')
-                time.sleep(5)
+                time.sleep(120)
         # Очередь свободна, создаём задание
         my_task = WebCrawlerTask()
         # Получаем всех персон
