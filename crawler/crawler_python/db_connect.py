@@ -45,7 +45,7 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
-    def __query_for_last_scan_pages(self):
+    def __query_for_rescan_needed_pages(self):
         return '''
                 SELECT id, url, found_date_time
                 FROM pages
@@ -67,7 +67,7 @@ class CrawlerSitesConnector:
 
     def get_not_scan_pages_gen(self):
         try:
-            CURSOR.execute(self.__query_for_last_scan_pages())
+            CURSOR.execute(self.__query_for_rescan_needed_pages())
             for k, v, d in CURSOR.fetchall():
                 yield {k: (v, d)}
         except MySQLError as e:
@@ -221,7 +221,7 @@ class CrawlerPersonsConnector:
         except MySQLError as e:
             print(err(e))
 
-    def __query_for_last_scan_keywords(self):
+    def __query_for_rescan_needed_keywords(self):
         return '''
                 SELECT person_id, name
                 FROM keywords
@@ -235,7 +235,7 @@ class CrawlerPersonsConnector:
 
     def get_not_scan_pers(self):
         try:
-            CURSOR.execute(self.__query_for_last_scan_keywords())
+            CURSOR.execute(self.__query_for_rescan_needed_keywords())
             keywords = list(CURSOR.fetchall())
             persons_dict = defaultdict(list)
             for k, v in keywords:
