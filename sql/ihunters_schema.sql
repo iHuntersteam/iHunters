@@ -113,6 +113,8 @@ BEGIN
     IF NEW.name != OLD.name || NEW.person_id != OLD.person_id THEN
         SET NEW.name_hash = MD5(NEW.name);
 		SET NEW.rescan_needed = 1;
+        SET @maxId = (SELECT MAX(id)+1 FROM keywords);
+        SET NEW.id = @maxId;
     END IF;
 END$$
 
