@@ -23,42 +23,6 @@ def err(e):
     return 'Got error {!r}, error is {}'.format(e, e.args[0])
 
 
-class CrawlerHandlerConnector:
-
-    def update_last_scan_pages():
-        try:
-            CURSOR.execute('''
-                UPDATE handler
-                SET last_scan_pages = create_upd_date_pages
-                WHERE handler.id = 1
-            ''')
-            CONN.commit()
-        except MySQLError as e:
-            print(err(e))
-
-    def update_last_scan_pers_keys():
-        try:
-            CURSOR.execute('''
-                UPDATE handler
-                SET last_scan_pers_keys = create_upd_date_pers_keys
-                WHERE handler.id = 1
-            ''')
-            CONN.commit()
-        except MySQLError as e:
-            print(err(e))
-
-    def check_for_scan(last_scan_field, create_upd_date_field):
-        try:
-            CURSOR.execute('''
-                SELECT IF((SELECT {0} FROM handler WHERE handler.id=1) 
-                !=
-                (SELECT {1} FROM handler WHERE handler.id=1), 1, 0)
-            '''.format(last_scan_field, create_upd_date_field))
-            return CURSOR.fetchone()[0]
-        except MySQLError as e:
-            print(err(e))
-
-
 class CrawlerSitesConnector:
 
     def get_pages_by_site_id(self, ids):
@@ -70,24 +34,29 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
-    def __query_for_last_scan_pages(self):
+    def get_all_pages_gen(self):
+        try:
+            CURSOR.execute('''
+                SELECT id, url, found_date_time
+                FROM pages
+            ''')
+            for k, v, d in CURSOR.fetchall():
+                yield {k: (v, d)}
+        except MySQLError as e:
+            print(err(e))
+
+    def __query_for_rescan_needed_pages(self):
         return '''
                 SELECT id, url, found_date_time
                 FROM pages
-                WHERE pages.create_upd_date > (
-                    SELECT handler.last_scan_pages
-                    FROM handler
-                    WHERE handler.id = 1)
-                AND pages.create_upd_date <= (
-                    SELECT handler.create_upd_date_pages
-                    FROM handler
-                    WHERE handler.id = 1
-                    )
+                WHERE pages.rescan_needed = 1
             '''
 
     def need_scan(self):
-        return CrawlerHandlerConnector.check_for_scan(
-            'last_scan_pages', 'create_upd_date_pages')
+        CURSOR.execute('''
+            SELECT COUNT(id) FROM pages WHERE rescan_needed = 1
+            ''')
+        return CURSOR.fetchone()
 
     def get_create_upd_date_pages(self):
         CURSOR.execute('''
@@ -99,7 +68,7 @@ class CrawlerSitesConnector:
 
     def get_not_scan_pages_gen(self):
         try:
-            CURSOR.execute(self.__query_for_last_scan_pages())
+            CURSOR.execute(self.__query_for_rescan_needed_pages())
             for k, v, d in CURSOR.fetchall():
                 yield {k: (v, d)}
         except MySQLError as e:
@@ -220,14 +189,23 @@ class CrawlerPersonsConnector:
     def get_person_with_keywords(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, name FROM persons WHERE id IN ({0})
-                '''.format(ids))
-            persons = CURSOR.fetchall()
-            CURSOR.execute('''
                 SELECT person_id, name FROM keywords WHERE person_id IN ({0})
             '''.format(ids))
             keywords = list(CURSOR.fetchall())
-            keywords.extend(persons)
+            persons_dict = defaultdict(list)
+            for k, v in keywords:
+                persons_dict[k].append(v)
+            return dict(persons_dict)
+
+        except MySQLError as e:
+            print(err(e))
+
+    def get_all_persons_with_keywords(self):
+        try:
+            CURSOR.execute('''
+            SELECT person_id, name FROM keywords
+            ''')
+            keywords = list(CURSOR.fetchall())
             persons_dict = defaultdict(list)
             for k, v in keywords:
                 persons_dict[k].append(v)
@@ -244,49 +222,23 @@ class CrawlerPersonsConnector:
         except MySQLError as e:
             print(err(e))
 
-    def __query_for_last_scan_persons(self):
-        return '''
-                SELECT id, name
-                FROM persons
-                WHERE persons.create_upd_date > (
-                    SELECT handler.last_scan_pers_keys
-                    FROM handler
-                    WHERE handler.id = 1)
-                AND persons.create_upd_date <= (
-                    SELECT handler.create_upd_date_pers_keys
-                    FROM handler
-                    WHERE handler.id = 1
-                    )
-            '''
-
-    def __query_for_last_scan_keywords(self, persons_id):
+    def __query_for_rescan_needed_keywords(self):
         return '''
                 SELECT person_id, name
                 FROM keywords
-                WHERE keywords.create_upd_date > (
-                    SELECT handler.last_scan_pers_keys
-                    FROM handler
-                    WHERE handler.id = 1)
-                AND keywords.create_upd_date <= (
-                    SELECT handler.create_upd_date_pers_keys
-                    FROM handler
-                    WHERE handler.id = 1
-                    )
-                AND keywords.person_id in ({0})
-            '''.format(persons_id)
+                WHERE keywords.rescan_needed = 1
+            '''
 
     def need_scan(self):
-        return CrawlerHandlerConnector.check_for_scan(
-            'last_scan_pers_keys', 'create_upd_date_pers_keys')
+        CURSOR.execute('''
+            SELECT COUNT(id) FROM keywords WHERE rescan_needed = 1
+            ''')
+        return CURSOR.fetchone()
 
     def get_not_scan_pers(self):
         try:
-            CURSOR.execute(self.__query_for_last_scan_persons())
-            persons = CURSOR.fetchall()
-            persons_id = ' ,'.join(str(_id) for _id, name in persons)
-            CURSOR.execute(self.__query_for_last_scan_keywords(persons_id))
+            CURSOR.execute(self.__query_for_rescan_needed_keywords())
             keywords = list(CURSOR.fetchall())
-            keywords.extend(persons)
             persons_dict = defaultdict(list)
             for k, v in keywords:
                 persons_dict[k].append(v)
