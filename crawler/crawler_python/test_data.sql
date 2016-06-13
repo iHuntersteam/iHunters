@@ -11,34 +11,28 @@ INSERT INTO `ihunters`.`persons` (`id`, `name`) VALUES (4, 'Путин');
 INSERT INTO `ihunters`.`persons` (`id`, `name`) VALUES (5, 'Медведев');
 INSERT INTO `ihunters`.`persons` (`id`, `name`) VALUES (6, 'Навальный');
 
-INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('python', 1);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('Питон', 1);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('Пайтон', 1);
 
-INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('PHP', 2);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('ПХП', 2);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('пыхапе', 2);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('похапе', 2);
 
-INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('JavaScript', 3);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('JS', 3);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('яваскрипт', 3);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('яваскрипте', 3);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('джаваскрипт', 3);
 
-INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('Путин', 4);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('путина', 4);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('путину', 4);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('путине', 4);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('путиным', 4);
 
-INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('медведев', 5);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('медведева', 5);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('медведеву', 5);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('медведеве', 5);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('медведевым', 5);
 
-INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('навальный', 6);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('навального', 6);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('навальному', 6);
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('навальном', 6);
@@ -52,3 +46,5 @@ INSERT INTO `ihunters`.`sites` (`id`, `name`) VALUES (3,'РБК');
 -- INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://rbc.ru/', 3);
 INSERT INTO `ihunters`.`sites` (`id`, `name`) VALUES (4,'Риа-Новости');
 -- INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://ria.ru/', 4);
+UPDATE `ihunters`.`sites` SET `rate_limit`='1' WHERE `id`='3';
+UPDATE `ihunters`.`sites` SET `rate_limit`='3' WHERE `id`='4';

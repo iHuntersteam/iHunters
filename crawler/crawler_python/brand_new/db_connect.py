@@ -174,37 +174,25 @@ class CrawlerPersonPageRankConnector:
             # Если мы пересканируем персон по сохранённых текстам, то не будем обновлять last_scan_date
             rescanned_flag = v.pop('rescanned', None)
 
+            if not rescanned_flag:
+                try:
+                    # Сохраним текст страницы
+                    CURSOR.execute('''
+                    INSERT INTO pages_content(page_id, page_body_text)
+                    VALUES (%s, %s)
+                    ON DUPLICATE KEY
+                    UPDATE page_body_text = VALUES (page_body_text);''', (page_id, page_text))
+                    # Пометим, что мы её просканировали
+                    CURSOR.execute('''UPDATE pages
+                                      SET rescan_needed = 0
+                                      WHERE id = %s;''', page_id)
+                    # Отметим дату последнего сканирования
+                    CURSOR.execute('''UPDATE pages SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;''', page_id)
+                except MySQLError as e:
+                    print(err(e))
+
             for person_id, rank in v.items():
                 if rank == 0:
-                    try:
-                        # CURSOR.execute('''UPDATE pages
-                        #                   SET last_scan_date = CURRENT_TIMESTAMP
-                        #                   WHERE `id` = %s;''', page_id)
-                        # CURSOR.execute('''INSERT INTO pages_content(page_id, page_body_text)
-                        #                   VALUES (%s, %s)
-                        #                   ON DUPLICATE KEY
-                        #                   UPDATE page_body_text = VALUES (page_body_text)''', (page_id, page_text))
-                        # CURSOR.execute('''UPDATE pages
-                        #                   SET rescan_needed = 0
-                        #                   WHERE id = %s;''', page_id)
-                        if rescanned_flag:
-                            # если пересканируем рейтинг по сохранённым страницам, то не обновляем дату сканирования
-                            # страницы и её текст.
-                            continue
-
-                        CURSOR.execute('''UPDATE pages SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;
-
-                                          INSERT INTO pages_content(page_id, page_body_text)
-                                          VALUES (%s, %s)
-                                          ON DUPLICATE KEY
-                                          UPDATE page_body_text = VALUES (page_body_text);
-
-                                          UPDATE pages
-                                          SET rescan_needed = 0
-                                          WHERE id = %s;''', (page_id, page_id, page_text, page_id))
-
-                    except MySQLError as e:
-                        print(err(e))
                     continue
                 # if rank haven't changed don't create a new record in the database
                 last_rank_info = self.get_last_rank_(page_id, person_id)
@@ -212,22 +200,13 @@ class CrawlerPersonPageRankConnector:
                     last_rank, last_date = last_rank_info
                     if last_rank == rank:
                         continue
+                # Такого рейтинга ещё не было
                 try:
                     CURSOR.execute('''INSERT INTO person_page_rank(person_id, page_id, rank, date_modified)
                                       VALUES('{0}', '{1}', '{2}', '{3}')'''.format(person_id,
                                                                                    page_id,
                                                                                    rank,
                                                                                    page_modified_date))
-                    if rescanned_flag:
-                        continue
-                    CURSOR.execute('''INSERT INTO pages_content(page_id, page_body_text)
-                                      VALUES (%s, %s)
-                                      ON DUPLICATE KEY
-                                      UPDATE page_body_text = VALUES (page_body_text)''', (page_id, page_text))
-                    CURSOR.execute('''UPDATE pages
-                                      SET rescan_needed = 0
-                                      WHERE id = %s;''', page_id)
-                    CURSOR.execute('''UPDATE pages SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;''', page_id)
                 except MySQLError as e:
                     print(err(e))
             # after inserting all items - commiting transaction
@@ -251,16 +230,15 @@ class CrawlerPersonsConnector:
 
     def get_person_with_keywords(self, ids):
         try:
+            if isinstance(ids, int):
+                # один айдишник передали
+                ids = [ids]
             # Чтобы можно было сюда просто передать список и не париться.
             var_string = ', '.join(['%s' for _ in range(len(ids))])
             # получается строка %s, %s, %s по количеству idшников, вставляем её в запрос
-            query_string = 'SELECT id, name FROM persons WHERE id IN ({0});'.format(var_string)
-            CURSOR.execute(query_string, ids)
-            persons = CURSOR.fetchall()
             query_string = 'SELECT person_id, name FROM keywords WHERE person_id IN ({0});'.format(var_string)
             CURSOR.execute(query_string, ids)
             keywords = list(CURSOR.fetchall())
-            keywords.extend(persons)
             persons_dict = defaultdict(list)
             for k, v in keywords:
                 persons_dict[k].append(v)
@@ -279,15 +257,35 @@ class CrawlerPersonsConnector:
 
     def get_persons_id_for_newly_added_persons_or_keywords(self):
         try:
-            CURSOR.execute('''
-            SELECT id FROM persons WHERE rescan_needed=1;
-            ''')
+            # CURSOR.execute('''
+            # SELECT id FROM persons WHERE rescan_needed=1;
+            # ''')
+            # new_persons = [x[0] for x in CURSOR.fetchall()]
+            # CURSOR.execute('''
+            # SELECT person_id FROM keywords WHERE rescan_needed=1;
+            # ''')
+            CURSOR.execute('''SELECT P.id
+                              FROM ihunters.keywords K
+                              INNER JOIN ihunters.persons P ON (K.person_id = P.id)
+                              WHERE P.rescan_needed = 1 OR K.rescan_needed = 1''')
+            # new_keywords = [x[0] for x in CURSOR.fetchall()]
             new_persons = [x[0] for x in CURSOR.fetchall()]
-            CURSOR.execute('''
-            SELECT person_id FROM keywords WHERE rescan_needed=1;
-            ''')
-            new_keywords = [x[0] for x in CURSOR.fetchall()]
-            return list(set(new_keywords + new_persons))
+            # return list(set(new_keywords + new_persons))
+            return list(set(new_persons))
+        except MySQLError as e:
+            print(err(e))
+            return []
+
+    def get_unscanned_keywords_for_persons(self, ids):
+        if isinstance(ids, int):
+            # один айдишник передали
+            ids = [ids]
+        # Чтобы можно было сюда просто передать список и не париться.
+        var_string = ', '.join(['%s' for _ in range(len(ids))])
+        query_string = 'SELECT id FROM keywords WHERE rescan_needed = 1 AND person_id IN ({});'.format(var_string)
+        try:
+            CURSOR.execute(query_string, ids)
+            return [x[0] for x in CURSOR.fetchall()]
         except MySQLError as e:
             print(err(e))
             return []
@@ -307,12 +305,12 @@ class CrawlerPersonsConnector:
         except MySQLError as e:
             print(err(e))
 
-    def set_keywords_scanned_for_person_id(self, ids):
+    def set_keywords_scanned(self, ids):
         if isinstance(ids, int):
             # один айдишник передали
             ids = [ids]
         var_string = ', '.join(['%s' for _ in range(len(ids))])
-        query_string = 'UPDATE keywords SET rescan_needed = 0  WHERE person_id IN ({});'.format(var_string)
+        query_string = 'UPDATE keywords SET rescan_needed = 0  WHERE id IN ({});'.format(var_string)
         try:
             CURSOR.execute(query_string, ids)
             CONN.commit()
