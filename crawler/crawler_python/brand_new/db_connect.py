@@ -227,6 +227,7 @@ class CrawlerPersonPageRankConnector:
                     CURSOR.execute('''UPDATE pages
                                       SET rescan_needed = 0
                                       WHERE id = %s;''', page_id)
+                    CURSOR.execute('''UPDATE pages SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;''', page_id)
                 except MySQLError as e:
                     print(err(e))
             # after inserting all items - commiting transaction
