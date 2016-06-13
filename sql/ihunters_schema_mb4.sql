@@ -86,15 +86,19 @@ CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Pages_BeforeInsert` BEFORE INSERT 
 BEGIN
   SET NEW.url_hash = MD5(NEW.url);
 END;//
-CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Pages_BeforeUpdate` BEFORE UPDATE ON ihunters.pages FOR EACH ROW
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_Persons_BeforeInsert` BEFORE INSERT ON ihunters.persons FOR EACH ROW
 BEGIN
-  SET NEW.url_hash = MD5(NEW.url);
+  SET NEW.name_hash = MD5(NEW.name);
 END;//
 CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_BeforeUpdate` BEFORE UPDATE ON ihunters.persons FOR EACH ROW
 BEGIN
-  SET NEW.name_hash = MD5(NEW.name);
     IF NEW.name != OLD.name THEN
+    SET NEW.name_hash = MD5(NEW.name);
     SET NEW.rescan_needed = 1;
     END IF;
+END;//
+CREATE DEFINER=`root`@`%` TRIGGER `ihunters`.`Persons_AfterInsert` AFTER INSERT ON ihunters.persons FOR EACH ROW
+BEGIN
+  INSERT INTO keywords(name, person_id)	VALUES(NEW.name, NEW.id);
 END;//
 DELIMITER ;
