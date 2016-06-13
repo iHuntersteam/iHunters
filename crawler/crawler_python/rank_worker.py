@@ -23,6 +23,10 @@ class PageRankWorker:
             ranks = self.parser.get_info_from(page)
             self.crawler_person_page_rank_conn.save(ranks)
 
+    def crawl_url(self, page):
+        ranks = self.parser.get_info_from(page)
+        self.crawler_person_page_rank_conn.save(ranks)
+
     def crawl_all(self):
         for site in self.site_ids:
             self.crawl_website(site)
@@ -41,10 +45,3 @@ if __name__ == '__main__':
     else:
         test = PageRankWorker()
         test.crawl_all()
-
-# # print(test.person_ids)
-# print(test.site_ids)
-# print(test.keywords_dict)
-#test.crawl_all()
-
-# test.crawl_website(1)

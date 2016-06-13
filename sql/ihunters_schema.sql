@@ -55,9 +55,27 @@ CREATE TABLE IF NOT EXISTS `person_page_rank` (
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
+
+ALTER TABLE persons DROP COLUMN rescan_needed;
+
 ALTER TABLE person_page_rank ADD scan_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE person_page_rank CHANGE COLUMN scan_date date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE sites ADD url NVARCHAR(256) NOT NULL UNIQUE;
+ALTER TABLE pages ADD rescan_needed BOOL NOT NULL DEFAULT 1;
+ALTER TABLE keywords ADD rescan_needed BOOL NOT NULL DEFAULT 1;
+DROP TRIGGER IF EXISTS Pages_AfterInsert;
+DROP TRIGGER IF EXISTS Pages_AfterUpdate;
+DROP TRIGGER IF EXISTS Keywords_AfterUpdate;
+DROP TRIGGER IF EXISTS Keywords_AfterInsert;
+DROP TRIGGER IF EXISTS Persons_AfterInsert;
+DROP TRIGGER IF EXISTS Persons_AfterUpdate;
+DROP TRIGGER IF EXISTS Persons_BeforeUpdate;
+DROP TRIGGER IF EXISTS Persons_BeforeInsert;
+DROP TRIGGER IF EXISTS Keywords_BeforeInsert;
+DROP TRIGGER IF EXISTS Keywords_BeforeUpdate;
+DROP TRIGGER IF EXISTS Pages_BeforeUpdate;
+DROP TRIGGER IF EXISTS PersonPageRank_AfterInsert;
+DROP TABLE IF EXISTS handler;
+
 
 
 CREATE TABLE IF NOT EXISTS `handler` (
@@ -116,6 +134,7 @@ BEGIN
         SET @maxId = (SELECT MAX(id)+1 FROM keywords);
         SET NEW.id = @maxId;
     END IF;
+
 END$$
 
 CREATE TRIGGER `ihunters`.`Pages_BeforeInsert` BEFORE INSERT ON ihunters.pages FOR EACH ROW
@@ -130,7 +149,13 @@ END$$
 
 CREATE TRIGGER `ihunters`.`Persons_BeforeInsert` BEFORE INSERT ON ihunters.persons FOR EACH ROW
 BEGIN
-	SET NEW.name_hash = MD5(NEW.name);
+	IF NEW.name != OLD.name || NEW.person_id != OLD.person_id THEN
+		SET NEW.name_hash = MD5(NEW.name);
+		SET NEW.rescan_needed = 1;
+		UPDATE persons 
+		SET persons.rescan_needed = 1
+		WHERE persons.id = NEW.person_id;
+	END IF;
 END$$
 
 CREATE TRIGGER `ihunters`.`Persons_BeforeUpdate` BEFORE UPDATE ON ihunters.persons FOR EACH ROW
@@ -142,14 +167,19 @@ END$$
 
 CREATE TRIGGER `ihunters`.`Persons_AfterInsert` AFTER INSERT ON ihunters.persons FOR EACH ROW
 BEGIN
-	INSERT INTO keywords(name, person_id)
-	VALUES(NEW.name, NEW.id);
+	IF NEW.url != OLD.url || 
+		NEW.site_id != OLD.site_id || 
+		NEW.found_date_time != OLD.found_date_time THEN
+			SET NEW.url_hash = MD5(NEW.url);
+			SET NEW.rescan_needed = 1;
+	END IF;
 END$$
 
 CREATE TRIGGER `ihunters`.`Sites_AfterInsert` AFTER INSERT ON ihunters.sites FOR EACH ROW
 BEGIN
-	INSERT INTO pages(url, site_id)
-	VALUES(NEW.url, NEW.id);
+
+	UPDATE pages SET last_scan_date=CURRENT_TIMESTAMP
+	WHERE pages.id = NEW.page_id;
 END$$
 
 DELIMITER ;

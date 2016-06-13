@@ -1,6 +1,6 @@
 import gzip
 import re
-from datetime import datetime
+from datetime import datetime, date
 from io import BytesIO
 from itertools import chain
 from urllib import parse
@@ -79,6 +79,12 @@ class SiteMapException(BaseCrawlException):
 
 
 class SitemapParser:
+
+    def __init__(self):
+        # all links that older than this date are ignored.
+        self.frontier_date = date(2015, 1, 1)
+
+
     def _fetch(self, url):
         """
         Receive file from a website. Auto-detects and reads gzip-compressed XML files (.gz)
@@ -141,6 +147,8 @@ class SitemapParser:
                             logging.debug('Error date string {} on {}'.format(lastmod.text, url))
                             lastmod_date = None
                         # TODO add filtering urls on date
+                        if lastmod_date.date() < self.frontier_date:
+                            continue
                     if location:
                         # if xml tag <loc> is presented but empty location == None
                         # return only non-empty locations
