@@ -143,6 +143,7 @@ class CrawlerWorker:
         while True:
             active_tasks = inspection_helper.active()
             reserved_tasks = inspection_helper.reserved()
+            sh_tasks = inspection_helper.scheduled()
 
             if active_tasks is None or reserved_tasks is None:
                 print('Celery worker не запущен.')
@@ -153,12 +154,17 @@ class CrawlerWorker:
                 active_count = len(item)
             for key, item in reserved_tasks.items():
                 reserved_count = len(item)
-            if active_count + reserved_count == 0:
+            for key, item in sh_tasks.items():
+                shed = len(item)
+            if active_count + reserved_count + shed == 0:
                 break
             else:
                 # Сейчас идёт какая-то работа. Подождём 2 минуты
-                print('Celery уже обрабатывает задания. Ждём окончания.')
+                print('Celery уже обрабатывает задания. Ждём окончания.'
+                      ' Active:{}/Reserved:{}/Sheduled:{}'.format(active_count, reserved_count, shed))
                 time.sleep(120)
+        print('По нулям. Ждём окончания. {}/{}/{}'.format(active_count, reserved_count, shed))
+        exit()
         # Очередь свободна, создаём задание
         my_task = WebCrawlerTask()
         # Получаем всех персон
@@ -230,8 +236,14 @@ class CrawlerWorker:
 
 if __name__ == '__main__':
     test = CrawlerWorker()
-    while True:
-        print('Новая проверка')
-        time.sleep(120)
-        test.check_new_items()
+    start_time = datetime.now()
+    test.start_pages_crawling()
+    time.sleep(2)
+    test.start_pages_crawling()
+    t = datetime.now() - start_time
+    print('Done in {} seconds.'.format(t.seconds))
+    # while True:
+    #     print('Новая проверка')
+    #     time.sleep(120)
+    #     test.check_new_items()
 

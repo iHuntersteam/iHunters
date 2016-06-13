@@ -45,6 +45,10 @@ INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('навально�
 INSERT INTO `ihunters`.`keywords`(`name`,`person_id`) VALUES ('навальным', 6);
 
 INSERT INTO `ihunters`.`sites` (`id`, `name`) VALUES (1,'Гикбрэйнс');
-INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://geekbrains.ru/', 1);
+-- INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://geekbrains.ru/', 1);
 INSERT INTO `ihunters`.`sites` (`id`, `name`) VALUES (2,'Лента');
-INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://lenta.ru/', 2);
+-- INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://lenta.ru/', 2);
+INSERT INTO `ihunters`.`sites` (`id`, `name`) VALUES (3,'РБК');
+-- INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://rbc.ru/', 3);
+INSERT INTO `ihunters`.`sites` (`id`, `name`) VALUES (4,'Риа-Новости');
+-- INSERT INTO `ihunters`.`pages` (`url`,`site_id`) VALUES ('http://ria.ru/', 4);
