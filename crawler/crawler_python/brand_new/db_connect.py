@@ -38,10 +38,13 @@ class CrawlerSitesConnector:
     def get_pages_by_site_id_gen(self, ids):
         try:
             CURSOR.execute('''
-                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND rescan_needed = 1
+                SELECT id, url,found_date_time FROM pages WHERE site_id IN ({0}) AND rescan_needed = 1;
                 '''.format(ids))
+            CONN.commit()
+
             for k, v, d in CURSOR.fetchall():
                 yield {k: (v, d)}
+
         except MySQLError as e:
             print(err(e))
 
@@ -52,7 +55,7 @@ class CrawlerSitesConnector:
                 INSERT INTO pages(url, site_id, found_date_time, rescan_needed)
                 VALUES (%s, %s, %s, 1)
                 ON DUPLICATE KEY UPDATE
-                rescan_needed = IF(last_scan_date < VALUES(found_date_time), 0, 1)
+                rescan_needed = IF(last_scan_date < VALUES(found_date_time), 1, 0)
                 ''', (url, id, found_time))
         except MySQLError as e:
             print(err(e))
@@ -75,6 +78,17 @@ class CrawlerSitesConnector:
             CURSOR.execute('''
                 SELECT COUNT(*) FROM pages
                 WHERE `site_id`=%s;
+            ''', one_id)
+            result = CURSOR.fetchone()
+            return result[0] if result else None
+        except MySQLError as e:
+            print(err(e))
+
+    def count_urls_to_scan(self, one_id):
+        try:
+            CURSOR.execute('''
+                SELECT COUNT(*) FROM pages
+                WHERE `site_id`=%s AND rescan_needed=1;
             ''', one_id)
             result = CURSOR.fetchone()
             return result[0] if result else None

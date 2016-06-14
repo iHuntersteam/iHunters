@@ -1,5 +1,5 @@
 from itertools import islice
-from brand_new.crawler_tasks import WebCrawlerTask
+from brand_new.crawler_tasks import WebCrawlerTask, WebCrawler1PerSec, WebCrawler3PerSec, WebCrawler5PerSec
 from brand_new.db_connect import (CrawlerPersonPageRankConnector, CrawlerSitesConnector, CrawlerPersonsConnector,
                                   CrawlerMonitoringConnection)
 from celery import chain, group
@@ -126,7 +126,8 @@ class CrawlerWorker:
         # Просканировали все страницы, отмечаем персоны просканированными
         self.crawler_persons_conn.set_persons_scanned(person_ids)
         # Отмечаем и все ключевые слова просканированными
-        self.crawler_persons_conn.set_keywords_scanned(remember_keywords)
+        if len(remember_keywords) > 0:
+            self.crawler_persons_conn.set_keywords_scanned(remember_keywords)
         # Мы просканировали те страницы, которые есть в базе, а те, которых нет - поставили флаг,
         #  что нужно их пересканировать
         # Запускаем пересканирование
@@ -146,18 +147,18 @@ class CrawlerWorker:
         while True:
             active_tasks = inspection_helper.active()
             reserved_tasks = inspection_helper.reserved()
-            sheduled_tasks = inspection_helper.scheduled()
+            scheduled_tasks = inspection_helper.scheduled()
 
-            if active_tasks is None or reserved_tasks is None or sheduled_tasks is None:
+            if active_tasks is None or reserved_tasks is None or scheduled_tasks is None:
                 print('Celery worker не запущен.')
                 # TODO Добавить что-нибудь на этот случай. Уведомление по почте, или, може быть, автозапуск.
-                exit()
+                return
 
             for key, item in active_tasks.items():
                 active_count = len(item)
             for key, item in reserved_tasks.items():
                 reserved_count = len(item)
-            for key, item in sheduled_tasks.items():
+            for key, item in scheduled_tasks.items():
                 shed = len(item)
             if active_count + reserved_count + shed == 0:
                 break
@@ -165,11 +166,26 @@ class CrawlerWorker:
                 # Сейчас идёт какая-то работа. Подождём 2 минуты
                 print('Celery уже обрабатывает задания. Ждём окончания.'
                       ' Active:{}/Reserved:{}/Sheduled:{}'.format(active_count, reserved_count, shed))
-                time.sleep(120)
-        print('По нулям. Ждём окончания. {}/{}/{}'.format(active_count, reserved_count, shed))
+                time.sleep(10)
+        # print('По нулям. Ждём окончания. {}/{}/{}'.format(active_count, reserved_count, shed))
 
         # Очередь свободна, создаём задание
-        my_task = WebCrawlerTask()
+        # my_task = WebCrawlerTask()
+        my_task3 = WebCrawler3PerSec()
+        my_task1 = WebCrawler1PerSec()
+        my_task5 = WebCrawler5PerSec()
+
+        #Задаём лимиты на скорость выполнения
+        # app.control.broadcast('rate_limit',
+        #                       arguments={'task_name': 'brand_new.crawler_tasks.WebCrawler1PerSec',
+        #                                  'rate_limit': '1/s'})
+        # app.control.broadcast('rate_limit',
+        #                       arguments={'task_name': 'brand_new.crawler_tasks.WebCrawler3PerSec',
+        #                                  'rate_limit': '3/s'})
+        # app.control.broadcast('rate_limit',
+        #                       arguments={'task_name': 'brand_new.crawler_tasks.WebCrawler5PerSec',
+        #                                  'rate_limit': '5/s'})
+
         # Получаем всех персон
         person_ids = self.crawler_persons_conn.get_persons_ids()
         # Получаем все ключевые слова
@@ -184,25 +200,34 @@ class CrawlerWorker:
             # генератор, который будет выдавать страницы с флаго rescan_needed - {page_id: (page_url, page_found_date)}
             website_pages_g = self.crawler_sites_conn.get_pages_by_site_id_gen(_id)
             website_rate = self.crawler_sites_conn.get_site_rate_limit(_id)
-            websites_gens.append((website_pages_g, website_rate))
+            website_pages_to_scan = self.crawler_sites_conn.count_urls_to_scan(_id)
+            websites_gens.append((website_pages_g, website_rate, website_pages_to_scan))
 
-        while len(websites_gens) > 0:
-            # Берём генератор, получаем из него запросов на 20 секунд и закидываем в очередь
-            for index, one_gen in enumerate(websites_gens):
+        # Сортируем по pages_to_scan//rate_limit Тем самым будем в очередь добавлять первыми страницы сайта,
+        # которые должны быстрее всего отсканиться
+        websites_gens = sorted(websites_gens, key=lambda x: x[2] // x[1])
+
+        # Берём генератор, получаем из него запросов на 20 секунд и закидываем в очередь
+        for index, one_gen in enumerate(websites_gens):
                 site_gen = one_gen[0]
                 site_rate = one_gen[1]
-                tasks = list(islice(site_gen, 20*int(site_rate)))
-                if len(tasks) == 0:
-                    del websites_gens[index]
-                    continue
-                # Устанавливаем количество заданий в секунду для текущего сайта
-                app.control.broadcast('rate_limit',
-                                      arguments={'task_name': 'brand_new.crawler_tasks.WebCrawlerTask',
-                                                 'rate_limit': '{}/s'.format(site_rate)})
-                time.sleep(2)
-                for page in tasks:
+                # tasks = list(islice(site_gen, 20*int(site_rate)))
+                # if len(tasks) == 0:
+                #     del websites_gens[index]
+                #     continue
+
+                if site_rate >= 5:
+                    my_task = my_task5
+                elif 1 < site_rate < 5:
+                    my_task = my_task3
+                else:
+                    my_task = my_task1
+
+                # for page in tasks:
+                for page in site_gen:
                     for p_id, p_data in page.items():
                         my_task.delay(p_id, p_data[0], p_data[1])
+                # Генератор исчерпан
         # Все задания закинуты в selery
 
     def update_database(self):
@@ -254,6 +279,10 @@ class CrawlerWorker:
 
 if __name__ == '__main__':
     test = CrawlerWorker()
+    while True:
+        print('Новая проверка')
+        # time.sleep(60)
+        test.check_new_items()
     # start_time = datetime.now()
     # test.start_pages_crawling()
     # time.sleep(2)
@@ -263,5 +292,5 @@ if __name__ == '__main__':
     # while True:
     #     print('Новая проверка')
     #     time.sleep(120)
-    test.check_new_items()
-
+    # test.check_new_items()
+    # test.start_pages_crawling()

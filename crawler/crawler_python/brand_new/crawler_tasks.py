@@ -150,3 +150,16 @@ class WebCrawlerTask(Task):
 
     def save_rank_to_database(self, data):
         self.get_connector.save(data)
+
+
+class WebCrawler1PerSec(WebCrawlerTask):
+    rate_limit = '1/s'
+
+
+
+class WebCrawler5PerSec(WebCrawlerTask):
+    rate_limit = '5/s'
+
+
+class WebCrawler3PerSec(WebCrawlerTask):
+    rate_limit = '3/s'
