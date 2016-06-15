@@ -250,9 +250,10 @@ class CrawlerWorker:
             print('Новые сайты добавлены с id={}'.format(new_ids))
             print('Запускаю сканирование sitemap.')
             self.rescan_few_sitemaps(new_ids)
+            self.crawler_sites_conn.set_sites_scanned(new_ids)
             print('Запускаю сканирование страниц.')
             self.start_pages_crawling()
-            self.crawler_sites_conn.set_sites_scanned(new_ids)
+
             return
 
         if new_persons > 0 or new_keywords > 0:
@@ -279,10 +280,11 @@ class CrawlerWorker:
 
 if __name__ == '__main__':
     test = CrawlerWorker()
-    while True:
-        print('Новая проверка')
+    test.check_new_items()
+    # while True:
+    #     print('Новая проверка')
         # time.sleep(60)
-        test.check_new_items()
+        # test.check_new_items()
     # start_time = datetime.now()
     # test.start_pages_crawling()
     # time.sleep(2)
