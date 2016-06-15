@@ -67,7 +67,7 @@ class CrawlerSitesConnector:
             INSERT INTO pages(url, site_id, found_date_time, rescan_needed)
             VALUES (%s, %s, %s, 1)
             ON DUPLICATE KEY UPDATE
-            rescan_needed = IF(last_scan_date < VALUES(found_date_time), 0, 1)
+            rescan_needed = IF(last_scan_date < VALUES(found_date_time), 1, 0)
             ''', data)
         except MySQLError as e:
             print(err(e))
