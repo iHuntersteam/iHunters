@@ -1,5 +1,6 @@
 # Mysql database credentials
 MYSQL_HOST = '192.168.1.119'
+# MYSQL_HOST = '185.5.250.86'
 MYSQL_PORT = 6612
 MYSQL_USER = 'ihunters'
 MYSQL_PASSWORD = 'ua2o7UK3frukqgG81h2i'
