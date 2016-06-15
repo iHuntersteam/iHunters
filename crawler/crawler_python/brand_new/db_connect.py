@@ -124,6 +124,17 @@ class CrawlerSitesConnector:
         except MySQLError as e:
             print(err(e))
 
+    def get_site_name(self, site_id):
+        try:
+            CURSOR.execute('''
+                SELECT name FROM sites
+                WHERE id=%s;
+                ''', site_id)
+            result = CURSOR.fetchone()
+            return result[0] if result else None
+        except MySQLError as e:
+            print(err(e))
+
     def get_all_pages_id_gen(self):
         try:
             CURSOR.execute('''SELECT id, site_id, found_date_time FROM pages;''')

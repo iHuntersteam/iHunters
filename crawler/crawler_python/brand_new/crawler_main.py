@@ -77,7 +77,12 @@ class CrawlerWorker:
         self.monitoring = CrawlerMonitoringConnection()
 
     def rescan_sitemap(self, website_id):
-        self.sitemap_worker.parse_and_save_links_from_sitemap(website_id)
+        website_pages = self.crawler_sites_conn.count_urls(website_id)
+        if website_pages == 0:
+            website_url = self.crawler_sites_conn.get_site_name(website_id)
+        else:
+            website_url = None
+        self.sitemap_worker.parse_and_save_links_from_sitemap(website_id, site_url=website_url)
 
     def rescan_all_sitemaps(self):
         self.sitemap_worker.crawl_all_sitemaps()
