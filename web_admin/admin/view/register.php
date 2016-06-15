@@ -25,6 +25,4 @@
 		</form>
 	</div>
 </div>
-<pre>
-	<?= var_dump($_POST)?>
-</pre>
+

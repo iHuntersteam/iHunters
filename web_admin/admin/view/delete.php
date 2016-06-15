@@ -1,5 +1,5 @@
 <ul class="breadcrumbs">
-	<li><a href="index.php?c=<?=$_GET['c']?>">назад</a></li>/
+	<li><a href="index.php?c=<?=$_GET['c']?>">Вернуться к списку<</a></li>/
 	<li>удаление</li>
 </ul>
 <h3><?=$title?></h3>

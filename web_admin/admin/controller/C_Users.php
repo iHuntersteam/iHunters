@@ -26,9 +26,9 @@ class C_Users extends C_Base
 			$data=$mUser->login($_POST['username'],$_POST['password']);
 			if($data==true)
 			{
-				
-				header("location: index.php?c=persons");
-				exit();
+				$this->msg="Вы успешно зарегистрировались.<br>Терперь вы можете войти в систему";
+				//header("location: index.php?c=persons");
+				//exit();
 			}
 			else
 			{
