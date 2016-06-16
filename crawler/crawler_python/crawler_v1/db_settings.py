@@ -1,0 +1,15 @@
+HOST = '192.168.1.119'
+PORT = 6612
+USER = 'ihunters'
+PASSWORD = 'ua2o7UK3frukqgG81h2i'
+DBNAME = 'ihunters'
+# HOST = '192.168.1.216'
+# PORT = 5555
+# USER = 'ihunters'
+# PASSWORD = 'ihunterspass'
+# DBNAME = 'ihunters'
+# HOST = 'localhost'
+# PORT = 3306
+# USER = 'mysql'
+# PASSWORD = 'mysql'
+# DBNAME = 'ihunters'

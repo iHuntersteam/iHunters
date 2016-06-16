@@ -13,7 +13,7 @@ from lxml import etree, html
 from lxml.html.clean import Cleaner
 from lxml.etree import XMLSyntaxError
 
-from brand_new.downloader_old import ReqRequest, ReqResponse, ReqDownloader, BaseCrawlException
+from downloader_old import ReqRequest, ReqResponse, ReqDownloader, BaseCrawlException
 
 
 class RobotsParser:

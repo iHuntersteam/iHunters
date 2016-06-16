@@ -12,9 +12,9 @@ from requests.exceptions import (SSLError, ConnectionError, URLRequired,
                                  MissingSchema, InvalidSchema, InvalidURL,
                                  TooManyRedirects)
 
-from brand_new.celery_app import app
-from brand_new.db_connect import CrawlerPersonsConnector, CrawlerPersonPageRankConnector
-from brand_new.utils import create_search_patterns, rank_page
+from celery_app import app
+from db_connect import CrawlerPersonsConnector, CrawlerPersonPageRankConnector
+from utils import create_search_patterns, rank_page
 
 
 class ReqRequest:

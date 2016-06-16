@@ -1,7 +1,7 @@
 from urllib import parse
 from datetime import datetime
 
-from parse import SitemapParser, RobotsParser
+from parse_old import SitemapParser, RobotsParser
 from db_connect import CrawlerSitesConnector
 
 
@@ -25,7 +25,13 @@ class SitemapWorker:
             res = self.sites_connector.get_page_info(one_id)
             self.site_urls.append(res)
 
-    def parse_and_save_links_from_sitemap(self, site_id, site_url):
+    def grab_one_site_url(self, site_id):
+        res = self.sites_connector.get_page_info(site_id)
+        return res[1] if res else None
+
+    def parse_and_save_links_from_sitemap(self, site_id, site_url=None):
+        if not site_url:
+            site_url = self.grab_one_site_url(site_id)
         sitemap_links = self.robotstxt_reader.get_sitemap_links(site_url)
         # TODO add robots.txt rules and check urls with them before insert into database
         if not sitemap_links:
@@ -50,7 +56,7 @@ class SitemapWorker:
             self.sites_connector.save_stack(insert_many)
             print('Processed total: {} urls'.format(url_counter))
 
-    def crawl_sitemaps(self):
+    def crawl_all_sitemaps(self):
         self.grab_site_urls()
         for _id, _url in self.site_urls:
             start_time = datetime.now()
