@@ -12,7 +12,7 @@ class Agent:
 
     def __init__(self):
         self.rules_for_agent = []
-        self.delay = []
+        self.delay = None
 
     @staticmethod
     def extract_path(some_url):
