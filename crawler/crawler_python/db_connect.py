@@ -73,6 +73,10 @@ class CrawlerSitesConnector:
             print(err(e))
         CONN.commit()
 
+    def save_site_rate(self, site_id, rate):
+        pass
+
+
     def count_urls(self, one_id):
         try:
             CURSOR.execute('''
