@@ -104,6 +104,7 @@ class SitemapParser:
         If date is not in sitemap it returns (url, None)
         """
         # grab sitemap
+        frontier_date = date(2015, 1, 1)
         try:
             sitemap = etree.parse(self._fetch(url))
         except XMLSyntaxError:
@@ -139,7 +140,7 @@ class SitemapParser:
                             logging.debug('Error date string {} on {}'.format(lastmod.text, url))
                             lastmod_date = None
                         # TODO add filtering urls on date
-                        frontier_date = date(2015, 1, 1)
+
                         if lastmod_date.date() < frontier_date:
                             continue
                     else:
