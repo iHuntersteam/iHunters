@@ -3,12 +3,14 @@ from datetime import datetime
 
 from parse_old import SitemapParser, RobotsParser
 from db_connect import CrawlerSitesConnector
+from robotstxt import RobotsFactory
 
 
 class SitemapWorker:
     sites_connector = CrawlerSitesConnector()
     robotstxt_reader = RobotsParser()
     sitemap_reader = SitemapParser()
+    all_robots = RobotsFactory()
 
     def __init__(self):
         self.site_ids = []
@@ -32,17 +34,21 @@ class SitemapWorker:
     def parse_and_save_links_from_sitemap(self, site_id, site_url=None):
         if not site_url:
             site_url = self.grab_one_site_url(site_id)
-        sitemap_links = self.robotstxt_reader.get_sitemap_links(site_url)
+
+        robots_rules = self.all_robots.get_rules_object(site_url, site_id)
+        sitemap_links = robots_rules.sitemaps
         # TODO add robots.txt rules and check urls with them before insert into database
         if not sitemap_links:
             parsed = parse.urlparse(site_url)
             sitemap_links = ['{s.scheme}://{s.netloc}/sitemap.xml'.format(s=parsed)]
         for sitemap_link in sitemap_links:
+            # All urls in sitemap is allowed to visit.
             urls_generator = self.sitemap_reader.get_parsed_urls(sitemap_link)
             url_counter = 0
             insert_many = []
             split_counter = 0
             for url, found_date in urls_generator:
+                # every link in sitemaps
                 found_date = found_date or datetime.now()
                 found_date = found_date.strftime('%Y-%m-%d %H:%M:%S')
                 insert_many.append((url, site_id, found_date))

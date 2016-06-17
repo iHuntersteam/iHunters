@@ -8,6 +8,7 @@ import time
 from datetime import datetime
 from sitemap_worker import SitemapWorker
 from utils import rank_page, create_search_patterns
+from robotstxt import RobotsFactory
 
 
 class CrawlerWorker:
@@ -75,7 +76,7 @@ class CrawlerWorker:
         if len(remember_keywords) > 0:
             self.crawler_persons_conn.set_keywords_scanned(remember_keywords)
         # Start pages rescan so pages we recently flagged will be downloaded and processed.
-        print('Finished rescan of saved pages. Starting crawler for grabs.')
+        print('Finished rescan of saved pages. Starting crawler for visit some pages.')
         self.start_pages_crawling()
 
     def start_pages_crawling(self):
@@ -91,12 +92,10 @@ class CrawlerWorker:
             active_tasks = inspection_helper.active()
             reserved_tasks = inspection_helper.reserved()
             scheduled_tasks = inspection_helper.scheduled()
-
             if active_tasks is None or reserved_tasks is None or scheduled_tasks is None:
                 print('No celery worker detected. Please, provide one')
                 # TODO Add something here. Notification for admin maybe.
                 return
-
             for key, item in active_tasks.items():
                 active_count = len(item)
             for key, item in reserved_tasks.items():
@@ -140,7 +139,7 @@ class CrawlerWorker:
             website_pages_g = self.crawler_sites_conn.get_pages_by_site_id_gen(_id)
             website_rate = self.crawler_sites_conn.get_site_rate_limit(_id)
             website_pages_to_scan_count = self.crawler_sites_conn.count_urls_to_scan(_id)
-            websites_gens.append((website_pages_g, website_rate, website_pages_to_scan_count))
+            websites_gens.append((website_pages_g, website_rate, website_pages_to_scan_count, _id))
 
         # Sorting via (number of pages to scan // site rate limit) = time to scan. Sites with smallest time goes first.
         websites_gens = sorted(websites_gens, key=lambda x: x[2] // x[1])
@@ -148,6 +147,7 @@ class CrawlerWorker:
         for index, one_gen in enumerate(websites_gens):
                 site_gen = one_gen[0]
                 site_rate = one_gen[1]
+                site_id = one_gen[3]
 
                 if site_rate >= 5:
                     my_task = my_task5
@@ -158,7 +158,7 @@ class CrawlerWorker:
 
                 for page in site_gen:
                     for p_id, p_data in page.items():
-                        my_task.delay(p_id, p_data[0], p_data[1])
+                        my_task.delay(p_id, p_data[0], p_data[1], site_id)
         # All tasks in a celery now
 
     def update_database(self):

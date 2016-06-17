@@ -196,6 +196,9 @@ class CrawlerPersonPageRankConnector:
             page_modified_date = v.pop('date-modified', datetime.now())
             page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
             page_text = v.pop('page-text', 'No text')
+            page_links = v.pop('new-links', None)
+            if page_links:
+                website_id = v.pop('site_id')
             # Если мы пересканируем персон по сохранённых текстам, то не будем обновлять last_scan_date
             rescanned_flag = v.pop('rescanned', None)
 
@@ -215,6 +218,16 @@ class CrawlerPersonPageRankConnector:
                     CURSOR.execute('''UPDATE pages SET last_scan_date = CURRENT_TIMESTAMP WHERE `id` = %s;''', page_id)
                 except MySQLError as e:
                     print(err(e))
+                if page_links:
+                    data = [(url, website_id) for url in page_links]
+                    try:
+                        CURSOR.executemany('''
+                        INSERT INTO pages(url, site_id)
+                        VALUES (%s, %s)
+                        ON DUPLICATE KEY UPDATE url=url;
+                        ''', data)
+                    except MySQLError as e:
+                        print(err(e))
 
             for person_id, rank in v.items():
                 if rank == 0:

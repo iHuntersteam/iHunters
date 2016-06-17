@@ -15,6 +15,8 @@ from requests.exceptions import (SSLError, ConnectionError, URLRequired,
 from celery_app import app
 from db_connect import CrawlerPersonsConnector, CrawlerPersonPageRankConnector
 from utils import create_search_patterns, rank_page
+from robotstxt import RobotsFactory
+from urllib import parse
 
 
 class ReqRequest:
@@ -50,6 +52,13 @@ class WebCrawlerTask(Task):
     _search_patterns = None
     _db_connection = None
     _session = None
+    _robots_files = None
+
+    @cached_property
+    def robots_rules(self):
+        if self._robots_files is None:
+            self._robots_files = RobotsFactory()
+        return self._robots_files
 
     @cached_property
     def session(self):
@@ -85,12 +94,12 @@ class WebCrawlerTask(Task):
             self._db_connection = CrawlerPersonPageRankConnector()
         return self._db_connection
 
-    def run(self, page_id, request_url, page_date, *args, **kwargs):
-        r1 = self.fetch(page_id, request_url, page_date)
+    def run(self, page_id, request_url, page_date, site_id, *args, **kwargs):
+        r1 = self.fetch(page_id, request_url, page_date, site_id)
         r2 = self.get_info_from(r1)
         self.save_rank_to_database(r2)
 
-    def fetch(self, page_id, request_url, page_date):
+    def fetch(self, page_id, request_url, page_date, site_id):
         http_headers = {
             'User-Agent': 'iHunters Bot 1.0',
         }
@@ -99,12 +108,13 @@ class WebCrawlerTask(Task):
         except (SSLError, ConnectionError, URLRequired,
                 MissingSchema, InvalidSchema, InvalidURL, TooManyRedirects) as e:
             self.retry(countdown=backoff(self.request.retries), exc=e)
-        return page_id, ReqResponse(ReqRequest(request_url), res), page_date
+        return page_id, ReqResponse(ReqRequest(request_url), res), page_date, site_id
 
     def get_info_from(self, data):
-        page_id, page_response, page_date = data
+        page_id, page_response, page_date, site_id = data
         page_ranks = {}
         page_url = page_response.request.url
+        robotstxt = self.robots_rules.get_rules_object(page_url, site_id)
         try:
             converted = page_response.content.decode('utf-8')
         except UnicodeDecodeError:
@@ -135,6 +145,19 @@ class WebCrawlerTask(Task):
         # we only need data from <body></body> tag
         body = root.xpath('body')[0]
         body_text = body.text_content()
+
+        links_in_page = root.xpath('//a/@href')
+        main_address_parsed = parse.urlsplit(page_url)
+        base_domain = '{s.scheme}://{s.netloc}'.format(s=main_address_parsed)
+        base_page = '{s.scheme}://{s.netloc}{s.path}'.format(s=main_address_parsed)
+        founded_links = []
+        for one_link in links_in_page:
+            total_link = parse.urljoin(base_page, one_link)
+            if total_link.startswith(base_domain):
+                if robotstxt.allowed(total_link, '*'):
+                    # we have address from our site and robots.txt allows us to visit it.
+                    founded_links.append(total_link)
+
         # result = {}
         result = rank_page(self.search_patterns, body_text)
         # for pattern_name in self.search_patterns:
@@ -146,6 +169,9 @@ class WebCrawlerTask(Task):
         # prepare body text to save. Remove multiple whitespaces and new-line sybmols
         body_text = re.sub('\s+', ' ', body_text)
         page_ranks[page_id]['page-text'] = body_text.strip()
+        page_ranks[page_id]['new-links'] = founded_links
+        if len(founded_links) > 0:
+            page_ranks[page_id]['site_id'] = site_id
         return page_ranks
 
     def save_rank_to_database(self, data):
