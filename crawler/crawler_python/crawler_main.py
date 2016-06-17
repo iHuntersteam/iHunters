@@ -197,7 +197,6 @@ class CrawlerWorker:
 
 if __name__ == '__main__':
     test = CrawlerWorker()
-    test.check_new_items()
     while True:
         print('Start new loop.')
         time.sleep(120)
