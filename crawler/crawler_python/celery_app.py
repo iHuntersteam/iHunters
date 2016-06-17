@@ -11,5 +11,5 @@ app.conf.update(
     # CELERY_RESULT_BACKEND=redis_backend,
     # CELERY_RESULT_BACKEND='rpc://',
     CELERY_TASK_RESULT_EXPIRES=86400,
-    # CELERY_ALWAYS_EAGER=True - For debug. Starts all tasks in one thread one-by-one.
+    # CELERY_ALWAYS_EAGER=True  # For debug. Starts all tasks in one thread one-by-one.
 )
