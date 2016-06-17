@@ -33,6 +33,9 @@
 			case 'users':
 				$controller=new C_Users();
 			break;
+			case 'statistic':
+				$controller=new C_Statistic();
+			break;
 			default:
 				$controller=new C_Users();
 			break;
