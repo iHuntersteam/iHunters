@@ -82,7 +82,7 @@ class SitemapParser:
         Receive file from a website. Auto-detects and reads gzip-compressed XML files (.gz)
         :return: BytesIO file-like object
         """
-        r = ReqDownloader.fetch(ReqRequest(url), allow_redirects=False)
+        r = ReqDownloader.fetch(ReqRequest(url), allow_redirects=True)
         if isinstance(r, BaseCrawlException):
             logging.debug('Sitemap isn\'t available on {}'.format(url))
             return BytesIO()
@@ -107,7 +107,8 @@ class SitemapParser:
         frontier_date = date(2015, 1, 1)
         try:
             sitemap = etree.parse(self._fetch(url))
-        except XMLSyntaxError:
+        except XMLSyntaxError as e:
+            print(e)
             logging.debug('XML parse error on {}'.format(url))
             sitemap = etree.parse(BytesIO(b'<?xml version="1.0" encoding="UTF-8" ?><wrong><bad></bad></wrong>'))
         # grab a root element
@@ -158,3 +159,4 @@ class SitemapParser:
             # bad xml
             # just ignore it
             logging.debug('Can\'t parse xml on {}'.format(url))
+            print('Can\'t parse xml on {}'.format(url))
