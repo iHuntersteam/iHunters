@@ -13,13 +13,14 @@ type Rank struct {
 
 func asyncHttpGets(urls map[int]string, persons map[int][]string) []*Rank {
 	//asyncio get html pages and then get Rank of them
+	patternStrArray := regexpWord(persons)
 	ch := make(chan *Rank, len(urls)) // buffered
 	responses := []*Rank{}
 	for id, url := range urls {
 		go func(url string, id int) {
 			fmt.Printf("Fetching %s \n", url)
 			html_page := Crawl(url)
-			count := Parse(html_page, persons)
+			count := Parse(html_page, patternStrArray)
 			ch <- &Rank{id, count}
 		}(url, id)
 	}
