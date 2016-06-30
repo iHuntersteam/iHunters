@@ -17,8 +17,8 @@ func TestParseHtml(t *testing.T) {
 	fmt.Println("TestParseHtml")
 	
 	html_page := Crawl("http://ria.ru/tourism/20160629/1454284149.html")
-
-	result := Parse(html_page, persons)
+	patternStrArray := regexpWord(persons)
+	result := Parse(html_page, patternStrArray)
 
 	fmt.Println(result)
 
