@@ -30,13 +30,13 @@ func regexpWord(persons map[int][]string) []PatternStrings {
 	return patternStrArray
 }
 
-func Parse(html_page []byte, persons map[int][]string) map[int]int {
+func Parse(html_page []byte, patternStrArray []PatternStrings) map[int]int {
 	// get count of words by html page
 	counter := make(map[int]int)
-	for id, words := range persons {
-		for _, word := range words {
-			m := regexpWord(word).FindAll(html_page, -1)
-			counter[id] += len(m)
+	for _, patterns := range patternStrArray {
+		for _, patt := range patterns.search_patterns {
+			m := patt.FindAll(html_page, -1)
+			counter[patterns.person_id] += len(m)
 		}
 	}
 	return counter
