@@ -1,27 +1,27 @@
 package main
 
 import (
+	// "crawler_golang/models"
 	"fmt"
 	"time"
 )
 
-type Rank struct {
+type RankUrl struct {
 	//structur for rank
-	url int
-	count map[int]int
+	url   int
+	count []Counter
 }
 
-func asyncHttpGets(urls map[int]string, persons map[int][]string) []*Rank {
+func asyncHttpGets(urls map[int]string, persons map[int][]string) (responses []*RankUrl) {
 	//asyncio get html pages and then get Rank of them
 	patternStrArray := regexpWord(persons)
-	ch := make(chan *Rank, len(urls)) // buffered
-	responses := []*Rank{}
+	ch := make(chan *RankUrl, len(urls)) // buffered
 	for id, url := range urls {
 		go func(url string, id int) {
 			fmt.Printf("Fetching %s \n", url)
 			html_page := Crawl(url)
 			count := Parse(html_page, patternStrArray)
-			ch <- &Rank{id, count}
+			ch <- &RankUrl{id, count}
 		}(url, id)
 	}
 
@@ -37,5 +37,5 @@ func asyncHttpGets(urls map[int]string, persons map[int][]string) []*Rank {
 			// fmt.Printf(".")
 		}
 	}
-	return responses
+	return
 }
