@@ -9,9 +9,8 @@ import (
 	"regexp"
 )
 
-
 type PatternStrings struct {
-	person_id int
+	person_id       int
 	search_patterns []*regexp.Regexp
 }
 
@@ -20,18 +19,17 @@ type Counter struct {
 	count     int
 }
 
-func regexpWord(persons map[int][]string) []PatternStrings {
+func regexpWord(persons map[int][]string) (patternStrArray []PatternStrings) {
 	// return regexp for words in person
-	patternStrArray := []PatternStrings{}
 	for id, words := range persons {
 		patterns := []*regexp.Regexp{}
 		for _, word := range words {
-			pat := regexp.MustCompile(`(?im)(?:\A|\z|\s|[[:graph:]])` + word + `(?:[[:graph:]]|\A|\z|\s)`) 
+			pat := regexp.MustCompile(`(?im)(?:\A|\z|\s|[[:graph:]])` + word + `(?:[[:graph:]]|\A|\z|\s)`)
 			patterns = append(patterns, pat)
 		}
 		patternStrArray = append(patternStrArray, PatternStrings{id, patterns})
 	}
-	return patternStrArray
+	return
 }
 
 func Parse(html_page []byte, patternStrArray []PatternStrings) (counter []Counter) {
@@ -48,4 +46,3 @@ func Parse(html_page []byte, patternStrArray []PatternStrings) (counter []Counte
 	}
 	return
 }
-
