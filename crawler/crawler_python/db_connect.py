@@ -198,7 +198,8 @@ class CrawlerPersonPageRankConnector:
     def save(self, dict_ranks):
         for page_id, v in dict_ranks.items():
             page_modified_date = v.pop('date-modified', datetime.now())
-            page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
+            page_modified_date = page_modified_date.strftime('%Y-%m-%d')
+            # page_modified_date = page_modified_date.strftime('%Y-%m-%d %H:%M:%S')
             page_text = v.pop('page-text', 'No text')
             page_links = v.pop('new-links', None)
             if page_links:
