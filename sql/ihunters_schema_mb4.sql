@@ -54,7 +54,7 @@ CREATE TABLE `person_page_rank` (
   `person_id` int(11) NOT NULL,
   `page_id` int(11) NOT NULL,
   `rank` int(11) NOT NULL,
-  `date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_modified` DATE NOT NULL,
   KEY `person_id` (`person_id`),
   KEY `page_id` (`page_id`),
   CONSTRAINT `person_page_rank_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `persons` (`id`) ON DELETE CASCADE,
