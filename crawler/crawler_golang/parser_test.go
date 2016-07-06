@@ -3,7 +3,9 @@ package main
 import (
 	// "db_connect"
 	// "crawler_golang/models"
+	// "database/sql"
 	"fmt"
+	// "log"
 	"testing"
 )
 
@@ -47,21 +49,16 @@ func TestAsyncoParseHtml(t *testing.T) {
 
 func TestDBConnector(t *testing.T) {
 
-	// fmt.Println(DB_set)
-	err := DB.Connect()
+	_, err := NewDB("ihunters/root/")
 	if err != nil {
 		panic(err)
 	}
 
-	rows, res, err := DB.Query("select * from pages limit 5")
+	pages, err := RescanNeededPages()
 	if err != nil {
 		panic(err)
 	}
 
-	for _, row := range rows {
-		fmt.Println(row.Str(res.Map("url")))
-	}
+	fmt.Println(pages)
 
-	// fmt.Println(rows)
-	// fmt.Println(res)
 }
