@@ -19,7 +19,7 @@ type Counter struct {
 	count     int
 }
 
-func regexpWord(persons map[int][]string) (patternStrArray []PatternStrings) {
+func regexpWord(persons map[int][]string) (patternStrArray []*PatternStrings) {
 	// return regexp for words in person
 	for id, words := range persons {
 		patterns := []*regexp.Regexp{}
@@ -27,12 +27,12 @@ func regexpWord(persons map[int][]string) (patternStrArray []PatternStrings) {
 			pat := regexp.MustCompile(`(?im)(?:\A|\z|\s|[[:graph:]])` + word + `(?:[[:graph:]]|\A|\z|\s)`)
 			patterns = append(patterns, pat)
 		}
-		patternStrArray = append(patternStrArray, PatternStrings{id, patterns})
+		patternStrArray = append(patternStrArray, &PatternStrings{id, patterns})
 	}
 	return
 }
 
-func Parse(html_page []byte, patternStrArray []PatternStrings) (counter []Counter) {
+func Parse(html_page []byte, patternStrArray []*PatternStrings) (counter []Counter) {
 	// get count of words by html page
 	for _, patterns := range patternStrArray {
 		c := 0
