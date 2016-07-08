@@ -1,0 +1,46 @@
+<div class="table">
+	<div class="grid top">
+		<p class="name">Date</p>
+		<p class="rank">Количество страниц</p>
+	</div>
+	<?php foreach ($range as $date): ?>
+		
+	<div class="grid">
+	
+		<p class="name">
+		<?=$date->format('d.m.Y')?>
+		</p>
+	
+		<p class="rank">
+			<?php 
+			$everydayStat=M_Statistic::rankByDay($site_id,$date->format('Y-m-d'));
+			echo count($everydayStat);
+			?>
+		</p>
+	</div>
+	
+	<?php endforeach ?>
+</div>
+<pre>
+	<? var_dump($everydayStat)?>
+</pre>
+f($this->isPost())
+		{
+			
+			$start=new DateTime($_POST['startdate']);
+			$finish=new DateTime($_POST['finishdate']);
+			$interval=new DateInterval('P1D');
+			$range=new DatePeriod($start,$interval,$finish);
+			$site=M_Sites::getSite($_POST['select_site']);
+			$person=M_Persons::getPerson($_POST['select_person']);
+			$this->everydayStatList=$this->template('view/everydayStatList.php',array('range'=>$range,'site_id'=>$_POST['select_site'],'person_id'=>$_POST['select_person']));
+
+		}
+
+		public static function rankByDay($site_id,$date)
+	{
+		$db=M_Mysql::getInstance();
+		$query="SELECT id FROM pages WHERE site_id='$site_id' AND last_scan_date='$date' ";
+		$rows=$db->select($query);
+		return $rows;
+	}
